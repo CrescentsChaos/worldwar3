@@ -8,6 +8,11 @@ const SLOTS := ["slot1", "slot2", "slot3", "auto"]
 ## Set by the main menu before switching to the battle scene.
 var pending_load: String = ""
 var pending_difficulty: String = "normal"
+## Armies chosen on the prematch screen ("" = generic roster, e.g. when a tool starts a battle directly).
+var pending_p_faction: String = ""
+var pending_p_strategy: String = ""
+var pending_e_faction: String = ""
+var pending_e_strategy: String = ""
 
 
 func _ready() -> void:

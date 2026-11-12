@@ -1,6 +1,9 @@
 extends Node
-## Tiny procedural sound system (no audio files needed).
-## To use your own sounds, replace the entries in `streams` with loaded files.
+## Sound system. Every sound is looked up by NAME:
+##   1. user://audio/<name>.ogg|mp3     (drop-in, no re-export; see assets/audio/README.md)
+##   2. res://assets/audio/<name>.ogg|wav|mp3
+##   3. a tiny procedural fallback (so the game is never silent or broken)
+## Callers use play_any([...names]) so specific names (e.g. "fire_tank") win over generic ones ("shot").
 
 const RATE := 22050
 const POOL := 10
@@ -10,9 +13,23 @@ var players: Array[AudioStreamPlayer] = []
 var last_played: Dictionary = {}
 var next_player := 0
 var enabled := true
+const EXTS := ["ogg", "wav", "mp3"]
+const USER_DIR := "user://audio/"
+const RES_DIR := "res://assets/audio/"
+var files: Dictionary = {}          # name -> AudioStream (or null when no file exists)
+var music_player: AudioStreamPlayer
+var ambient_player: AudioStreamPlayer
+var music_name := ""
+var ambient_name := ""
 
 
 func _ready() -> void:
+	for d in ["audio", "vfx", "tiles", "sprites"]:
+		DirAccess.make_dir_recursive_absolute("user://" + d)
+	music_player = AudioStreamPlayer.new()
+	ambient_player = AudioStreamPlayer.new()
+	add_child(music_player)
+	add_child(ambient_player)
 	for i in POOL:
 		var p := AudioStreamPlayer.new()
 		add_child(p)
@@ -27,18 +44,114 @@ func _ready() -> void:
 	streams["deploy"] = _noise(0.12, 0.4, 8.0, 0.6)
 
 
-func play(sound: String, volume_db: float = 0.0, min_interval: float = 0.05) -> void:
-	if not enabled or not streams.has(sound):
-		return
+## Finds a sound file by name (user:// first, then res://). Returns null if there is none.
+func file_stream(sound: String) -> AudioStream:
+	if files.has(sound):
+		return files[sound]
+	var s: AudioStream = null
+	for ext in EXTS:
+		var up: String = USER_DIR + sound + "." + ext
+		if FileAccess.file_exists(up):
+			s = _load_user(up, ext)
+			if s != null:
+				break
+	if s == null:
+		for ext in EXTS:
+			var rp: String = RES_DIR + sound + "." + ext
+			if ResourceLoader.exists(rp):
+				s = load(rp) as AudioStream
+				if s != null:
+					break
+	files[sound] = s
+	return s
+
+
+func _load_user(path: String, ext: String) -> AudioStream:
+	if ext == "ogg":
+		return AudioStreamOggVorbis.load_from_file(path)
+	if ext == "mp3":
+		var m := AudioStreamMP3.new()
+		m.data = FileAccess.get_file_as_bytes(path)
+		return m
+	return null     # wav: put it in res://assets/audio/ (Godot imports it) or convert to ogg
+
+
+func has_sound(sound: String) -> bool:
+	return files.get(sound, null) != null or streams.has(sound) or file_stream(sound) != null
+
+
+func play(sound: String, volume_db: float = 0.0, min_interval: float = 0.05) -> bool:
+	if not enabled:
+		return false
+	var st: AudioStream = file_stream(sound)
+	var from_file := st != null
+	if st == null:
+		if not streams.has(sound):
+			return false
+		st = streams[sound]
 	var now := Time.get_ticks_msec() / 1000.0
 	if now - float(last_played.get(sound, -10.0)) < min_interval:
-		return
+		return true
 	last_played[sound] = now
 	var p := players[next_player]
 	next_player = (next_player + 1) % POOL
-	p.stream = streams[sound]
+	p.stream = st
 	p.volume_db = volume_db
+	p.pitch_scale = randf_range(0.96, 1.04) if from_file else 1.0
 	p.play()
+	return true
+
+
+## Plays the first name in the list that has a sound (file or built-in). Most specific name first.
+func play_any(names: Array, volume_db: float = 0.0, min_interval: float = 0.05) -> bool:
+	for n in names:
+		if has_sound(str(n)):
+			return play(str(n), volume_db, min_interval)
+	return false
+
+
+## Looping background music / ambience. Does nothing if no file named `sound` exists.
+func play_music(sound: String, volume_db: float = -8.0) -> void:
+	_play_loop(music_player, sound, volume_db, true)
+
+
+func play_ambient(sound: String, volume_db: float = -14.0) -> void:
+	_play_loop(ambient_player, sound, volume_db, false)
+
+
+func stop_ambient() -> void:
+	ambient_name = ""
+	ambient_player.stop()
+
+
+func stop_music() -> void:
+	music_name = ""
+	music_player.stop()
+
+
+func _play_loop(player: AudioStreamPlayer, sound: String, volume_db: float, is_music: bool) -> void:
+	var current := music_name if is_music else ambient_name
+	if sound == current and player.playing:
+		return
+	if is_music:
+		music_name = sound
+	else:
+		ambient_name = sound
+	var st := file_stream(sound)
+	if st == null:
+		player.stop()
+		return
+	if st is AudioStreamOggVorbis:
+		(st as AudioStreamOggVorbis).loop = true
+	elif st is AudioStreamMP3:
+		(st as AudioStreamMP3).loop = true
+	elif st is AudioStreamWAV:
+		var w := st as AudioStreamWAV
+		w.loop_mode = AudioStreamWAV.LOOP_FORWARD
+		w.loop_end = w.data.size() / (2 * (2 if w.stereo else 1))
+	player.stream = st
+	player.volume_db = volume_db
+	player.play()
 
 
 func _make_stream(samples: PackedFloat32Array) -> AudioStreamWAV:

@@ -1,0 +1,15 @@
+{
+  "_help": "Optional per-tile settings. scale = size of one repeat (1.0 = the image's pixel size).",
+  "ground": {
+    "scale": 1.0
+  },
+  "water_deep": {
+    "scale": 1.0
+  },
+  "water_shallow": {
+    "scale": 1.0
+  },
+  "river": {
+    "scale": 1.0
+  }
+}

@@ -28,7 +28,12 @@ func _process(_d: float) -> void:
 		var cat := rng.randi() % 12
 		if cat < 6:
 			var ids: Array = GameData.units.keys()
-			battle.deploy(0, "unit", ids[rng.randi() % ids.size()], Vector2(rng.randf_range(30, 980), rng.randf_range(80, 930)))
+			var uid: String = ids[rng.randi() % ids.size()]
+			var udom := str(GameData.units[uid].get("domain", "land"))
+			var upos := Vector2(rng.randf_range(30, 980), rng.randf_range(80, 930))
+			if udom == "water" or udom == "sub":
+				upos.y = rng.randf_range(-150, 20) if rng.randi() % 2 == 0 else rng.randf_range(990, 1150)
+			battle.deploy(0, "unit", uid, upos)
 		elif cat < 8:
 			var sids: Array = GameData.structures.keys()
 			battle.deploy(0, "structure", sids[rng.randi() % sids.size()], Vector2(rng.randf_range(30, 980), rng.randf_range(80, 930)))

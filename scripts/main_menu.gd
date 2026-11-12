@@ -8,6 +8,8 @@ var _decor: Array = []
 
 
 func _ready() -> void:
+	Sfx.play_music("music_menu")
+	Sfx.stop_ambient()
 	Engine.time_scale = 1.0
 	get_tree().paused = false
 	_rng.seed = 39
@@ -96,7 +98,7 @@ func _btn(text: String, cb: Callable) -> Button:
 func _new_game(diff: String) -> void:
 	SaveManager.pending_load = ""
 	SaveManager.pending_difficulty = diff
-	get_tree().change_scene_to_file("res://scenes/battle.tscn")
+	get_tree().change_scene_to_file("res://scenes/prematch.tscn")
 
 
 func _load(slot: String) -> void:

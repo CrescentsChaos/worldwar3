@@ -102,6 +102,9 @@ func _placeholder(shape: String) -> Texture2D:
 			_rect(img, Rect2i(8, 51, 48, 5), dark)
 			_circle(img, Vector2(30, 32), 12, dark)
 			_rect(img, Rect2i(30, 29, 30, 6), dark)
+		"ship":
+			_poly(img, PackedVector2Array([Vector2(62, 32), Vector2(48, 23), Vector2(6, 23), Vector2(2, 32), Vector2(6, 41), Vector2(48, 41)]), body)
+			_rect(img, Rect2i(20, 28, 18, 8), dark)
 		"proj":
 			_circle(img, Vector2(32, 32), 8, body)
 		_:

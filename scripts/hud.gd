@@ -159,15 +159,15 @@ func _build_bottom_panel() -> void:
 	var x := 12.0
 	for t in GameData.tabs:
 		var tid := str(t.get("id", ""))
-		var b := _make_button(str(t.get("name", tid)), Vector2(x, 6), Vector2(120, 28), func(): _show_tab(tid), 12)
+		var b := _make_button(str(t.get("name", tid)), Vector2(x, 6), Vector2(104, 28), func(): _show_tab(tid), 12)
 		b.toggle_mode = true
 		panel.add_child(b)
 		tab_buttons[tid] = b
-		x += 124.0
+		x += 108.0
 	panel.add_child(_make_button("<", Vector2(x + 6.0, 6), Vector2(30, 28), func(): _scroll_cards(-320), 14))
 	panel.add_child(_make_button(">", Vector2(x + 40.0, 6), Vector2(30, 28), func(): _scroll_cards(320), 14))
-	panel.add_child(_label("WASD/arrows: move camera   Wheel: zoom   Middle-drag: pan   Home/End: capitals   Q/E: tabs   1-9: select",
-		Vector2(x + 80.0, 10), Vector2(520, 20), 11, Color(0.6, 0.68, 0.6)))
+	panel.add_child(_label("WASD: camera  Wheel: zoom  Home/End: capitals  Q/E: tabs  1-9: select",
+		Vector2(x + 80.0, 10), Vector2(maxf(1270.0 - x - 80.0, 200.0), 20), 11, Color(0.6, 0.68, 0.6)))
 	card_scroll = ScrollContainer.new()
 	card_scroll.position = Vector2(12, 40)
 	card_scroll.size = Vector2(944, 106)
@@ -188,8 +188,8 @@ func _build_bottom_panel() -> void:
 	# Overview map (click / drag to move the camera).
 	minimap = Minimap.new()
 	minimap.battle = battle
-	minimap.position = Vector2(970, 568 - 92)
-	minimap.size = Vector2(300, 84)
+	minimap.position = Vector2(970, 568 - 128)
+	minimap.size = Vector2(300, 120)
 	root.add_child(minimap)
 
 
@@ -306,10 +306,10 @@ func _show_tab(tab: String) -> void:
 	cards.clear()
 	card_scroll.scroll_horizontal = 0
 	var hotkey := 1
-	for item in GameData.items_for_tab(tab):
+	for item in GameData.items_for_tab(tab, 0):
 		var kind: String = item[0]
 		var id: String = item[1]
-		var d := GameData.get_def(kind, id)
+		var d := GameData.def_for(0, kind, id)
 		var card := _make_card(kind, id, d, hotkey)
 		card_box.add_child(card)
 		hotkey += 1
@@ -377,7 +377,7 @@ func _refresh_card_styles(force: bool = false) -> void:
 
 
 func _info_text(kind: String, id: String) -> String:
-	var d := GameData.get_def(kind, id)
+	var d := GameData.def_for(0, kind, id)
 	if d.is_empty():
 		return ""
 	var lines: Array[String] = [str(d.get("name", id)) + "   $" + str(int(d.get("cost", 0)))]
@@ -629,6 +629,6 @@ func _input(event: InputEvent) -> void:
 				return
 			var n: int = event.keycode - KEY_1
 			if n >= 0 and n <= 8:
-				var items := GameData.items_for_tab(current_tab)
+				var items := GameData.items_for_tab(current_tab, 0)
 				if n < items.size():
 					_select(items[n][0], items[n][1])

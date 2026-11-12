@@ -4,6 +4,7 @@ extends Control
 
 var battle
 var _t := 0.0
+var _bg: ImageTexture
 
 
 func _ready() -> void:
@@ -20,12 +21,12 @@ func _process(delta: float) -> void:
 
 func _to_mini(p: Vector2) -> Vector2:
 	return Vector2(p.x / float(Battle.W) * size.x,
-		(p.y - Battle.FIELD_TOP) / (Battle.FIELD_BOTTOM - Battle.FIELD_TOP) * size.y)
+		(p.y - float(Water.Y_MIN)) / float(Water.Y_MAX - Water.Y_MIN) * size.y)
 
 
 func _to_world(p: Vector2) -> Vector2:
 	return Vector2(p.x / size.x * float(Battle.W),
-		p.y / size.y * (Battle.FIELD_BOTTOM - Battle.FIELD_TOP) + Battle.FIELD_TOP)
+		p.y / size.y * float(Water.Y_MAX - Water.Y_MIN) + float(Water.Y_MIN))
 
 
 func _gui_input(event: InputEvent) -> void:
@@ -49,7 +50,9 @@ func _gui_input(event: InputEvent) -> void:
 func _draw() -> void:
 	if battle == null:
 		return
-	draw_rect(Rect2(Vector2.ZERO, size), Color(0.04, 0.06, 0.04, 0.82))
+	if _bg == null:
+		_bg = ImageTexture.create_from_image(Water.minimap_image(int(size.x), int(size.y)))
+	draw_texture_rect(_bg, Rect2(Vector2.ZERO, size), false)
 	var pz := float(GameData.settings.get("player_zone_x", 1000)) / float(Battle.W) * size.x
 	var ez := float(GameData.settings.get("enemy_zone_x", 2200)) / float(Battle.W) * size.x
 	draw_rect(Rect2(0, 0, pz, size.y), Color(0.3, 0.55, 1.0, 0.10))

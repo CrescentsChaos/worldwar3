@@ -34,6 +34,15 @@ var spawn_t := 0.0              # country buildings that train free units
 var heal_t := 0.0
 var _drawn_hp := -1.0
 var _drawn_off := false
+var domain := "land"            # land | water (ships) | sub (submarines) | amphib (divers)
+var draft := 1                  # lowest water kind a ship can sail on (1 stream, 2 river, 3 deep sea)
+var path: PackedVector2Array = PackedVector2Array()   # waypoints around rivers / along waterways
+var path_i := 0
+var path_t := 0.0
+var path_goal := Vector2.ZERO
+var _cd: Dictionary = {}        # draft -> [distance from here to the nearest water, time stamp]
+var _submerged := false
+var overlay: Overlay = null      # health bar + labels, drawn above every sprite and effect
 
 
 func setup(p_battle, p_kind: String, p_id: String, p_def: Dictionary, p_team: int) -> void:
@@ -46,7 +55,9 @@ func setup(p_battle, p_kind: String, p_id: String, p_def: Dictionary, p_team: in
 	hp = max_hp
 	layer = str(def.get("layer", "ground"))
 	armor = float(def.get("armor", 0))
-	radius = float(def.get("size", 32)) * 0.42
+	domain = str(def.get("domain", "land"))
+	draft = int(def.get("draft", 1))
+	radius = float(def.get("size", 32)) * float(def.get("radius_k", 0.42)) * GameData.sprite_scale()
 	rotates = bool(def.get("rotate", kind != "base" and kind != "national"))
 	desired_angle = 0.0 if team == 0 else PI
 	lane_y = position.y
@@ -58,6 +69,8 @@ func _derive_cls() -> String:
 	match kind:
 		"strategic": return "missile"
 		"structure", "national", "base": return "structure"
+	if domain == "water" or domain == "sub":
+		return "ship"
 	if layer == "air":
 		return "air"
 	if str(def.get("tab", "")) == "infantry":
@@ -71,6 +84,7 @@ func _ready() -> void:
 	match layer:
 		"air": z_index = 30
 		"missile": z_index = 40
+		"sub": z_index = 9
 		_:
 			match kind:
 				"base": z_index = 5
@@ -78,8 +92,11 @@ func _ready() -> void:
 				"structure": z_index = 8
 				_: z_index = 12
 	retarget_t = randf() * 0.3
-	if kind == "national" and def.has("spawns"):
+	if (kind == "national" or kind == "unit") and def.has("spawns"):
 		spawn_t = float(def.get("spawn_every", 30.0)) * randf_range(0.4, 1.0)
+	overlay = Overlay.new()
+	overlay.owner_c = self
+	add_child(overlay)
 	build_sprite()
 
 
@@ -89,7 +106,7 @@ func build_sprite() -> void:
 	sprite = Sprite2D.new()
 	var tex := SpriteLib.get_texture(str(def.get("sprite", id)), str(def.get("shape", "box")))
 	sprite.texture = tex
-	var s := float(def.get("size", 32)) / maxf(float(tex.get_width()), 1.0)
+	var s := float(def.get("size", 32)) * GameData.sprite_scale() / maxf(float(tex.get_width()), 1.0)
 	sprite.scale = Vector2(s, s)
 	sprite.modulate = SpriteLib.team_tint(team)
 	sprite.rotation = desired_angle if rotates else 0.0
@@ -105,6 +122,8 @@ func _process(delta: float) -> void:
 	if dead:
 		return
 	cooldown_t = maxf(0.0, cooldown_t - delta)
+	if domain == "amphib":
+		_update_amphib()
 	if flash > 0.0:
 		flash = maxf(0.0, flash - delta * 4.0)
 	retarget_t -= delta
@@ -115,7 +134,10 @@ func _process(delta: float) -> void:
 	_act(delta)
 	_tick_special(delta)
 	if sprite != null:
-		sprite.modulate = SpriteLib.team_tint(team).lerp(Color(2, 2, 2), flash * 0.6)
+		var mod := SpriteLib.team_tint(team).lerp(Color(2, 2, 2), flash * 0.6)
+		if layer == "sub":
+			mod.a = 0.6
+		sprite.modulate = mod
 		if rotates:
 			sprite.rotation = lerp_angle(sprite.rotation, desired_angle, minf(1.0, delta * 9.0))
 	_maybe_redraw()
@@ -128,6 +150,8 @@ func _maybe_redraw() -> void:
 		_drawn_hp = hp
 		_drawn_off = off
 		queue_redraw()
+		if overlay != null:
+			overlay.queue_redraw()
 
 
 # ------------------------------------------------------------------ helpers
@@ -142,6 +166,34 @@ func _range() -> float:
 	if bool(def.get("radar_boost", false)) and battle.has_capability(team, "radar"):
 		r *= 1.3
 	return r
+
+
+## True for ships, submarines and divers that are currently swimming.
+func in_water() -> bool:
+	match domain:
+		"water", "sub":
+			return true
+		"amphib":
+			return _submerged
+	return false
+
+
+## Distance from here to the nearest water a ship of this draft can sail on (cached).
+func coast_dist(dr: int) -> float:
+	var now := Time.get_ticks_msec() / 1000.0
+	var e: Array = _cd.get(dr, [])
+	if e.is_empty() or now - float(e[1]) > (6.0 if _speed() <= 0.0 else 1.5):
+		e = [Water.dist_to_water(position, dr), now]
+		_cd[dr] = e
+	return float(e[0])
+
+
+## Divers dive when they swim into deep water: they can then only be hit by sonar weapons.
+func _update_amphib() -> void:
+	var sub_now := Water.kind_at(position) >= 2 and not Water.is_bridge(position)
+	if sub_now != _submerged:
+		_submerged = sub_now
+		layer = "sub" if sub_now else "ground"
 
 
 ## False for powered systems (SAM, interceptors, railguns...) while the power grid is down.
@@ -168,6 +220,9 @@ func _acquire() -> void:
 	var min_rng := float(def.get("min_range", 0.0))
 	var targets: Array = def.get("targets", [])
 	var prefer: Array = def.get("prefer", [])
+	var water_only: bool = bool(def.get("water_only", false))
+	var swimmer: bool = domain == "water" or domain == "sub"
+	var walker: bool = domain == "land" and layer == "ground" and _speed() > 0.0
 	var best: Combatant = null
 	var best_score := INF
 	for n in get_tree().get_nodes_in_group("team%d" % (1 - team)):
@@ -179,6 +234,13 @@ func _acquire() -> void:
 		var d := position.distance_to(c.position) - c.radius
 		if d > sight or d < min_rng:
 			continue
+		if water_only and not c.in_water():
+			continue                           # torpedoes and shore guns only fire at things in the water
+		if d > rng:
+			if walker and c.in_water():
+				continue                       # land units don't chase targets out at sea
+			if swimmer and not c.in_water() and c.coast_dist(draft) > rng - 8.0:
+				continue                       # inland target that no ship can reach
 		var stealth := float(c.def.get("stealth", 0.0))
 		if stealth > 0.0 and d > rng * stealth:
 			continue                           # stealth aircraft are only seen up close
@@ -204,6 +266,8 @@ func _acquire() -> void:
 func _update_goal() -> void:
 	if def.has("heal") and bool(def.get("follow", false)):
 		goal_pos = _support_goal()
+	elif domain == "water" or domain == "sub":
+		goal_pos = battle.naval_goal(team, position, _range(), draft)
 	else:
 		goal_pos = battle.objective_for(team, position)
 
@@ -293,7 +357,7 @@ func _tick_special(delta: float) -> void:
 			heal_t = 0.5
 			if online():
 				_do_heal(0.5)
-	if kind == "national" and def.has("spawns"):
+	if (kind == "national" or kind == "unit") and def.has("spawns"):
 		spawn_t -= delta
 		if spawn_t <= 0.0:
 			spawn_t = float(def.get("spawn_every", 30.0)) * randf_range(0.9, 1.1)
@@ -317,13 +381,80 @@ func _do_heal(dt: float) -> void:
 
 
 func _move_toward(pos: Vector2, speed: float, delta: float) -> void:
-	var dir := pos - position
+	var goal := _steer(pos, delta)
+	var dir := goal - position
 	if dir.length() < 2.0:
 		return
 	dir = dir.normalized()
 	desired_angle = dir.angle()
-	vel = dir * speed + push
-	position += vel * delta
+	vel = dir * speed * _terrain_speed() + push
+	_apply_move(vel * delta)
+
+
+## 0 = head straight for the goal. Otherwise the path level for Water.find_path():
+## 1-3 ships by draft, 4 vehicles (rivers need bridges), 5 infantry (can wade rivers, not the sea).
+func _path_level() -> int:
+	if domain == "water" or domain == "sub":
+		return draft
+	if domain == "amphib" or layer == "air" or _speed() <= 0.0:
+		return 0
+	return 5 if cls == "infantry" else 4
+
+
+## The point to head for right now: the goal itself, or the next waypoint of a detour / sea route.
+func _steer(goal: Vector2, delta: float) -> Vector2:
+	var level := _path_level()
+	if level == 0:
+		return goal
+	path_t -= delta
+	if path_t <= 0.0 or path_goal.distance_to(goal) > 90.0:
+		path_t = randf_range(1.0, 1.6)
+		path_goal = goal
+		path_i = 0
+		path = PackedVector2Array()
+		if level <= 3 or not Water.line_clear(position, goal, level):
+			path = Water.find_path(position, goal, level)
+	if path.size() == 0:
+		return goal
+	var last := path.size() - 1
+	while path_i < last and position.distance_to(path[path_i]) < 20.0:
+		path_i += 1
+	if level >= 4 and path_i >= last and position.distance_to(path[last]) < 20.0:
+		return goal
+	return path[path_i]
+
+
+func _terrain_speed() -> float:
+	match domain:
+		"land":
+			if layer == "air":
+				return 1.0
+			return Water.speed_mult(position, cls == "infantry")
+		"amphib":
+			return float(def.get("swim_mult", 1.0)) if Water.kind_at(position) >= 1 else 1.0
+	return 1.0
+
+
+func _can_stand(p: Vector2) -> bool:
+	match domain:
+		"water", "sub":
+			return Water.kind_at(p) >= draft
+		"amphib":
+			return true
+	if layer == "air":
+		return true
+	return Water.land_ok(p, cls == "infantry")
+
+
+## Moves by `step`, sliding along shores and river banks instead of entering forbidden terrain.
+func _apply_move(step: Vector2) -> void:
+	var np := position + step
+	if not _can_stand(position) or _can_stand(np):
+		position = np
+	elif _can_stand(Vector2(np.x, position.y)):
+		position = Vector2(np.x, position.y)
+	elif _can_stand(Vector2(position.x, np.y)):
+		position = Vector2(position.x, np.y)
 	_clamp_to_field()
 
 
@@ -347,7 +478,10 @@ func _strafe(delta: float, speed: float) -> void:
 
 func _clamp_to_field() -> void:
 	position.x = clampf(position.x, 12.0, float(battle.W) - 12.0)
-	position.y = clampf(position.y, battle.FIELD_TOP + 10.0, battle.FIELD_BOTTOM - 10.0)
+	if layer == "air" or domain != "land":
+		position.y = clampf(position.y, float(Water.Y_MIN) + 10.0, float(Water.Y_MAX) - 10.0)
+	else:
+		position.y = clampf(position.y, battle.FIELD_TOP + 10.0, battle.FIELD_BOTTOM - 10.0)
 
 
 func _try_fire() -> void:
@@ -419,24 +553,59 @@ func _draw() -> void:
 		draw_set_transform(Vector2(9, 16), sprite.rotation, sprite.scale)
 		draw_texture(sprite.texture, -sprite.texture.get_size() * 0.5, Color(0, 0, 0, 0.28))
 		draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
-	if layer != "air":
+	if domain == "water" or domain == "sub":
+		_draw_wake()
+	if layer != "air" and domain != "water" and domain != "sub":
 		draw_arc(Vector2.ZERO, radius + 2.0, 0.0, TAU, 22, Color(SpriteLib.team_color(team), 0.8), 2.0)
+
+
+## Health bar and labels. Drawn by the Overlay child (z_index 100) so text is never hidden by other sprites.
+func draw_overlay(ci: CanvasItem) -> void:
 	if hp < max_hp or kind == "base":
 		var w := maxf(radius * 2.0, 26.0)
 		var y := -(radius + 11.0)
 		var frac := clampf(hp / max_hp, 0.0, 1.0)
-		draw_rect(Rect2(-w * 0.5, y, w, 4.0), Color(0, 0, 0, 0.65))
+		ci.draw_rect(Rect2(-w * 0.5, y, w, 4.0), Color(0, 0, 0, 0.65))
 		var col := Color(0.3, 0.9, 0.35) if frac > 0.5 else (Color(0.95, 0.8, 0.2) if frac > 0.25 else Color(0.95, 0.25, 0.2))
-		draw_rect(Rect2(-w * 0.5, y, w * frac, 4.0), col)
+		ci.draw_rect(Rect2(-w * 0.5, y, w * frac, 4.0), col)
 	var font := ThemeDB.fallback_font
 	if kind == "national" or kind == "base":
 		var lw := maxf(radius * 2.0 + 70.0, 110.0)
 		var lp := Vector2(-lw * 0.5, radius + 17.0)
-		draw_string_outline(font, lp, str(def.get("name", id)), HORIZONTAL_ALIGNMENT_CENTER, lw, 13, 5, Color(0, 0, 0, 0.85))
-		draw_string(font, lp, str(def.get("name", id)), HORIZONTAL_ALIGNMENT_CENTER, lw, 13,
+		ci.draw_string_outline(font, lp, str(def.get("name", id)), HORIZONTAL_ALIGNMENT_CENTER, lw, 13, 5, Color(0, 0, 0, 0.85))
+		ci.draw_string(font, lp, str(def.get("name", id)), HORIZONTAL_ALIGNMENT_CENTER, lw, 13,
 			SpriteLib.team_color(team).lightened(0.45))
 	if not online():
 		var ow := 90.0
 		var op := Vector2(-ow * 0.5, -(radius + 16.0))
-		draw_string_outline(font, op, "NO POWER", HORIZONTAL_ALIGNMENT_CENTER, ow, 11, 4, Color(0, 0, 0, 0.9))
-		draw_string(font, op, "NO POWER", HORIZONTAL_ALIGNMENT_CENTER, ow, 11, Color(1.0, 0.85, 0.2))
+		ci.draw_string_outline(font, op, "NO POWER", HORIZONTAL_ALIGNMENT_CENTER, ow, 11, 4, Color(0, 0, 0, 0.9))
+		ci.draw_string(font, op, "NO POWER", HORIZONTAL_ALIGNMENT_CENTER, ow, 11, Color(1.0, 0.85, 0.2))
+
+
+## V-shaped wake behind a moving ship (fainter for submarines).
+func _draw_wake() -> void:
+	if vel.length_squared() < 4.0:
+		return
+	var a := sprite.rotation if sprite != null else desired_angle
+	var fwd := Vector2.from_angle(a)
+	var side := fwd.orthogonal()
+	var half := float(def.get("size", 60)) * GameData.sprite_scale() * 0.5
+	var stern := -fwd * half * 0.85
+	var spread := float(def.get("size", 60)) * GameData.sprite_scale() * 0.2
+	var al := 0.18 if domain == "sub" else 0.4
+	draw_line(stern, stern - fwd * half * 0.9 + side * spread, Color(1, 1, 1, al), 2.0)
+	draw_line(stern, stern - fwd * half * 0.9 - side * spread, Color(1, 1, 1, al), 2.0)
+	draw_line(stern - fwd * half * 0.15, stern - fwd * half * 0.7, Color(1, 1, 1, al * 0.8), 3.0)
+
+
+## Holds the health bar and labels so they always draw above every sprite and effect.
+class Overlay extends Node2D:
+	var owner_c = null
+
+	func _init() -> void:
+		z_as_relative = false
+		z_index = 100
+
+	func _draw() -> void:
+		if owner_c != null and is_instance_valid(owner_c):
+			owner_c.draw_overlay(self)

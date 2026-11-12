@@ -1,0 +1,42 @@
+{
+  "_help": "Optional per-effect settings. See README.md. Remove the leading underscore from a name to enable an example.",
+  "explosion_small": {
+    "fps": 24,
+    "scale": 1.0,
+    "additive": true
+  },
+  "explosion_medium": {
+    "fps": 24,
+    "scale": 1.0,
+    "additive": true
+  },
+  "explosion_large": {
+    "fps": 24,
+    "scale": 1.0,
+    "additive": true
+  },
+  "explosion_nuke": {
+    "fps": 20,
+    "scale": 1.0,
+    "additive": true
+  },
+  "hit_spark": {
+    "fps": 30,
+    "scale": 1.0,
+    "additive": true
+  },
+  "water_splash": {
+    "fps": 24,
+    "scale": 1.0
+  },
+  "muzzle_flash": {
+    "fps": 30,
+    "scale": 1.0,
+    "additive": true,
+    "rotate": true
+  },
+  "deploy_dust": {
+    "fps": 24,
+    "scale": 1.0
+  }
+}
