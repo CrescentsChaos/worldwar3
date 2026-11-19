@@ -2,7 +2,7 @@ extends Node
 ## JSON save files in user://saves/. Slots: slot1..slot3 (manual) and auto.
 
 const SAVE_DIR := "user://saves/"
-const SAVE_VERSION := 2
+const SAVE_VERSION := 3
 const SLOTS := ["slot1", "slot2", "slot3", "auto"]
 
 ## Set by the main menu before switching to the battle scene.

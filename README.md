@@ -104,6 +104,7 @@ tools/                     sprite generator (Pillow) + headless tests
 ## Dev tools
 ```
 python3 tools/generate_placeholder_sprites.py                       # regenerate placeholder art (Pillow)
+python3 tools/build_rosters.py                                      # rebuild every army's roster in data/units.json from tools/rosters/*.py
 godot --headless --path . --fixed-fps 60 res://tools/selftest.tscn  # smoke test (~100 s of game time)
 godot --headless --path . --fixed-fps 60 res://tools/soak.tscn      # 8-minute random-play soak test
 ```
@@ -170,9 +171,66 @@ Godot imports the new PNGs and the new `water.gd` the first time you open the pr
 ## Prematch build: armies and strategies
 After choosing a difficulty you pick an **army** and a **strategy**; the enemy gets an army and strategy too (random by default, or pick one).
 Armies: **Wehrmacht, Red Army, Imperial Japanese Army, British Army, US Army, French Army, Italian Royal Army, Russian Ground Forces.**
-* **Roster:** every army renames the whole roster to its own equipment (Tiger II, IS-2, Type 97 Chi-Ha, Challenger 2, M1A2 Abrams, Leclerc, M13/40, T-90M ...).
+* **Roster:** every army fields its OWN units, not renamed generics. Each of the ~70 slots (infantry, vehicles, aircraft, ships, defenses, missiles) is a separate, realistic design per army with its own HP / armor / damage / rate of fire / range / speed / size, a class, a real-world spec line and a realistic description (Tiger II, IS-2, Type 97 Chi-Ha, Challenger 2, M1A2 Abrams, Leclerc, M13/40, T-90M ...). Costs are derived from the stats. Where an army had no real equivalent the slot is banned (UK/France: no battleship; UK: no cluster munitions) or, for WW2 armies, filled with a late-war prototype or an explicit what-if.
+* **Datasheets:** hover any card in battle for a full datasheet (stat bars comparable across armies, strengths / weaknesses, requirements, real-world data). The prematch screen has an **Arsenal** browser for every army's full roster.
   Stats stay on the shared baseline; the differences are the army perks below. The four WW2 armies use late-war prototypes in the tech slots (Maus, Me 262, Ho 229, V-weapons...).
 * **Army perks and bans:** e.g. Wehrmacht tanks +10% HP but +8% cost; Red Army infantry -20% cost, no carriers; Italian army has no rocket artillery, drones, helicopters or stealth bomber.
 * **Strategies (3 per army):** each adds perks (cost / HP / speed / damage / cooldown modifiers, economy), a **unique free starting setup** (a fortified front line, a tank spearhead, an infantry horde, a fleet, a missile shield ...) and steers the AI (offense / defense / air / naval / missile / infantry).
 * The enemy AI uses the same system: its army's names, bans, perks and starting setup, and it plays to its strategy.
-* All of it is data in `units.json` -> `factions` (`names`, `ban`, `mods`, `income`, `money`, `strategies[].setup`). Saves remember both armies. If `factions` is missing the game skips the screen and uses the generic roster.
+* All of it is data in `units.json` -> `factions` (`roster`, `ban`, `mods`, `income`, `money`, `strategies[].setup`; `names` is only a fallback). Saves remember both armies. If `factions` is missing the game skips the screen and uses the generic roster.
+
+
+## Army rosters (data/units.json -> factions.<id>.roster)
+Edit `tools/rosters/<army>.py` and run `python3 tools/build_rosters.py`. A row is
+`U(slot_id, name, class, description, "real | world | specs", hp=.., ar=.., sp=.., rg=.., dm=.., cd=.., ...)`.
+Anything omitted is inherited from the slot; any engine field (`splash`, `pierce`, `vs`, `proj`, `targets`, `cargo`, `heal`, `size`,
+`stealth`, `kamikaze`, `spawn_every` ...) can be overridden. Cost is computed from the final stats unless `cost=` is given
+(or listed in `COST` in the build script). Optional `sprite=` points an army-specific unit at its own art.
+
+## Look & feel (battlefield restyle)
+- **UI:** `scripts/ui/mil_theme.gd` holds the whole palette (graphite panels, one amber accent, sharp corners, condensed
+  system font). Every screen assigns `MilTheme.theme()`; change colours / fonts there. Helpers: `seg_bar.gd`, `bracket_frame.gd`,
+  `alert_banner.gd`, `feed_log.gd`.
+- **Colour grade:** `scripts/screen_fx.gd` (desaturation, contrast, vignette, grain) sits under the HUD. Tune the shader uniforms there.
+- **Sprites:** `python3 tools/generate_placeholder_sprites.py && python3 tools/generate_naval_sprites.py && python3 tools/style_sprites.py`
+  (Pillow, numpy, scipy). Run the stylizer once on fresh generator output; the bundled `assets/sprites` is already styled.
+- **Terrain:** ground and water are generated in `tile_lib.gd` when no tile files exist; dirt, scorched front line, roads, craters, rocks and
+  forests are drawn in `battle.gd` (`TerrainLayer`). Explosions leave scorch marks and burnt wrecks (`DecalLayer`).
+- `settings.team_tint` is now 0.28 (sprites are drab; team shows via tint, corner ticks and a marker on aircraft).
+
+## Command & control (v3: no more card-dropping)
+Units are no longer teleported onto the map. They are **produced** and then **commanded**:
+- **Production:** a unit card queues the unit at a Barracks (infantry), War Factory (vehicles), Airbase (aircraft) or Naval Port (ships);
+  with none standing, the capital builds it. Each building builds one item at a time (time = cost / 35 s, 2-26 s; override with `build_time`
+  in `units.json`), so more factories = more throughput, and destroying a factory stalls the queue (it moves to another one or refunds).
+  Shift-click a card = queue 5. A power cut stops powered producers. The AI uses the same queues.
+- **Orders:** your units wait where they are built (they rally to the flag). Drag a box (or click) to select; **RMB** move,
+  **Ctrl+RMB / T + click** attack-move (advance and engage), **X** hold position (fire in range, never advance), **F + click** set the rally flag,
+  **C** select every unit, **Esc** deselect. Move = ignore targets and fire only in passing; attack-move stops to fight, then holds on arrival.
+- Defenses, infrastructure and missiles are still placed by clicking the map. Orders and queues are saved with the game.
+- Strafing aircraft and suicide drones still fly their own sorties (air orders are the next step).
+
+## Unique sprites per army (v4)
+Every unit of every army now has its **own sprite** (`assets/sprites/<faction>_<slot>.png`, 543 files) and each roster entry in
+`units.json` points at it with `"sprite": "<faction>_<slot>"` (the armies' `roster` already replaced name / stats, now the art too).
+- Art is generated from each unit's real-world identity by `python3 tools/fsprites/build_all.py` (Pillow, numpy, scipy; ~70 s).
+  Modules: `infantry.py` (helmet + kit per army, weapon per unit), `vehicles.py`, `air.py` (incl. rotorcraft), `navy.py`, `defenses.py`,
+  `missiles.py`; `schemes.py` holds each army's paint / camouflage / national insignia; `core.py` does the shading.
+- To change one unit's look, edit its entry in the module's `CAT` list (matched on the unit's name) and re-run. Hand-drawn PNGs dropped in
+  `user://sprites/<faction>_<slot>.png` still override the generated ones, exactly like before.
+- `build_rosters.py` now writes the `sprite` field automatically, so rebuilding rosters keeps the links.
+- The generic slot sprites (`assets/sprites/<slot>.png`) are still used for national buildings and as a fallback.
+
+
+## v5 expansion: big battlefield, automation, traps
+
+**Map** - now 6400 x 1488 land (4x the area), longer river with 5 bridges, two extra creeks, deeper seas. Camera zooms out to see the whole theatre; Shift+WASD pans fast. Units move 1.5x faster and missiles 1.8x to cover the distance.
+
+**Less manual** - your units now start in **AUTO-ASSAULT** (they march and fight like the AI). `V` cycles the army stance: AUTO-ASSAULT / DEFEND RALLY / MANUAL (the old behaviour). `P` toggles **AUTOPILOT**: the staff keeps buying units for you but never spends your last 350 funds, so you can still buy defenses, buildings and missiles. Economy is 1.7x so armies are bigger.
+
+**New infantry** - Mossberg Breacher (shotgun), Marksman, Mortar Team, Javelin/AT Team, Heavy Assault Trooper, Combat Sapper (lays mines, clears mines), Squad Commander (+25% damage aura), K9 Demolition Dog.
+**New vehicles / navy** - Mine Flail Tank, Torpedo Boat, ASW Frigate, Minelayer, Midget Submarine, SSGN cruise-missile sub.
+**New defenses** - Sandbag Nest, Watchtower, Sniper Nest, Flamethrower Bunker, Shore Torpedo Battery, Observation Post (+20% damage aura).
+**Traps & Mines tab** - AT Mine, AP Mine, Claymore, Napalm Trap, Barbed Wire, Dragon's Teeth, Naval Mine, Decoy Tank. Enemy traps are almost invisible; sappers and flail tanks defuse them. Traps have their own cap (90) and don't use the defense cap.
+**New buildings** - Field Hospital, Supply Depot, Fuel Depot, **Forward Operating Base** (can be built anywhere on your side of the river; acts as a barracks).
+All new items are themed per army (partial roster rows). `tools/expand_content.py` regenerates this data; `tools/feature_test.tscn` and `tools/stress.tscn` test it.

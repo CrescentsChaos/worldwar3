@@ -88,4 +88,5 @@ func _impact() -> void:
 func _draw() -> void:
 	for i in range(1, trail.size()):
 		var a := float(i) / float(trail.size())
-		draw_line(trail[i - 1] - position, trail[i] - position, Color(trail_color, a * 0.6), 1.5)
+		draw_line(trail[i - 1] - position, trail[i] - position, Color(trail_color, a * 0.30), 3.5)
+		draw_line(trail[i - 1] - position, trail[i] - position, Color(trail_color.lightened(0.5), a * 0.9), 1.3)

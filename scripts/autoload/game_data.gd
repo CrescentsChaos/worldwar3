@@ -20,6 +20,7 @@ var factions: Dictionary = {}       # army factions (prematch build), see units.
 var team_faction: Array = ["", ""]  # chosen faction id per team ("" = generic roster)
 var team_strategy: Array = ["", ""]
 var _team_cache: Array = [{}, {}]
+var _stat_max: Dictionary = {}
 
 
 func _ready() -> void:
@@ -52,6 +53,7 @@ func reload() -> void:
 	country = parsed.get("country", [])
 	factions = parsed.get("factions", {})
 	_team_cache = [{}, {}]
+	_stat_max = {}
 	for group in [units, structures, national, strategic]:
 		for key in group:
 			group[key]["id"] = key
@@ -179,22 +181,100 @@ func def_for(team: int, kind: String, id: String) -> Dictionary:
 	if cache.has(key):
 		var hit: Dictionary = cache[key]
 		return hit
-	var d: Dictionary = base_def.duplicate(true)
-	var f := faction_def(team)
-	var names: Dictionary = f.get("names", {})
-	if names.has(id):
-		d["name"] = str(names[id])
+	var d: Dictionary = _build_def(str(team_faction[team]), str(team_strategy[team]), kind, id)
+	cache[key] = d
+	return d
+
+
+## Same as def_for() but for an explicit army (used by the Arsenal browser on the prematch screen).
+func def_for_faction(faction_id: String, kind: String, id: String, strategy_id: String = "") -> Dictionary:
+	var base_def: Dictionary = get_def(kind, id)
+	if base_def.is_empty() or not factions.has(faction_id):
+		return base_def
+	return _build_def(faction_id, strategy_id, kind, id)
+
+
+## Slot definition -> army definition. An army's `roster` entry is a COMPLETE replacement of the slot's
+## stats, name, class, specs and description (not a rename); `names` is only a fallback for armies
+## without a roster entry. Doctrine mods are applied on top.
+func _build_def(faction_id: String, strategy_id: String, kind: String, id: String) -> Dictionary:
+	var d: Dictionary = get_def(kind, id).duplicate(true)
+	var f: Dictionary = factions.get(faction_id, {})
+	var roster: Dictionary = f.get("roster", {})
+	if roster.has(id):
+		var r: Dictionary = roster[id]
+		for k in r:
+			var v: Variant = r[k]
+			if v is Dictionary or v is Array:
+				v = v.duplicate(true)
+			d[k] = v
+	else:
+		var names: Dictionary = f.get("names", {})
+		if names.has(id):
+			d["name"] = str(names[id])
+	d["faction"] = faction_id
 	var ban: Array = f.get("ban", [])
 	if ban.has(id):
 		d["banned"] = true
 	var mods: Array = []
 	mods.append_array(f.get("mods", []))
-	mods.append_array(strategy_def(team).get("mods", []))
+	var ss: Dictionary = f.get("strategies", {})
+	var strat: Dictionary = ss.get(strategy_id, {})
+	mods.append_array(strat.get("mods", []))
 	for m in mods:
 		if _matches(str(m.get("match", "all")), kind, d):
 			_apply_mod(d, m)
-	cache[key] = d
 	return d
+
+
+# ------------------------------------------------------------------ datasheet helpers
+
+## Damage per second as shown on datasheets (a kamikaze's single blast is averaged over 2.5 s).
+func dps_of(d: Dictionary) -> float:
+	var dmg := float(d.get("damage", 0.0))
+	if dmg <= 0.0:
+		return 0.0
+	if bool(d.get("kamikaze", false)):
+		return dmg / 2.5
+	return dmg / maxf(float(d.get("cooldown", 1.0)), 0.05)
+
+
+## Largest value of each stat within a tab, across the generic roster AND every army's roster, so
+## the bars on a datasheet are comparable between armies. Cached; cleared on reload().
+func stat_max(tab: String) -> Dictionary:
+	if _stat_max.has(tab):
+		var hit: Dictionary = _stat_max[tab]
+		return hit
+	var m := {"hp": 1.0, "armor": 1.0, "dps": 1.0, "range": 1.0, "speed": 1.0, "damage": 1.0, "splash": 1.0}
+	var all_defs: Array = []
+	for group in [units, structures, strategic]:
+		for k in group:
+			all_defs.append(group[k])
+	for fid in factions:
+		var ro: Dictionary = factions[fid].get("roster", {})
+		for id in ro:
+			var bd: Dictionary = {}
+			for group in [units, structures, strategic]:
+				if group.has(id):
+					bd = group[id]
+			if bd.is_empty():
+				continue
+			var merged: Dictionary = bd.duplicate()
+			merged.merge(ro[id], true)
+			all_defs.append(merged)
+	for dd in all_defs:
+		var dict: Dictionary = dd
+		if str(dict.get("tab", "")) != tab:
+			continue
+		m["hp"] = maxf(float(m["hp"]), float(dict.get("hp", 0.0)))
+		m["armor"] = maxf(float(m["armor"]), float(dict.get("armor", 0.0)))
+		m["dps"] = maxf(float(m["dps"]), dps_of(dict))
+		m["range"] = maxf(float(m["range"]), float(dict.get("range", 0.0)))
+		m["speed"] = maxf(float(m["speed"]), float(dict.get("speed", 0.0)))
+		m["damage"] = maxf(float(m["damage"]), float(dict.get("damage", 0.0)))
+		m["splash"] = maxf(float(m["splash"]), float(dict.get("splash", 0.0)))
+	_stat_max[tab] = m
+	return m
 
 
 func _matches(rule: String, kind: String, d: Dictionary) -> bool:

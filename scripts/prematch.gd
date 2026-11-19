@@ -3,7 +3,7 @@ extends Control
 ## All content lives in data/units.json -> "factions".
 
 const FACTION_ORDER := ["wehrmacht", "red_army", "ija", "british_army", "us_army", "french_army", "italian_army", "russian_gf"]
-const GOLD := Color(0.93, 0.78, 0.28)
+const GOLD := Color(1.0, 0.62, 0.10)
 
 var _pf := "us_army"
 var _ps := ""
@@ -16,10 +16,12 @@ var _faction_text: RichTextLabel
 var _strategy_text: RichTextLabel
 var _enemy_text: Label
 var _enemy_opt: OptionButton
+var _arsenal: Arsenal
 var _rng := RandomNumberGenerator.new()
 
 
 func _ready() -> void:
+	theme = MilTheme.theme()
 	Engine.time_scale = 1.0
 	get_tree().paused = false
 	_rng.randomize()
@@ -88,10 +90,11 @@ func _toggle_btn(text: String, group: ButtonGroup, cb: Callable) -> Button:
 
 
 func _build() -> void:
-	var title := _label("PREMATCH BUILD", Vector2(0, 22), Vector2(1280, 50), 40, GOLD)
+	var title := _label("MISSION BRIEFING", Vector2(0, 18), Vector2(1280, 54), 42, Color(0.93, 0.94, 0.9))
+	title.add_theme_font_override("font", MilTheme.font_bold())
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	var sub := _label("Choose your army and strategy. Difficulty: %s." % SaveManager.pending_difficulty.capitalize(),
-		Vector2(0, 72), Vector2(1280, 24), 15, Color(0.75, 0.82, 0.72))
+	var sub := _label("SELECT YOUR ARMY AND STRATEGY   //   DIFFICULTY: %s" % SaveManager.pending_difficulty.to_upper(),
+		Vector2(0, 74), Vector2(1280, 24), 13, GOLD)
 	sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 
 	_label("YOUR ARMY", Vector2(40, 108), Vector2(260, 24), 16, GOLD)
@@ -130,20 +133,36 @@ func _build() -> void:
 	_refresh_enemy_text()
 
 	var start := Button.new()
-	start.text = "START BATTLE"
+	start.text = "DEPLOY  >>"
 	start.position = Vector2(520, 630)
 	start.size = Vector2(240, 56)
 	start.focus_mode = Control.FOCUS_NONE
-	start.add_theme_font_size_override("font_size", 20)
+	start.add_theme_font_size_override("font_size", 22)
+	start.add_theme_font_override("font", MilTheme.font_bold())
+	start.add_theme_stylebox_override("normal", MilTheme.box(MilTheme.AMBER, MilTheme.AMBER, 1, 10, 6))
+	start.add_theme_stylebox_override("hover", MilTheme.box(MilTheme.AMBER.lightened(0.15), Color.WHITE, 1, 10, 6))
+	start.add_theme_stylebox_override("pressed", MilTheme.box(MilTheme.AMBER.darkened(0.2), MilTheme.AMBER, 1, 10, 6))
+	start.add_theme_color_override("font_color", MilTheme.BG_SOLID)
+	start.add_theme_color_override("font_hover_color", MilTheme.BG_SOLID)
+	start.add_theme_color_override("font_pressed_color", MilTheme.BG_SOLID)
 	start.pressed.connect(_start)
 	add_child(start)
 	var back := Button.new()
-	back.text = "Back"
+	back.text = "BACK"
 	back.position = Vector2(326, 636)
 	back.size = Vector2(140, 44)
 	back.focus_mode = Control.FOCUS_NONE
 	back.pressed.connect(func(): get_tree().change_scene_to_file("res://scenes/main_menu.tscn"))
 	add_child(back)
+	var ars := Button.new()
+	ars.text = "ARSENAL  -  VIEW ALL UNITS"
+	ars.position = Vector2(800, 636)
+	ars.size = Vector2(230, 44)
+	ars.focus_mode = Control.FOCUS_NONE
+	ars.pressed.connect(func(): _arsenal.open(_pf))
+	add_child(ars)
+	_arsenal = Arsenal.new()
+	add_child(_arsenal)
 
 
 func _select_faction(fid: String, want_strategy: String) -> void:
@@ -184,6 +203,9 @@ func _on_enemy_selected(i: int) -> void:
 
 
 func _name_of(f: Dictionary, kind: String, id: String) -> String:
+	var ro: Dictionary = f.get("roster", {})
+	if ro.has(id):
+		return str(ro[id].get("name", id))
 	var names: Dictionary = f.get("names", {})
 	if names.has(id):
 		return str(names[id])
@@ -211,7 +233,7 @@ func _income_lines(src: Dictionary) -> Array:
 func _refresh_faction_text() -> void:
 	var f: Dictionary = GameData.factions[_pf]
 	var t := "[font_size=24][b]%s[/b][/font_size]\n" % str(f.get("name", _pf))
-	t += "[color=#c9b458]%s[/color]  -  %s\n\n" % [str(f.get("tagline", "")), str(f.get("era", ""))]
+	t += "[color=#ff9e1a]%s[/color]  -  %s\n\n" % [str(f.get("tagline", "")), str(f.get("era", ""))]
 	t += str(f.get("desc", "")) + "\n\n"
 	t += "[b]Army perks[/b]\n"
 	var perks: Array = GameData.describe_mods(f.get("mods", []))
@@ -290,8 +312,16 @@ func _go_battle() -> void:
 
 
 func _draw() -> void:
-	draw_rect(Rect2(0, 0, 1280, 720), Color(0.09, 0.12, 0.08))
-	draw_rect(Rect2(318, 106, 412, 500), Color(0.12, 0.16, 0.11, 0.9))
-	draw_rect(Rect2(742, 292, 276, 314), Color(0.12, 0.16, 0.11, 0.9))
-	draw_rect(Rect2(0, 0, 1280, 6), Color(0.93, 0.78, 0.28, 0.8))
-	draw_rect(Rect2(0, 714, 1280, 6), Color(0.93, 0.78, 0.28, 0.8))
+	draw_polygon(PackedVector2Array([Vector2(0, 0), Vector2(1280, 0), Vector2(1280, 720), Vector2(0, 720)]),
+		PackedColorArray([Color(0.055, 0.065, 0.068), Color(0.055, 0.065, 0.068), Color(0.018, 0.022, 0.024), Color(0.018, 0.022, 0.024)]))
+	for x in range(0, 1281, 80):
+		draw_line(Vector2(x, 0), Vector2(x, 720), Color(0.7, 0.8, 0.7, 0.035), 1.0)
+	for y in range(0, 721, 80):
+		draw_line(Vector2(0, y), Vector2(1280, y), Color(0.7, 0.8, 0.7, 0.035), 1.0)
+	for r in [Rect2(318, 106, 412, 500), Rect2(742, 292, 276, 314)]:
+		draw_rect(r, Color(0.02, 0.024, 0.026, 0.88))
+		draw_rect(r, MilTheme.LINE, false, 1.0)
+		MilTheme.draw_brackets(self, r.grow(2.0), MilTheme.AMBER_DIM, 10.0, 1.5)
+	draw_rect(Rect2(0, 0, 6, 720), MilTheme.AMBER)
+	draw_rect(Rect2(0, 0, 1280, 2), Color(MilTheme.AMBER, 0.5))
+	draw_rect(Rect2(0, 718, 1280, 2), Color(MilTheme.AMBER, 0.5))

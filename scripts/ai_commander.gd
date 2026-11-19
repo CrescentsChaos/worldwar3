@@ -14,17 +14,20 @@ extends Node
 const ANCHOR_VALUE := {
 	"hq": 3.0, "power_plant": 2.4, "tech_center": 2.2, "fortress": 2.0, "factory": 2.0,
 	"missile_silo": 1.8, "airbase": 1.6, "metropolis": 1.2, "barracks": 1.0, "radar_station": 0.9,
-	"oil_refinery": 0.8, "naval_port": 0.6, "town": 0.5,
+	"oil_refinery": 0.8, "naval_port": 0.6, "town": 0.5, "forward_base": 1.2, "supply_depot": 0.6,
+	"field_hospital": 0.5, "fuel_depot": 0.4,
 }
+const EXTRA_BUILDINGS := ["supply_depot", "forward_base", "field_hospital", "fuel_depot", "forward_base"]
 const DEF_POOL := {
-	"ground": ["railgun", "heavy_battery", "cannon_turret", "at_gun", "pillbox", "mg_turret", "mortar_pit"],
+	"ground": ["railgun", "heavy_battery", "cannon_turret", "at_gun", "pillbox", "mg_turret", "mortar_pit",
+		"sandbag_nest", "watchtower", "sniper_nest", "flame_bunker"],
 	"aa": ["sam_site", "flak_battery", "ciws"],
 	"int": ["interceptor_battery", "abm_battery"],
-	"coast": ["coastal_battery"],
+	"coast": ["coastal_battery", "torpedo_battery"],
 	"support": ["repair_depot"],
 }
 const ARMOR_DEF := ["railgun", "at_gun", "cannon_turret", "heavy_battery"]
-const INF_DEF := ["pillbox", "mg_turret", "mortar_pit"]
+const INF_DEF := ["pillbox", "mg_turret", "mortar_pit", "sandbag_nest", "sniper_nest", "flame_bunker"]
 const REBUILD_ORDER := ["power_plant", "tech_center", "factory", "airbase", "missile_silo", "barracks",
 	"radar_station", "naval_port", "oil_refinery", "metropolis", "town"]
 const CRITICAL := ["power_plant", "tech_center", "factory", "airbase"]
@@ -47,6 +50,10 @@ var spent_army := 0.0
 var urgent_t := 0.0
 var _initial: Dictionary = {}      # country building id -> how many we start with
 var _mine: Array = []              # our defensive structures from the last scan
+var autopilot := false             # true = this commander only buys UNITS for the player (team 0)
+var active := true
+var keep_cash := 350.0             # autopilot never spends below this, so the player always has a reserve
+var mine_t := 0.0
 
 
 func configure(dd: Dictionary) -> void:
@@ -65,7 +72,7 @@ func configure(dd: Dictionary) -> void:
 
 
 func _process(delta: float) -> void:
-	if battle == null or battle.over:
+	if battle == null or battle.over or not active:
 		return
 	think_t -= delta
 	if think_t <= 0.0:
@@ -76,11 +83,18 @@ func _process(delta: float) -> void:
 func _think() -> void:
 	var sc: Dictionary = _scan()
 	_mine = sc["mine"]
+	if autopilot:
+		if queue.is_empty() and battle.elapsed > 3.0:
+			_plan_army(sc)
+			queue_deadline = battle.elapsed + 60.0
+		_run_queue()
+		return
 	if _try_strategic():
 		return
 	if _try_infrastructure():
 		return
 	_urgent(sc)
+	_try_minefield(sc)
 	if queue.is_empty():
 		_plan(sc)
 	_run_queue()
@@ -116,7 +130,7 @@ func _scan() -> Dictionary:
 		if c == null or c.dead or c.is_queued_for_deletion() or c.layer == "missile":
 			continue
 		ids[c.id] = int(ids.get(c.id, 0)) + 1
-		if c.kind == "structure":
+		if c.kind == "structure" and not c.is_trap():
 			mine.append({"id": c.id, "pos": c.position, "role": str(c.def.get("role", "")), "cost": float(c.def.get("cost", 0))})
 		elif c.kind == "unit":
 			sc["my_units"] += 1
@@ -313,7 +327,59 @@ func _try_infrastructure() -> bool:
 			var p := _coast_pos() if nid == "naval_port" else _rear_pos()
 			if battle.deploy(team, "national", nid, p) == "":
 				return true
+	# once the core country stands: extra economy / support / forward bases
+	if battle.elapsed > 150.0 and money > 1700.0 and randf() < 0.5:
+		var nid2: String = EXTRA_BUILDINGS[randi() % EXTRA_BUILDINGS.size()]
+		var d2: Dictionary = GameData.get_def("national", nid2)
+		if not d2.is_empty() and battle.national_count(team, nid2) < mini(int(d2.get("limit", 2)), 2) \
+				and money > float(d2.get("cost", 0)) + 900.0:
+			for attempt in 6:
+				var p2: Vector2
+				if nid2 == "forward_base":
+					p2 = Vector2(randf_range(3500.0, float(GameData.settings.get("enemy_zone_x", 4900)) - 300.0),
+						randf_range(battle.FIELD_TOP + 150.0, battle.FIELD_BOTTOM - 150.0))
+				else:
+					p2 = _rear_pos()
+				if battle.deploy(team, "national", nid2, p2) == "":
+					return true
 	return false
+
+
+## Scatters a small minefield / wire belt in front of the defenses (and sea mines when the player has a navy).
+func _try_minefield(sc: Dictionary) -> void:
+	if battle.elapsed < 70.0 or battle.elapsed < mine_t:
+		return
+	mine_t = battle.elapsed + randf_range(14.0, 26.0)
+	var money: float = battle.money[team]
+	if money < 650.0 or battle.trap_count(team) >= int(GameData.settings.get("trap_cap", 90)) - 6:
+		return
+	var ea: float = sc["en_armor"]
+	var ei: float = sc["en_inf"]
+	var en: float = sc["en_navy"]
+	var pool: Array = []
+	if en > 400.0 and randf() < 0.3:
+		pool = ["naval_mine"]
+	elif ea >= ei:
+		pool = ["landmine", "landmine", "tank_trap", "napalm_trap"]
+	else:
+		pool = ["ap_mine", "ap_mine", "claymore", "barbed_wire", "napalm_trap"]
+	var id: String = pool[randi() % pool.size()]
+	var d: Dictionary = GameData.def_for(team, "structure", id)
+	if d.is_empty() or bool(d.get("banned", false)):
+		return
+	var centre: Vector2
+	if id == "naval_mine":
+		centre = _naval_pos(1)
+		if centre.x < 0.0:
+			return
+	else:
+		centre = _defense_pos(true) + Vector2(-randf_range(60.0, 200.0), 0.0)
+		centre.x = maxf(centre.x, float(GameData.settings.get("enemy_zone_x", 4900)) + 90.0)
+	var n := randi_range(3, 5)
+	for i in n:
+		var p := centre + Vector2(randf_range(-110.0, 110.0), randf_range(-110.0, 110.0))
+		if battle.deploy(team, "structure", id, p) != "":
+			continue
 
 
 # ------------------------------------------------------------------ planning
@@ -643,6 +709,8 @@ func _run_queue() -> void:
 		queue.clear()
 		return
 	var spare: float = battle.money[team]
+	if autopilot:
+		spare -= keep_cash
 	if battle.elapsed < save_until:
 		spare -= reserve               # a missile strike / rebuild is being saved for
 	var bought := 0
@@ -683,9 +751,22 @@ func _run_queue() -> void:
 
 
 ## "" = deployed, "stop" = a cap / funds problem (drop the plan), "fail" = no legal spot found this time.
+func _auto_unit_pos(d: Dictionary) -> Vector2:
+	var dom := str(d.get("domain", "land"))
+	if dom == "water" or dom == "sub":
+		var pz := float(GameData.settings.get("player_zone_x", 1500))
+		for i in 16:
+			var dy := randf_range(Water.COAST + 30.0, Water.COAST + 260.0)
+			var p := Vector2(randf_range(100.0, pz - 40.0), Water.MID_Y + (-dy if randf() < 0.5 else dy))
+			if Water.kind_at(p) >= int(d.get("draft", 1)):
+				return p
+		return Vector2(-1.0, -1.0)
+	return Vector2(randf_range(150.0, 700.0), randf_range(battle.FIELD_TOP + 200.0, battle.FIELD_BOTTOM - 200.0))
+
+
 func _place(kind: String, id: String, slot: String, d: Dictionary) -> String:
 	for attempt in 8:
-		var p := _slot_pos(slot, d)
+		var p := _auto_unit_pos(d) if team == 0 else _slot_pos(slot, d)
 		if p.x < 0.0:
 			continue
 		var r: String = battle.deploy(team, kind, id, p)

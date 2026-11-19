@@ -18,7 +18,7 @@ func setup_missile(p_battle, p_id: String, p_def: Dictionary, p_team: int, p_sta
 	setup(p_battle, "strategic", p_id, p_def, p_team)
 	start_pos = p_start
 	target_pos = p_target
-	speed = float(def.get("speed", 300))
+	speed = float(def.get("speed", 300)) * float(GameData.settings.get("missile_speed_mult", 1.8))
 	damage = float(def.get("damage", 100))
 	splash = float(def.get("splash", 100))
 	arc = float(def.get("arc", 0.3))
@@ -78,10 +78,19 @@ func to_dict() -> Dictionary:
 
 
 func _draw() -> void:
-	for i in range(1, trail.size()):
-		var a := float(i) / float(trail.size())
-		var w := (4.0 if is_nuke else 2.5) * a + 0.5
-		draw_line(trail[i - 1] - position, trail[i] - position, Color(1.0, 0.85 - 0.3 * (1.0 - a), 0.5, a * 0.55), w)
+	var n := trail.size()
+	for i in range(1, n):
+		var a := float(i) / float(n)
+		var p0 := trail[i - 1] - position
+		var p1 := trail[i] - position
+		draw_line(p0, p1, Color(0.72, 0.72, 0.68, a * 0.24), (8.0 if is_nuke else 5.0) * (1.7 - a))
+		if i > n - 9:
+			draw_line(p0, p1, Color(1.0, 0.72, 0.28, a * 0.85), (4.0 if is_nuke else 2.4) * a + 0.6)
+	if sprite != null:
+		var tail := -Vector2.from_angle(sprite.rotation) * float(def.get("size", 40)) * 0.45
+		var gr := 10.0 if is_nuke else 6.0
+		draw_circle(tail, gr, Color(1.0, 0.55, 0.15, 0.25))
+		draw_circle(tail, gr * 0.5, Color(1.0, 0.9, 0.6, 0.7))
 	if sprite != null and sprite.texture != null:
 		draw_set_transform(Vector2(10, 18), sprite.rotation, sprite.scale)
 		draw_texture(sprite.texture, -sprite.texture.get_size() * 0.5, Color(0, 0, 0, 0.25))

@@ -11,20 +11,20 @@ extends RefCounted
 ## (boats 1, destroyers and missile boats 2, big ships and submarines 3).
 ## Path levels used by find_path(): 1-3 = ship drafts, 4 = land vehicles, 5 = infantry.
 
-const W := 3200
+const W := 6400
 const CELL := 16
-const Y_MIN := -200
-const Y_MAX := 1208            # symmetric around MID_Y with Y_MIN
-const COLS := 200              # W / CELL
-const ROWS := 88               # (Y_MAX - Y_MIN) / CELL
+const Y_MIN := -560
+const Y_MAX := 1568            # symmetric around MID_Y with Y_MIN
+const COLS := 400              # W / CELL
+const ROWS := 133              # (Y_MAX - Y_MIN) / CELL
 const MID_Y := 504.0
-const COAST := 456.0           # half-height of the land strip (the field itself is 440)
-const RIVER_X := 1600.0
-const BAY_DEPTH := 150.0
-const BAY_SIGMA := 240.0
-const RIVER_W := 64.0
-const STREAM_W := 38.0
-const BRIDGE_YS := [340.0, 504.0, 668.0]
+const COAST := 760.0           # half-height of the land strip (the field itself is 744)
+const RIVER_X := 3200.0
+const BAY_DEPTH := 250.0
+const BAY_SIGMA := 420.0
+const RIVER_W := 72.0
+const STREAM_W := 40.0
+const BRIDGE_YS := [30.0, 267.0, 504.0, 741.0, 978.0]
 
 static var built := false
 static var kinds := PackedByteArray()
@@ -67,11 +67,24 @@ static func coast_dy(x: float) -> float:
 
 static func _make_waterways() -> void:
 	waterways.clear()
-	var main := PackedVector2Array([Vector2(RIVER_X, 190.0), Vector2(RIVER_X, 2.0 * MID_Y - 190.0)])
+	var half := COAST - BAY_DEPTH + 40.0
+	var main := PackedVector2Array([Vector2(RIVER_X, MID_Y - half), Vector2(RIVER_X, MID_Y + half)])
 	waterways.append([main, RIVER_W, 2])
-	var ctrl: Array = [Vector2(1228, 44), Vector2(1244, 120), Vector2(1300, 215), Vector2(1390, 285),
-		Vector2(1480, 345), Vector2(1560, 392), Vector2(RIVER_X, 410)]
+	# four tributaries (the original shape, stretched to the bigger map)
+	var ctrl_src: Array = [Vector2(1228, 44), Vector2(1244, 120), Vector2(1300, 215), Vector2(1390, 285),
+		Vector2(1480, 345), Vector2(1560, 392), Vector2(1600, 410)]
+	var ctrl: Array = []
+	for c in ctrl_src:
+		ctrl.append(Vector2(RIVER_X + (c.x - 1600.0) * 2.4, MID_Y + (c.y - 504.0) * 1.7))
+	ctrl[ctrl.size() - 1] = Vector2(RIVER_X, ctrl[ctrl.size() - 1].y)
 	var base_line := _spline(ctrl, 8)
+	# two long creeks crossing the land between each country and the river (wadable, slow)
+	for cx in [2150.0, 4250.0]:
+		var creek: Array = []
+		for k in range(0, 9):
+			var yy := MID_Y - 700.0 + float(k) * 175.0
+			creek.append(Vector2(cx + 70.0 * sin(float(k) * 1.1 + cx), yy))
+		waterways.append([_spline(creek, 6), STREAM_W * 0.8, 1])
 	for flip_x in [false, true]:
 		for flip_y in [false, true]:
 			var line := PackedVector2Array()

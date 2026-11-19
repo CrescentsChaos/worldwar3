@@ -42,7 +42,19 @@ var path_t := 0.0
 var path_goal := Vector2.ZERO
 var _cd: Dictionary = {}        # draft -> [distance from here to the nearest water, time stamp]
 var _submerged := false
+var order := "auto"             # auto (AI marches on its own) | hold | move | attack_move
+var order_pos := Vector2.ZERO
+var selected := false
 var overlay: Overlay = null      # health bar + labels, drawn above every sprite and effect
+var _spd_mult := 1.0            # settings.move_speed_mult for units (the map is big)
+var slow_t := 0.0               # slowed by wire / tank traps while > 0
+var slow_m := 1.0
+var buff_t := 0.0               # damage aura from an officer / observation post while > 0
+var buff_m := 1.0
+var lay_t := 0.0                # mine-laying timer (sappers, minelayers)
+var trap_t := 0.0               # trap trigger scan timer
+var aura_t := 0.0
+var sweep_t := 0.0
 
 
 func setup(p_battle, p_kind: String, p_id: String, p_def: Dictionary, p_team: int) -> void:
@@ -63,6 +75,9 @@ func setup(p_battle, p_kind: String, p_id: String, p_def: Dictionary, p_team: in
 	lane_y = position.y
 	cls = _derive_cls()
 	goal_pos = battle.base_pos(1 - team)
+	if kind == "unit":
+		_spd_mult = float(GameData.settings.get("move_speed_mult", 1.0))
+	lay_t = float(def.get("lay_every", 12.0)) * randf_range(0.3, 1.0)
 
 
 func _derive_cls() -> String:
@@ -76,6 +91,21 @@ func _derive_cls() -> String:
 	if str(def.get("tab", "")) == "infantry":
 		return "infantry"
 	return "armor" if armor >= 8.0 else "vehicle"
+
+
+## Ground / naval / helicopter units can be commanded. Strafing aircraft and suicide drones fly their own sorties.
+func can_take_orders() -> bool:
+	return kind == "unit" and _speed() > 0.0 and not bool(def.get("strafe", false)) and not bool(def.get("kamikaze", false))
+
+
+func set_order(o: String, p: Vector2 = Vector2.ZERO) -> void:
+	if not can_take_orders():
+		return
+	order = o
+	order_pos = p if (o == "move" or o == "attack_move") else position
+	path = PackedVector2Array()
+	path_t = 0.0
+	target = null if o == "move" else target
 
 
 func _ready() -> void:
@@ -126,6 +156,10 @@ func _process(delta: float) -> void:
 		_update_amphib()
 	if flash > 0.0:
 		flash = maxf(0.0, flash - delta * 4.0)
+	if slow_t > 0.0:
+		slow_t -= delta
+	if buff_t > 0.0:
+		buff_t -= delta
 	retarget_t -= delta
 	if retarget_t <= 0.0:
 		retarget_t = 0.22 + randf() * 0.12
@@ -137,6 +171,8 @@ func _process(delta: float) -> void:
 		var mod := SpriteLib.team_tint(team).lerp(Color(2, 2, 2), flash * 0.6)
 		if layer == "sub":
 			mod.a = 0.6
+		if is_trap():
+			mod.a = 0.95 if team == 0 else 0.3      # enemy mines are barely visible
 		sprite.modulate = mod
 		if rotates:
 			sprite.rotation = lerp_angle(sprite.rotation, desired_angle, minf(1.0, delta * 9.0))
@@ -157,7 +193,11 @@ func _maybe_redraw() -> void:
 # ------------------------------------------------------------------ helpers
 
 func _speed() -> float:
-	return float(def.get("speed", 0))
+	return float(def.get("speed", 0)) * _spd_mult
+
+
+func is_trap() -> bool:
+	return kind == "structure" and def.has("trap")
 
 
 ## Weapon range (radar-guided systems reach further while a friendly radar station lives).
@@ -225,12 +265,14 @@ func _acquire() -> void:
 	var walker: bool = domain == "land" and layer == "ground" and _speed() > 0.0
 	var best: Combatant = null
 	var best_score := INF
-	for n in get_tree().get_nodes_in_group("team%d" % (1 - team)):
+	for n in battle.near_team(1 - team, position, sight + 160.0):
 		var c := n as Combatant
 		if c == null or c.dead or c.is_queued_for_deletion():
 			continue
 		if not targets.has(c.layer):
 			continue
+		if c.is_trap():
+			continue                               # buried / hidden: only blasts and sweepers clear them
 		var d := position.distance_to(c.position) - c.radius
 		if d > sight or d < min_rng:
 			continue
@@ -264,12 +306,40 @@ func _acquire() -> void:
 
 
 func _update_goal() -> void:
-	if def.has("heal") and bool(def.get("follow", false)):
+	if order == "move" or order == "attack_move":
+		goal_pos = order_pos
+		return
+	if order == "hold":
+		goal_pos = position
+		return
+	if def.has("aura") and bool(def.get("follow", false)):
+		goal_pos = _follow_goal()
+	elif def.has("heal") and bool(def.get("follow", false)):
 		goal_pos = _support_goal()
 	elif domain == "water" or domain == "sub":
 		goal_pos = battle.naval_goal(team, position, _range(), draft)
 	else:
 		goal_pos = battle.objective_for(team, position)
+
+
+## Officers: walk with the front-most friendly ground fighters, staying a little behind them.
+func _follow_goal() -> Vector2:
+	var best: Combatant = null
+	var best_v := -INF
+	var dirx := 1.0 if team == 0 else -1.0
+	for n in get_tree().get_nodes_in_group("team%d" % team):
+		var c := n as Combatant
+		if c == null or c == self or c.dead or c.is_queued_for_deletion():
+			continue
+		if c.kind != "unit" or c.layer != "ground" or c.domain != "land" or c._speed() <= 0.0 or c.def.has("aura"):
+			continue
+		var v := c.position.x * dirx
+		if v > best_v:
+			best_v = v
+			best = c
+	if best == null:
+		return position
+	return best.position - Vector2(dirx * 70.0, 0.0)
 
 
 ## Medics / engineers / repair vehicles: walk to the nearest wounded friend, else the nearest friend.
@@ -304,7 +374,7 @@ func _compute_push() -> void:
 	push = Vector2.ZERO
 	if _speed() <= 0.0:
 		return
-	for n in get_tree().get_nodes_in_group("team%d" % team):
+	for n in battle.near_team(team, position, 180.0):
 		var c := n as Combatant
 		if c == null or c == self or c.dead or c.layer != layer or c._speed() <= 0.0:
 			continue
@@ -332,17 +402,30 @@ func _act(delta: float) -> void:
 		if target != null and is_instance_valid(target) and not target.dead:
 			_try_fire()
 		return
+	if order == "move" and speed > 0.0:
+		if position.distance_to(order_pos) < 22.0:
+			order = "hold"
+		else:
+			_move_toward(order_pos, speed, delta)
+		if target != null and is_instance_valid(target) and not target.dead:
+			_try_fire()
+		return
 	if target != null and is_instance_valid(target) and not target.dead:
 		var d := position.distance_to(target.position) - target.radius
 		if d > rng:
-			if speed > 0.0:
+			if speed > 0.0 and order != "hold":
 				_move_toward(target.position, speed, delta)
 		else:
 			desired_angle = (target.position - position).angle()
 			_try_fire()
 	elif speed > 0.0:
 		target = null
-		if def.has("heal") and bool(def.get("follow", false)):
+		if order == "hold":
+			return
+		if order == "attack_move" and position.distance_to(order_pos) < 28.0:
+			order = "hold"
+			return
+		if (def.has("heal") or def.has("aura")) and bool(def.get("follow", false)):
 			if position.distance_to(goal_pos) > 80.0:
 				_move_toward(goal_pos, speed, delta)
 		else:
@@ -362,6 +445,100 @@ func _tick_special(delta: float) -> void:
 		if spawn_t <= 0.0:
 			spawn_t = float(def.get("spawn_every", 30.0)) * randf_range(0.9, 1.1)
 			battle.garrison_spawn(self)
+	if def.has("trap"):
+		trap_t -= delta
+		if trap_t <= 0.0:
+			trap_t = 0.15
+			_trap_scan(0.15)
+	if def.has("aura"):
+		aura_t -= delta
+		if aura_t <= 0.0:
+			aura_t = 0.5
+			if online():
+				_do_aura()
+	if def.has("lays_trap"):
+		_tick_lay(delta)
+	if def.has("sweeper"):
+		sweep_t -= delta
+		if sweep_t <= 0.0:
+			sweep_t = 0.4
+			_do_sweep()
+
+
+## Officers / observation posts: friends inside the radius fire harder for the next moment.
+func _do_aura() -> void:
+	var a: Dictionary = def.get("aura", {})
+	var rad := float(a.get("radius", 250.0))
+	var mult := float(a.get("dmg", 1.2))
+	for n in get_tree().get_nodes_in_group("team%d" % team):
+		var c := n as Combatant
+		if c == null or c.dead or c.layer == "missile" or c.is_queued_for_deletion():
+			continue
+		if position.distance_to(c.position) <= rad:
+			c.buff_m = mult if c.buff_t <= 0.0 else maxf(c.buff_m, mult)
+			c.buff_t = 0.8
+
+
+## Mines and tripwires blow up under enemies; wire and tank traps slow (and cut) them.
+func _trap_scan(dt: float) -> void:
+	var cfg: Dictionary = def.get("trap", {})
+	var enemy := 1 - team
+	var slow: Dictionary = cfg.get("slow", {})
+	var trig: Array = cfg.get("triggers", [])
+	var rad := float(slow.get("radius", cfg.get("radius", 20.0)))
+	for n in battle.near_team(enemy, position, rad + 160.0):
+		var c := n as Combatant
+		if c == null or c.dead or c.kind != "unit" or c.layer == "air" or c.layer == "missile" or c.is_queued_for_deletion():
+			continue
+		if c.def.has("sweeper"):
+			continue                                   # sappers and flail tanks walk over mines safely
+		if position.distance_to(c.position) > rad + c.radius * 0.3:
+			continue
+		if not slow.is_empty():
+			if (slow.get("classes", []) as Array).has(c.cls):
+				c.slow_m = float(slow.get("mult", 0.4))
+				c.slow_t = 0.4
+				var dps := float(slow.get("dps", 0.0))
+				if dps > 0.0:
+					c.take_damage(dps * dt, team)
+			continue
+		if trig.has(c.cls):
+			var vsd: Dictionary = cfg.get("vs", {})
+			var lay: Array = cfg.get("layers", ["ground"])
+			battle.explode(position, float(cfg.get("splash", 50.0)), float(cfg.get("damage", 100.0)), team,
+				lay, 0.5, false, float(cfg.get("pierce", 0.0)), vsd)
+			die(-1)
+			return
+
+
+## Sappers / minelayers drop a free mine now and then while they move through contested ground.
+func _tick_lay(delta: float) -> void:
+	lay_t -= delta
+	if lay_t > 0.0 or vel.length_squared() < 4.0 or dead:
+		return
+	lay_t = float(def.get("lay_every", 12.0)) * randf_range(0.9, 1.2)
+	var tid := str(def.get("lays_trap", ""))
+	var td: Dictionary = GameData.def_for(team, "structure", tid)
+	if td.is_empty() or battle.trap_count(team) >= int(GameData.settings.get("trap_cap", 90)):
+		return
+	if position.distance_to(battle.base_pos(team)) < 450.0:
+		return                                         # keep our own roads clear
+	var wet := str(td.get("domain", "land")) == "water"
+	if wet != (Water.kind_at(position) >= 1) or Water.is_bridge(position):
+		return
+	battle.spawn_entity("structure", tid, team, position)
+
+
+## Safely defuses enemy mines and traps around this unit.
+func _do_sweep() -> void:
+	var rad := float(def.get("sweeper", 100.0))
+	for n in battle.near_team(1 - team, position, rad + 60.0):
+		var c := n as Combatant
+		if c == null or c.dead or not c.is_trap() or c.is_queued_for_deletion():
+			continue
+		if position.distance_to(c.position) <= rad:
+			battle.spawn_explosion(c.position, 10.0, false, 0.2)
+			c.die(-1)
 
 
 func _do_heal(dt: float) -> void:
@@ -387,7 +564,7 @@ func _move_toward(pos: Vector2, speed: float, delta: float) -> void:
 		return
 	dir = dir.normalized()
 	desired_angle = dir.angle()
-	vel = dir * speed * _terrain_speed() + push
+	vel = dir * speed * _terrain_speed() * (slow_m if slow_t > 0.0 else 1.0) + push
 	_apply_move(vel * delta)
 
 
@@ -408,7 +585,7 @@ func _steer(goal: Vector2, delta: float) -> Vector2:
 		return goal
 	path_t -= delta
 	if path_t <= 0.0 or path_goal.distance_to(goal) > 90.0:
-		path_t = randf_range(1.0, 1.6)
+		path_t = randf_range(3.5, 5.0)
 		path_goal = goal
 		path_i = 0
 		path = PackedVector2Array()
@@ -532,7 +709,8 @@ func die(source_team: int) -> void:
 
 func to_dict() -> Dictionary:
 	return {"t": kind, "id": id, "team": team, "x": position.x, "y": position.y,
-		"hp": hp, "cd": cooldown_t, "rot": desired_angle, "sdir": strafe_dir, "lane": lane_y, "st": spawn_t}
+		"hp": hp, "cd": cooldown_t, "rot": desired_angle, "sdir": strafe_dir, "lane": lane_y, "st": spawn_t,
+		"ord": order, "ox": order_pos.x, "oy": order_pos.y}
 
 
 func from_dict(d: Dictionary) -> void:
@@ -542,6 +720,9 @@ func from_dict(d: Dictionary) -> void:
 	strafe_dir = float(d.get("sdir", 1.0))
 	lane_y = float(d.get("lane", position.y))
 	spawn_t = float(d.get("st", spawn_t))
+	if d.has("ord"):
+		order = str(d.get("ord", order))
+		order_pos = Vector2(float(d.get("ox", 0.0)), float(d.get("oy", 0.0)))
 	if sprite != null and rotates:
 		sprite.rotation = desired_angle
 
@@ -549,37 +730,67 @@ func from_dict(d: Dictionary) -> void:
 # ------------------------------------------------------------------- drawing
 
 func _draw() -> void:
-	if layer == "air" and sprite != null and sprite.texture != null:
-		draw_set_transform(Vector2(9, 16), sprite.rotation, sprite.scale)
-		draw_texture(sprite.texture, -sprite.texture.get_size() * 0.5, Color(0, 0, 0, 0.28))
+	var tcol := SpriteLib.team_color(team)
+	if is_trap():
+		if team == 0:
+			var cfg: Dictionary = def.get("trap", {})
+			var tr := float(cfg.get("slow", {}).get("radius", cfg.get("radius", 20.0)))
+			draw_arc(Vector2.ZERO, tr, 0.0, TAU, 24, Color(tcol, 0.35), 1.0)
+		return
+	if sprite != null and sprite.texture != null and domain != "water" and domain != "sub":
+		var air := layer == "air"
+		draw_set_transform(Vector2(9, 16) if air else Vector2(2.5, 4.0), sprite.rotation, sprite.scale)
+		draw_texture(sprite.texture, -sprite.texture.get_size() * 0.5, Color(0, 0, 0, 0.26 if air else 0.38))
 		draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 	if domain == "water" or domain == "sub":
 		_draw_wake()
-	if layer != "air" and domain != "water" and domain != "sub":
-		draw_arc(Vector2.ZERO, radius + 2.0, 0.0, TAU, 22, Color(SpriteLib.team_color(team), 0.8), 2.0)
+	if selected:
+		var sr := radius + 6.0
+		MilTheme.draw_brackets(self, Rect2(Vector2(-sr, -sr), Vector2(sr, sr) * 2.0), MilTheme.GOOD, 6.0, 1.6)
+		if order == "move" or order == "attack_move":
+			var col := MilTheme.GOOD if order == "move" else MilTheme.WARN
+			draw_dashed_line(Vector2.ZERO, order_pos - position, Color(col, 0.45), 1.2, 6.0)
+		elif order == "hold":
+			draw_arc(Vector2.ZERO, radius + 10.0, -PI * 0.2, PI * 0.2, 6, Color(MilTheme.WARN, 0.8), 2.0)
+	if layer == "air":
+		var py := -(radius + 4.0)
+		draw_colored_polygon(PackedVector2Array([Vector2(0, py), Vector2(-4, py - 7), Vector2(4, py - 7)]), Color(tcol, 0.95))
+	elif domain != "water" and domain != "sub":
+		# four tactical corner ticks instead of a full circle
+		var r := radius + 3.0
+		for k in 4:
+			var ang := float(k) * PI * 0.5 + PI * 0.25
+			draw_arc(Vector2.ZERO, r, ang - 0.30, ang + 0.30, 6, Color(tcol, 0.85), 2.0)
 
 
 ## Health bar and labels. Drawn by the Overlay child (z_index 100) so text is never hidden by other sprites.
 func draw_overlay(ci: CanvasItem) -> void:
-	if hp < max_hp or kind == "base":
-		var w := maxf(radius * 2.0, 26.0)
-		var y := -(radius + 11.0)
+	var tcol := SpriteLib.team_color(team)
+	if (hp < max_hp and not is_trap()) or kind == "base" or selected:
+		var w := maxf(radius * 2.0, 28.0)
+		var y := -(radius + 12.0)
+		var bx := -w * 0.5
 		var frac := clampf(hp / max_hp, 0.0, 1.0)
-		ci.draw_rect(Rect2(-w * 0.5, y, w, 4.0), Color(0, 0, 0, 0.65))
-		var col := Color(0.3, 0.9, 0.35) if frac > 0.5 else (Color(0.95, 0.8, 0.2) if frac > 0.25 else Color(0.95, 0.25, 0.2))
-		ci.draw_rect(Rect2(-w * 0.5, y, w * frac, 4.0), col)
-	var font := ThemeDB.fallback_font
+		ci.draw_rect(Rect2(bx - 1.0, y - 1.0, w + 2.0, 6.0), Color(0, 0, 0, 0.78))
+		var col := Color(0.50, 0.80, 0.34) if frac > 0.5 else (Color(0.95, 0.72, 0.18) if frac > 0.25 else Color(0.92, 0.25, 0.2))
+		ci.draw_rect(Rect2(bx, y, w * frac, 4.0), col)
+		var segs := int(clampf(w / 9.0, 3.0, 10.0))
+		for i in range(1, segs):
+			var tx := bx + w * float(i) / float(segs)
+			ci.draw_line(Vector2(tx, y), Vector2(tx, y + 4.0), Color(0, 0, 0, 0.55), 1.0)
+		ci.draw_rect(Rect2(bx - 5.0, y - 1.0, 3.0, 6.0), tcol)
+	var font := MilTheme.font_bold()
 	if kind == "national" or kind == "base":
 		var lw := maxf(radius * 2.0 + 70.0, 110.0)
 		var lp := Vector2(-lw * 0.5, radius + 17.0)
-		ci.draw_string_outline(font, lp, str(def.get("name", id)), HORIZONTAL_ALIGNMENT_CENTER, lw, 13, 5, Color(0, 0, 0, 0.85))
-		ci.draw_string(font, lp, str(def.get("name", id)), HORIZONTAL_ALIGNMENT_CENTER, lw, 13,
-			SpriteLib.team_color(team).lightened(0.45))
+		var nm := str(def.get("name", id)).to_upper()
+		ci.draw_string_outline(font, lp, nm, HORIZONTAL_ALIGNMENT_CENTER, lw, 12, 5, Color(0, 0, 0, 0.9))
+		ci.draw_string(font, lp, nm, HORIZONTAL_ALIGNMENT_CENTER, lw, 12, tcol.lightened(0.5))
 	if not online():
 		var ow := 90.0
-		var op := Vector2(-ow * 0.5, -(radius + 16.0))
+		var op := Vector2(-ow * 0.5, -(radius + 18.0))
 		ci.draw_string_outline(font, op, "NO POWER", HORIZONTAL_ALIGNMENT_CENTER, ow, 11, 4, Color(0, 0, 0, 0.9))
-		ci.draw_string(font, op, "NO POWER", HORIZONTAL_ALIGNMENT_CENTER, ow, 11, Color(1.0, 0.85, 0.2))
+		ci.draw_string(font, op, "NO POWER", HORIZONTAL_ALIGNMENT_CENTER, ow, 11, MilTheme.WARN)
 
 
 ## V-shaped wake behind a moving ship (fainter for submarines).

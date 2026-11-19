@@ -15,7 +15,7 @@ const RES_DIR := "res://assets/sprites/"
 
 var cache: Dictionary = {}
 
-const TEAM_COLORS := [Color(0.35, 0.65, 1.0), Color(1.0, 0.38, 0.33)]
+const TEAM_COLORS := [Color(0.33, 0.58, 0.86), Color(0.88, 0.30, 0.25)]
 
 
 func _ready() -> void:
@@ -105,6 +105,20 @@ func _placeholder(shape: String) -> Texture2D:
 		"ship":
 			_poly(img, PackedVector2Array([Vector2(62, 32), Vector2(48, 23), Vector2(6, 23), Vector2(2, 32), Vector2(6, 41), Vector2(48, 41)]), body)
 			_rect(img, Rect2i(20, 28, 18, 8), dark)
+		"mine":
+			_circle(img, Vector2(32, 32), 22, dark)
+			_circle(img, Vector2(32, 32), 17, body)
+			_circle(img, Vector2(32, 32), 7, dark)
+			for k in 8:
+				var a2 := float(k) * TAU / 8.0
+				_circle(img, Vector2(32, 32) + Vector2.from_angle(a2) * 24.0, 3.5, dark)
+		"tower":
+			_rect(img, Rect2i(10, 10, 44, 44), dark)
+			_rect(img, Rect2i(15, 15, 34, 34), body)
+			_rect(img, Rect2i(15, 31, 34, 3), dark)
+			_rect(img, Rect2i(31, 15, 3, 34), dark)
+			_circle(img, Vector2(32, 32), 6, dark)
+			_rect(img, Rect2i(32, 30, 28, 4), dark)
 		"proj":
 			_circle(img, Vector2(32, 32), 8, body)
 		_:
