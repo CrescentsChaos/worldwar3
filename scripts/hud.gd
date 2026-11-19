@@ -38,6 +38,9 @@ var over_title: Label
 var over_stats: Label
 var tab_buttons: Dictionary = {}
 var speed_buttons: Array = []
+var radio_panel: RadioPanel
+var prep_panel: PrepPanel
+var asset_manager: Control
 
 var cards: Dictionary = {}          # "kind:id" -> {button, overlay, label, def, kind, id}
 var current_tab := "infantry"
@@ -63,8 +66,38 @@ func _ready() -> void:
 	_build_bottom_panel()
 	_build_overlays()
 	_build_mode_buttons()
+	_build_v6()
 	if not GameData.tabs.is_empty():
 		current_tab = str(GameData.tabs[0].get("id", "infantry"))
+
+
+# ------------------------------------------------------------------ v6 panels
+
+func _build_v6() -> void:
+	radio_panel = RadioPanel.new()
+	radio_panel.battle = battle
+	radio_panel.position = Vector2(14, 198)
+	radio_panel.size = Vector2(410, 154)
+	root.add_child(radio_panel)
+	prep_panel = PrepPanel.new()
+	root.add_child(prep_panel)
+	prep_panel.build(battle)
+
+
+func show_prep(on: bool) -> void:
+	if prep_panel == null:
+		return
+	prep_panel.visible = on
+	if on:
+		prep_panel.refresh()
+
+
+func open_asset_manager() -> void:
+	if asset_manager != null and is_instance_valid(asset_manager):
+		return
+	asset_manager = AssetManager.new()
+	root.add_child(asset_manager)
+	asset_manager.closed.connect(func(): asset_manager = null)
 
 
 # ------------------------------------------------------------------ building
@@ -325,6 +358,7 @@ func _build_overlays() -> void:
 		vb.add_child(b2)
 		slot_buttons["load:" + s] = b2
 	vb.add_child(_vbtn("Reload sprites (F10)", func(): battle.reload_sprites()))
+	vb.add_child(_vbtn("Asset manager (replace sprites / sounds / radio / tiles)", open_asset_manager))
 	vb.add_child(_vbtn("Abort mission - main menu", _to_menu))
 
 	# Game over

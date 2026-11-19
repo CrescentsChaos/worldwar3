@@ -30,7 +30,27 @@ static var _font_bold: Font = null
 static var _font_mono: Font = null
 
 
+## A font the player dropped into user://fonts/ (ui.ttf, bold.ttf, mono.ttf; .otf works too), or null.
+static func _custom_font(nm: String) -> Font:
+	for ext in ["ttf", "otf"]:
+		var p := "user://fonts/%s.%s" % [nm, ext]
+		if FileAccess.file_exists(p):
+			var ff := FontFile.new()
+			ff.data = FileAccess.get_file_as_bytes(p)
+			return ff
+	return null
+
+
+## Forget the cached fonts; screens opened afterwards use the new ones.
+static func reload_fonts() -> void:
+	_font_ui = null
+	_font_bold = null
+	_font_mono = null
+
+
 static func font_ui() -> Font:
+	if _font_ui == null:
+		_font_ui = _custom_font("ui")
 	if _font_ui == null:
 		var f := SystemFont.new()
 		f.font_names = PackedStringArray(UI_FONTS)
@@ -40,6 +60,8 @@ static func font_ui() -> Font:
 
 static func font_bold() -> Font:
 	if _font_bold == null:
+		_font_bold = _custom_font("bold")
+	if _font_bold == null:
 		var f := SystemFont.new()
 		f.font_names = PackedStringArray(UI_FONTS)
 		f.font_weight = 700
@@ -48,6 +70,8 @@ static func font_bold() -> Font:
 
 
 static func font_mono() -> Font:
+	if _font_mono == null:
+		_font_mono = _custom_font("mono")
 	if _font_mono == null:
 		var f := SystemFont.new()
 		f.font_names = PackedStringArray(MONO_FONTS)

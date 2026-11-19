@@ -78,4 +78,13 @@ func _draw() -> void:
 		draw_rect(Rect2(0, y, 3, 42), MilTheme.GOOD)
 		draw_string(font, Vector2(10, y + 14), "SELECTED  %d" % sel.size(), HORIZONTAL_ALIGNMENT_LEFT, -1, 12, MilTheme.GOOD)
 		draw_string(font, Vector2(10, y + 27), txt, HORIZONTAL_ALIGNMENT_LEFT, w - 16.0, 11, MilTheme.TEXT)
-		draw_string(font, Vector2(10, y + 39), "RMB move   CTRL+RMB / T attack-move   X hold", HORIZONTAL_ALIGNMENT_LEFT, -1, 9, MilTheme.DIM)
+		var ab_counts := {}
+		for c in sel:
+			if is_instance_valid(c):
+				var pa: String = c.primary_active()
+				if pa != "" and c.can_use(pa):
+					ab_counts[pa] = int(ab_counts.get(pa, 0)) + 1
+		var hint := "RMB move  T attack-move  X hold"
+		for pa in ab_counts:
+			hint += "   Z %s x%d" % [Abilities.ability_name(str(pa)), int(ab_counts[pa])]
+		draw_string(font, Vector2(10, y + 39), hint, HORIZONTAL_ALIGNMENT_LEFT, w - 16.0, 9, MilTheme.DIM if ab_counts.is_empty() else MilTheme.AMBER)

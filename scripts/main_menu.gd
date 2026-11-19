@@ -47,6 +47,7 @@ func _build() -> void:
 		left.add_child(_btn("%s   -   %s" % [d.to_upper(), str(names[d])], func(): _new_game(d)))
 	left.add_child(_heading("Command"))
 	left.add_child(_btn("OPEN SPRITES FOLDER", _open_sprites))
+	left.add_child(_btn("ASSET MANAGER  (replace anything)", _open_assets))
 	left.add_child(_btn("QUIT TO DESKTOP", func(): get_tree().quit()))
 
 	var right := VBoxContainer.new()
@@ -99,6 +100,10 @@ func _load(slot: String) -> void:
 	get_tree().change_scene_to_file("res://scenes/battle.tscn")
 
 
+func _open_assets() -> void:
+	add_child(AssetManager.new())
+
+
 func _open_sprites() -> void:
 	DirAccess.make_dir_recursive_absolute(SpriteLib.USER_DIR)
 	var path := ProjectSettings.globalize_path(SpriteLib.USER_DIR)
@@ -111,6 +116,9 @@ func _open_sprites() -> void:
 func _draw() -> void:
 	draw_polygon(PackedVector2Array([Vector2(0, 0), Vector2(1280, 0), Vector2(1280, 720), Vector2(0, 720)]),
 		PackedColorArray([Color(0.055, 0.065, 0.068), Color(0.055, 0.065, 0.068), Color(0.018, 0.022, 0.024), Color(0.018, 0.022, 0.024)]))
+	var menu_bg: Texture2D = SpriteLib.get_optional("ui_menu_bg")
+	if menu_bg != null:
+		draw_texture_rect(menu_bg, Rect2(0, 0, 1280, 720), false, Color(1, 1, 1, 0.55))
 	# contour map
 	for c in _contours:
 		var ctr: Vector2 = c[0]

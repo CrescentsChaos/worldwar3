@@ -72,7 +72,7 @@ func configure(dd: Dictionary) -> void:
 
 
 func _process(delta: float) -> void:
-	if battle == null or battle.over or not active:
+	if battle == null or battle.over or battle.prep or not active:
 		return
 	think_t -= delta
 	if think_t <= 0.0:
@@ -697,6 +697,13 @@ func _role_w(role: String, sc: Dictionary) -> float:
 			return 0.3
 		"diver":
 			return 0.15
+		"recon":
+			var n_scouts := 0
+			for n in battle.get_tree().get_nodes_in_group("team%d" % team):
+				var cc := n as Combatant
+				if cc != null and not cc.dead and bool(cc.def.get("scout", false)):
+					n_scouts += 1
+			return 1.1 if n_scouts < 2 else (0.25 if n_scouts < 4 else 0.0)
 	return 0.5
 
 

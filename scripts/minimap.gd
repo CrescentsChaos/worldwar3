@@ -71,8 +71,8 @@ func _draw() -> void:
 	draw_line(Vector2(ez, 0), Vector2(ez, size.y), Color(MilTheme.ENEMY, 0.4), 1.0)
 	for n in get_tree().get_nodes_in_group("combatants"):
 		var c := n as Combatant
-		if c == null or c.dead:
-			continue
+		if c == null or c.dead or not c.visible:
+			continue                                     # fog of war: hidden enemies are not on the map
 		var p := _to_mini(c.position)
 		var col := SpriteLib.team_color(c.team)
 		match c.kind:

@@ -234,3 +234,48 @@ Every unit of every army now has its **own sprite** (`assets/sprites/<faction>_<
 **Traps & Mines tab** - AT Mine, AP Mine, Claymore, Napalm Trap, Barbed Wire, Dragon's Teeth, Naval Mine, Decoy Tank. Enemy traps are almost invisible; sappers and flail tanks defuse them. Traps have their own cap (90) and don't use the defense cap.
 **New buildings** - Field Hospital, Supply Depot, Fuel Depot, **Forward Operating Base** (can be built anywhere on your side of the river; acts as a barracks).
 All new items are themed per army (partial roster rows). `tools/expand_content.py` regenerates this data; `tools/feature_test.tscn` and `tools/stress.tscn` test it.
+
+## v6: preparation phase, scouts, fog of war, utility abilities, radio, asset manager
+
+**Preparation phase** (new games; `settings.prep_phase`, `prep_seconds` in units.json). The war is frozen; you can:
+click a building and **drag** it to move it, **R** rotates it (Shift+R the other way), **Del** sells what you bought
+this phase (starting buildings can only be moved / rotated), place new buildings from the cards (R rotates the ghost),
+queue units, set the army stance, the **army objective** (nearest / capital / economy / industry), fog of war and
+autopilot. **Build designs**: SAVE / LOAD slots A-C store your layout (user://layouts/), MIRROR flips it north-south,
+RESET restores the country layout. Loading a design moves what you own and buys what is missing if you can afford it.
+Enter or START BATTLE ends the phase (a countdown does it automatically).
+
+**Rotation.** Every building that does not turn by itself (country buildings, walls...) can be rotated, also during the
+battle (hover + R). Coastal buildings with directional art face the water automatically: `art_front` (degrees, 0 = east,
+90 = south) is the side of the art that must point at the sea; the Naval Port has `art_front: 90` and `face_water`.
+
+**Scouting drones** (units.json, `scout: true`): Raven Recon Quad (barracks), RQ-11 Scout UAV (airbase), RQ-4 High-Altitude
+Recon (airbase + radar station), MQ-8 Naval Recon UAV (port, has sonar), Talon Scout UGV (factory, defuses mines).
+They roam the enemy half on their own, see far (`vision`), and paint targets (+25% damage taken). Airbases, carriers, ports
+and barracks also launch them for free (max 5 alive). Sprites: `tools/generate_scout_sprites.py` (replace freely).
+
+**Fog of war** (`settings.fog_of_war`, toggle in the prep panel). Enemy units are hidden outside your vision; your units
+cannot shoot what nobody sees (artillery needs spotters!). Enemy buildings stay on the map once seen, the enemy country
+is known from the start. Stealth aircraft need radar, submarines need sonar, mines need a sweeper / scout nearby.
+Anything that fires is revealed for a moment. `vision` per unit and `settings.vision_mult` tune it.
+
+**Utility abilities** (scripts/abilities.gd; override per unit with `"abilities": [...]`):
+dig_in, siege, suppress, designate, radar, sonar, withdraw (fall back, repair, return), smoke (Z), fortify (Z), unload (Z).
+Z uses the selection's active ability; the unit info panel lists each unit's utility.
+
+**Radio** (scripts/autoload/radio.gd): contact reports, under-attack calls, order acknowledgements, missile / nuke
+warnings, kill confirms, enemy intercepts... shown on the RADIO NET panel (click or Space = jump to the event, M = mute
+voices). Voices: drop `radio_<event>_<n>.ogg` (see the Asset Manager, RADIO category) or `radio_<event>.ogg`; otherwise a
+synthesised radio babble plays. All lines are in `Radio.LINES`.
+
+**Audio no longer cuts off.** 48 voices with priorities: a playing sound is only ever replaced by a more important one
+(nukes > explosions > deaths > shots), extra copies of the same sound are skipped instead of cutting the first, the
+sound system keeps running while paused / on the game-over screen, and the radio has its own channel + the music ducks.
+Separate buses: Music, SFX, Radio. `.wav` files can now be dropped into user://audio/ too.
+
+**Asset Manager** (main menu or pause menu): replace every sprite, sound effect, radio line, visual effect, map tile,
+interface image (background, menu background, mouse cursor) and font from inside the game; RESET removes a replacement,
+EXPORT CHECKLIST writes user://asset_checklist.csv with every asset id and whether it is custom / bundled / placeholder.
+Fonts: user://fonts/ui.ttf, bold.ttf, mono.ttf (restart or reopen screens to apply).
+
+Keys added: **R** rotate, **Z** ability, **M** radio mute, **Space** jump to last radio report, **Enter** start battle (prep), **Del** sell (prep).

@@ -255,8 +255,15 @@ func _tags_for(d: Dictionary, kind: String, missing: String) -> String:
 		notes.append("Income +%s / s" % str(d.get("income")))
 	if d.has("limit"):
 		notes.append("Max %d per country" % int(float(d.get("limit", 0.0))))
+	if bool(d.get("scout", false)):
+		notes.append("Scout: roams ahead on its own, sees %d" % int(Abilities.vision_for(kind, d, "air")))
 	if not notes.is_empty():
 		lines.append("[color=#8f9a95]Notes[/color]  " + "  -  ".join(notes))
+	var util: PackedStringArray = []
+	for a in Abilities.for_def(kind, d):
+		util.append("%s (%s)" % [Abilities.ability_name(str(a)), "Z" if Abilities.is_active(str(a)) else "auto"])
+	if not util.is_empty():
+		lines.append("[color=#e0a93a]Utility[/color]  " + ",  ".join(util))
 	var req := GameData.requirements(d)
 	if not req.is_empty():
 		var rn: PackedStringArray = []

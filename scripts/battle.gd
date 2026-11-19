@@ -65,6 +65,25 @@ var _nat_count: Array = [0, 0]
 var _world_t := 0.0
 var _drag_cam := false
 
+# --- v6: preparation phase, fog of war, smoke, rotation, scouting
+var prep := false                       # true while the preparation phase runs (the world is frozen)
+var prep_t := -1.0                      # seconds left (<= 0: unlimited, the player presses START)
+var prep_sel: Combatant = null          # building selected in the prep phase
+var prep_drag := false
+var prep_off := Vector2.ZERO
+var prep_orig := Vector2.ZERO
+var prep_valid := true
+var plan_focus := "auto"                # army objective: auto | capital | economy | industry
+var fog: FogLayer
+var fog_enabled := true
+var smokes: Array = []                  # {pos, team, r, t, age}
+var place_facing := 0.0                 # rotation of the building being placed (R)
+var place_manual := false
+var _vis_t := 0.0
+var _radar_src: Array = [[], []]
+var _sonar_src: Array = [[], []]
+var _power_ok: Array = [true, true]
+
 
 func _ready() -> void:
 	Engine.time_scale = 1.0
@@ -86,6 +105,12 @@ func _ready() -> void:
 	add_child(units_root)
 	add_child(proj_root)
 	add_child(fx_root)
+	fog_enabled = bool(GameData.settings.get("fog_of_war", true))
+	fog = FogLayer.new()
+	add_child(fog)
+	fog.setup()
+	fog.set_enabled(fog_enabled)
+	_apply_custom_cursor()
 	cam = Camera2D.new()
 	add_child(cam)
 	var z0 := clampf(float(GameData.settings.get("default_zoom", 1.0)), ZOOM_MIN, float(GameData.settings.get("zoom_max", ZOOM_MAX)))
@@ -106,6 +131,10 @@ func _ready() -> void:
 			hud.toast("Loaded %s" % SaveManager.slot_label(slot))
 	if not loaded:
 		new_game(SaveManager.pending_difficulty)
+		if bool(GameData.settings.get("prep_phase", true)):
+			start_prep()
+		else:
+			Radio.say("battle_start", {"force": true})
 	hud.rebuild_cards()
 
 
@@ -195,6 +224,15 @@ func new_game(diff: String) -> void:
 	intercepted = [0, 0]
 	elapsed = 0.0
 	over = false
+	prep = false
+	prep_sel = null
+	prep_drag = false
+	plan_focus = "auto"
+	smokes.clear()
+	_power_ok = [true, true]
+	if fog != null:
+		fog.reset()
+	Radio.reset()
 	var mid_y := (FIELD_TOP + FIELD_BOTTOM) * 0.5
 	bases[0] = spawn_entity("base", "hq", 0, Vector2(BASE_MARGIN, mid_y))
 	bases[1] = spawn_entity("base", "hq", 1, Vector2(float(W) - BASE_MARGIN, mid_y))
@@ -206,6 +244,7 @@ func new_game(diff: String) -> void:
 	_apply_setup(1)
 	_refresh_world()
 	_setup_ai(diff)
+	_update_vision()
 	focus_camera(Vector2(820.0, 520.0))
 	if str(GameData.team_faction[0]) != "":
 		hud.toast("%s  vs  %s.  Destroy the enemy capital to win." % [GameData.team_label(0), GameData.team_label(1)])
@@ -330,6 +369,11 @@ func _refresh_world() -> void:
 	_income = inc
 	_objectives = objs
 	_nat_count = nat
+	for t in 2:
+		var ok: bool = int(caps[t].get("power", 0)) > 0
+		if bool(_power_ok[t]) and not ok and t == 0 and not prep and elapsed > 1.0:
+			Radio.say("power_down")
+		_power_ok[t] = ok
 
 
 func _rebuild_grid() -> void:
@@ -392,14 +436,33 @@ func missing_requirement(team: int, d: Dictionary) -> String:
 func objective_for(team: int, from: Vector2) -> Vector2:
 	var best := base_pos(1 - team)
 	var best_d := INF
+	var focus := plan_focus if team == 0 else "auto"
 	for c in _objectives[1 - team]:
 		if not is_instance_valid(c) or c.dead:
+			continue
+		if focus != "auto" and not _fits_focus(c, focus):
 			continue
 		var d := from.distance_to(c.position)
 		if d < best_d:
 			best_d = d
 			best = c.position
 	return best
+
+
+## Does a building belong to the army objective chosen in the preparation phase?
+func _fits_focus(c: Combatant, focus: String) -> bool:
+	match focus:
+		"capital":
+			return c.kind == "base"
+		"economy":
+			return c.kind != "base" and float(c.def.get("income", 0.0)) > 0.0
+		"industry":
+			var prov: Array = c.def.get("provides", [])
+			for k in ["factory", "barracks", "airbase", "power", "tech", "silo", "port"]:
+				if prov.has(k):
+					return true
+			return false
+	return true
 
 
 func nationals_providing(team: int, cap: String) -> Array:
@@ -453,6 +516,10 @@ func spawn_entity(kind: String, id: String, team: int, pos: Vector2) -> Combatan
 	var c := Combatant.new()
 	c.position = pos
 	c.setup(self, kind, id, d, team)
+	if c.can_rotate():
+		c.facing = default_facing(d, pos)
+	if kind == "national" or kind == "base":
+		c.explored = true               # the enemy country is known intelligence; only units / defences / traps hide in the fog
 	units_root.add_child(c)
 	if team == 0 and c.can_take_orders():
 		_apply_stance(c, false)
@@ -666,7 +733,8 @@ func on_combatant_died(c: Combatant, source_team: int) -> void:
 			intercepted[source_team] += 1
 		else:
 			kills[source_team] += 1
-	var cargo: Array = c.def.get("cargo", [])
+	_radio_death(c, source_team)
+	var cargo: Array = c.def.get("cargo", []) if c.cargo_loaded else []
 	for cid in cargo:
 		if unit_count(c.team, false) < int(GameData.settings.get("unit_cap", 90)):
 			spawn_entity("unit", str(cid), c.team, c.position + Vector2(randf_range(-24.0, 24.0), randf_range(-24.0, 24.0)))
@@ -691,6 +759,7 @@ func game_over(winner: int) -> void:
 	if over:
 		return
 	over = true
+	Radio.say("victory" if winner == 0 else "defeat", {"force": true})
 	hud.show_game_over(winner == 0)
 
 
@@ -707,6 +776,14 @@ func garrison_spawn(src: Combatant) -> void:
 	var ud: Dictionary = GameData.def_for(src.team, "unit", uid)
 	if bool(ud.get("banned", false)):
 		return
+	if bool(ud.get("scout", false)):
+		var scouts := 0
+		for sn in get_tree().get_nodes_in_group("team%d" % src.team):
+			var sc := sn as Combatant
+			if sc != null and not sc.dead and bool(sc.def.get("scout", false)):
+				scouts += 1
+		if scouts >= 5:
+			return                           # enough eyes in the sky
 	var udom := str(ud.get("domain", "land"))
 	if udom == "water" or udom == "sub":
 		var wp := Water.nearest_water(src.position, int(ud.get("draft", 1)))
@@ -799,10 +876,10 @@ func trap_count(team: int) -> int:
 	return n
 
 
-func can_place_structure(pos: Vector2, new_radius: float = 22.0) -> bool:
+func can_place_structure(pos: Vector2, new_radius: float = 22.0, ignore: Combatant = null) -> bool:
 	for node in get_tree().get_nodes_in_group("combatants"):
 		var c := node as Combatant
-		if c == null or c.dead or c.layer == "air" or c.layer == "missile":
+		if c == null or c.dead or c.layer == "air" or c.layer == "missile" or c == ignore:
 			continue
 		if c.is_trap():
 			continue
@@ -812,7 +889,7 @@ func can_place_structure(pos: Vector2, new_radius: float = 22.0) -> bool:
 
 
 ## Returns "" on success or a human-readable reason.
-func deploy(team: int, kind: String, id: String, pos: Vector2) -> String:
+func deploy(team: int, kind: String, id: String, pos: Vector2, facing: float = INF) -> String:
 	if over:
 		return "The battle is over"
 	var d := GameData.def_for(team, kind, id)
@@ -865,6 +942,10 @@ func deploy(team: int, kind: String, id: String, pos: Vector2) -> String:
 	var c := spawn_entity(kind, id, team, pos)
 	if c == null:
 		return "Could not deploy"
+	if facing != INF and c.can_rotate():
+		c.set_facing(facing)
+	if prep and team == 0:
+		c.prep_bought = true
 	money[team] -= cost
 	deploy_cd[team][id] = float(d.get("deploy_cd", 1.0))
 	if kind == "national":
@@ -1011,6 +1092,7 @@ func _finish_unit(t: int, it: Dictionary) -> void:
 		Sfx.play_any(["deploy_" + id, "deploy"], -6.0, 0.05)
 		if hud != null and hud.feed != null:
 			hud.feed.push("%s ready" % str(ud.get("name", id)), MilTheme.GOOD)
+		Radio.say("unit_ready", {"unit": c, "name": str(ud.get("name", id))})
 		if c.can_take_orders() and udom != "water" and udom != "sub" and stance == "manual":
 			var rp: Vector2 = rally[0] + Vector2(randf_range(-70.0, 70.0), randf_range(-110.0, 110.0))
 			rp.y = clampf(rp.y, FIELD_TOP + 20.0, FIELD_BOTTOM - 20.0)
@@ -1078,6 +1160,8 @@ func hold_selected() -> void:
 	for c in selected:
 		if is_instance_valid(c):
 			c.set_order("hold")
+	if not selected.is_empty() and is_instance_valid(selected[0]):
+		Radio.say("ack_hold", {"unit": selected[0]})
 
 
 ## Sends the selection to `target`, spread out in a loose block so they do not pile onto one pixel.
@@ -1103,6 +1187,8 @@ func issue_order(mode: String, target: Vector2) -> void:
 		c.set_order(mode, p)
 	order_marks.append([tgt, 0.0, col])
 	Sfx.play("click", -7.0, 0.03)
+	if is_instance_valid(selected[0]):
+		Radio.say("ack_move" if mode == "move" else "ack_attack", {"unit": selected[0]})
 
 
 func _command_key(key: int) -> void:
@@ -1120,9 +1206,40 @@ func _command_key(key: int) -> void:
 			hud.toast("Rally point: click where new units should gather")
 		KEY_C:
 			select_all_units()
+		KEY_Z:
+			use_selected_ability()
+		KEY_M:
+			var on := Radio.toggle_voice()
+			hud.toast("Radio audio ON" if on else "Radio audio MUTED (subtitles stay)")
+		KEY_SPACE:
+			var rp: Variant = Radio.last_position()
+			if rp != null:
+				focus_camera(rp)
+		KEY_R:
+			var shift := Input.is_key_pressed(KEY_SHIFT)
+			if sel_kind == "structure" or sel_kind == "national":
+				var gd := GameData.def_for(0, sel_kind, sel_id)
+				if not place_manual:
+					place_facing = ghost_facing(gd, get_local_mouse_position())
+					place_manual = true
+				place_facing = wrapf(place_facing + (-PI * 0.5 if shift else PI * 0.5), -PI, PI)
+			elif prep:
+				prep_rotate(-1 if shift else 1)
+			else:
+				var hs := _hover_structure(get_local_mouse_position())
+				if hs != null and hs.can_rotate():
+					hs.set_facing(hs.facing + (-PI * 0.5 if shift else PI * 0.5))
+		KEY_DELETE, KEY_BACKSPACE:
+			if prep:
+				prep_sell()
+		KEY_ENTER, KEY_KP_ENTER:
+			if prep:
+				end_prep()
 
 
 func launch_strategic(team: int, id: String, target_pos: Vector2) -> String:
+	if prep:
+		return "Preparation phase: the war has not started yet"
 	var d := GameData.def_for(team, "strategic", id)
 	var tp := Vector2(clampf(target_pos.x, 10.0, float(W) - 10.0), clampf(target_pos.y, float(Water.Y_MIN) + 10.0, float(Water.Y_MAX) - 10.0))
 	var start := base_pos(team) + Vector2(40.0 if team == 0 else -40.0, randf_range(-30.0, 30.0))
@@ -1139,14 +1256,18 @@ func launch_strategic(team: int, id: String, target_pos: Vector2) -> String:
 	if team == 1:
 		if d.get("nuke", false):
 			hud.alert("!!  NUCLEAR LAUNCH DETECTED  !!", true)
+			Radio.say("nuke_enemy", {"pos": tp, "name": str(d.get("name", id)), "force": true})
 		else:
 			hud.alert("Incoming missile: %s" % str(d.get("name", id)), false)
+			Radio.say("missile_enemy", {"pos": tp, "name": str(d.get("name", id))})
 	return ""
 
 
 func select(kind: String, id: String) -> void:
 	sel_kind = kind
 	sel_id = id
+	place_manual = false
+	place_facing = 0.0
 	if kind != "":
 		Sfx.play("click", -6.0, 0.03)
 
@@ -1204,11 +1325,506 @@ func best_strike_point(victim_team: int, splash: float) -> Dictionary:
 	return best
 
 
+# ------------------------------------------------------------ v6: facing, smoke, vision, scouts, radio
+
+## Direction a building should face by default: coastal buildings with directional art (naval ports) turn their
+## dock side toward the nearest water. Returns the sprite rotation in radians.
+func default_facing(d: Dictionary, pos: Vector2) -> float:
+	if d.has("art_front") and (d.has("coastal") or bool(d.get("face_water", false))):
+		var front := deg_to_rad(float(d.get("art_front", 0.0)))
+		var w := Water.nearest_water(pos, 2)
+		if w.x > -1000.0 and w.distance_to(pos) > 1.0:
+			var ang := snappedf((w - pos).angle(), PI * 0.5)
+			return wrapf(ang - front, -PI, PI)
+	return 0.0
+
+
+func ghost_facing(d: Dictionary, mp: Vector2) -> float:
+	if place_manual:
+		return place_facing
+	return default_facing(d, mp)
+
+
+func add_smoke(pos: Vector2, team: int, r: float) -> void:
+	smokes.append({"pos": pos, "team": team, "r": r, "t": 8.0, "age": 0.0})
+
+
+func in_smoke(p: Vector2, team: int) -> bool:
+	for sm in smokes:
+		if int(sm["team"]) == team and p.distance_to(sm["pos"]) <= float(sm["r"]):
+			return true
+	return false
+
+
+func is_detected(team: int, c: Combatant) -> bool:
+	for sr in _radar_src[team]:
+		if c.position.distance_to(sr[0]) <= float(sr[1]):
+			return true
+	return false
+
+
+func _near_any(arr: Array, pos: Vector2, scale: float = 1.0) -> bool:
+	for sr in arr:
+		if pos.distance_to(sr[0]) <= float(sr[1]) * scale:
+			return true
+	return false
+
+
+## Fog of war: what the player can see this moment. Enemy units outside every friendly vision circle are hidden,
+## enemy buildings stay known once seen, stealth / submarines / mines need radar / sonar / sweepers.
+func _update_vision() -> void:
+	_vis_t = 0.25
+	var src: Array = []
+	var radar: Array = [[], []]
+	var sonar: Array = [[], []]
+	var det: Array = []
+	for n in get_tree().get_nodes_in_group("combatants"):
+		var c := n as Combatant
+		if c == null or c.dead or c.layer == "missile" or c.is_queued_for_deletion():
+			continue
+		if c.abilities.has("radar"):
+			radar[c.team].append([c.position, Abilities.radar_radius(c.def)])
+		if c.abilities.has("sonar"):
+			sonar[c.team].append([c.position, Abilities.sonar_radius(c.def)])
+		if c.team == 0:
+			if c.vision > 0.0:
+				src.append([c.position, c.vision])
+			if c.def.has("sweeper") or bool(c.def.get("scout", false)):
+				det.append([c.position, 230.0])
+	_radar_src = radar
+	_sonar_src = sonar
+	if fog != null and fog_enabled:
+		fog.refresh(src)
+	var contacts: Array = []
+	for n in get_tree().get_nodes_in_group("team1"):
+		var c := n as Combatant
+		if c == null or c.dead or c.is_queued_for_deletion():
+			continue
+		var seen := false
+		if not fog_enabled or c.layer == "missile":
+			seen = true
+		elif c.is_trap():
+			seen = _near_any(det, c.position)
+		elif c.reveal_t > 0.0 or c.mark_t > 0.0:
+			seen = true
+		elif c.layer == "sub":
+			seen = _near_any(sonar[0], c.position)
+		else:
+			var stealth := float(c.def.get("stealth", 0.0))
+			if stealth > 0.0:
+				seen = _near_any(radar[0], c.position) or _near_any(src, c.position, clampf(stealth, 0.25, 1.0))
+			else:
+				seen = fog.is_visible_at(c.position)
+		if not c.is_trap() and c.kind != "unit" and c.layer != "missile":
+			if seen:
+				if not c.explored and c.kind == "structure":
+					contacts.append(c)
+				c.explored = true
+			elif c.explored:
+				seen = true
+		if seen and not c.spotted and c.kind == "unit" and fog_enabled:
+			contacts.append(c)
+		c.spotted = seen
+		c.visible = seen
+	if not contacts.is_empty() and not prep and elapsed > 2.0:
+		_report_contacts(contacts)
+
+
+func _report_contacts(contacts: Array) -> void:
+	var first: Combatant = contacts[0]
+	var spotter: Combatant = null
+	var best := INF
+	for n in near_team(0, first.position, 1400.0):
+		var u := n as Combatant
+		if u == null or u.dead or u.kind != "unit":
+			continue
+		var dd := u.position.distance_to(first.position)
+		if dd < best:
+			best = dd
+			spotter = u
+	if spotter == null:
+		return
+	if first.kind == "structure":
+		Radio.say("structure_spotted", {"unit": spotter, "pos": first.position, "name": str(first.def.get("name", first.id))})
+		return
+	var cnt := 0
+	for c in contacts:
+		if c.kind == "unit" and c.position.distance_to(first.position) < 450.0:
+			cnt += 1
+	var what := "units"
+	match first.cls:
+		"infantry": what = "infantry"
+		"armor": what = "armor"
+		"vehicle": what = "vehicles"
+		"air": what = "aircraft"
+		"ship": what = "vessels"
+	Radio.say("enemy_spotted", {"unit": spotter, "pos": first.position, "n": maxi(cnt, 1), "what": what})
+
+
+## Patrol point for a scouting drone: ahead of the army front, across the whole width of the field.
+func next_scout_waypoint(team: int, _from: Vector2) -> Vector2:
+	var dirx := 1.0 if team == 0 else -1.0
+	var best := -INF
+	for n in get_tree().get_nodes_in_group("team%d" % team):
+		var c := n as Combatant
+		if c == null or c.dead or c.kind != "unit" or c.layer != "ground" or c.domain != "land" or bool(c.def.get("scout", false)):
+			continue
+		best = maxf(best, c.position.x * dirx)
+	var fx := base_pos(team).x + dirx * 700.0
+	if best > -INF:
+		fx = best * dirx
+	var x := fx + dirx * randf_range(500.0, 1900.0)
+	if randf() < 0.18:
+		x = base_pos(1 - team).x - dirx * randf_range(300.0, 900.0)
+	x = clampf(x, 120.0, float(W) - 120.0)
+	return Vector2(x, randf_range(FIELD_TOP + 80.0, FIELD_BOTTOM - 80.0))
+
+
+## Where a badly damaged unit goes to be repaired.
+func repair_spot_for(c: Combatant) -> Vector2:
+	var best := c.position
+	var best_d := INF
+	var is_air: bool = c.layer == "air"
+	var is_ship: bool = c.domain == "water" or c.domain == "sub"
+	for n in get_tree().get_nodes_in_group("team%d" % c.team):
+		var o := n as Combatant
+		if o == null or o.dead or o.is_queued_for_deletion():
+			continue
+		var ok := false
+		if o.kind == "base":
+			ok = not is_ship
+		elif o.kind == "national":
+			if is_ship:
+				ok = o.id == "naval_port"
+			elif is_air:
+				ok = o.id == "airbase" or o.id == "field_hospital"
+			else:
+				ok = o.id == "field_hospital" or o.id == "supply_depot" or o.id == "factory"
+		elif o.kind == "structure":
+			ok = o.id == "repair_depot" and not is_ship
+		if not ok:
+			continue
+		var dd := c.position.distance_to(o.position)
+		if dd < best_d:
+			best_d = dd
+			best = o.position
+	return best
+
+
+func note_hit(c: Combatant) -> void:
+	if over or prep:
+		return
+	if c.kind == "base":
+		var pct := int(100.0 * c.hp / maxf(c.max_hp, 1.0))
+		if pct < 60:
+			Radio.say("capital_hit", {"unit": c, "n": pct})
+	elif (c.kind == "unit" or c.kind == "national" or c.kind == "structure") and not c.is_trap():
+		Radio.say("under_attack", {"unit": c})
+
+
+func _radio_death(c: Combatant, source_team: int) -> void:
+	if over or prep or c.is_trap():
+		return
+	if c.team == 0:
+		if c.kind == "national":
+			Radio.say("structure_lost", {"unit": c})
+		elif c.kind == "unit":
+			if bool(c.def.get("scout", false)):
+				Radio.say("recon_lost", {"unit": c})
+			elif float(c.def.get("cost", 0)) >= 90.0:
+				Radio.say("unit_lost", {"unit": c})
+	elif source_team == 0:
+		if c.layer == "missile":
+			Radio.say("intercept_ok")
+		elif c.kind == "unit":
+			for n in near_team(0, c.position, 450.0):
+				var u := n as Combatant
+				if u != null and not u.dead and u.kind == "unit":
+					Radio.say("kill", {"unit": u})
+					break
+
+
+func use_selected_ability() -> void:
+	var used := 0
+	var nm := ""
+	for c in selected:
+		if not is_instance_valid(c):
+			continue
+		var a: String = c.primary_active()
+		if a != "" and c.use_ability(a):
+			used += 1
+			nm = Abilities.ability_name(a)
+	if hud != null:
+		hud.toast("%s: %d unit%s" % [nm, used, "" if used == 1 else "s"] if used > 0 else "No ready ability in the selection")
+
+
+func _apply_custom_cursor() -> void:
+	var t: Texture2D = SpriteLib.get_optional("ui_cursor")
+	if t != null:
+		Input.set_custom_mouse_cursor(t, Input.CURSOR_ARROW, Vector2(2, 2))
+
+
+# ------------------------------------------------------------ v6: preparation phase
+
+func start_prep() -> void:
+	prep = true
+	prep_t = float(GameData.settings.get("prep_seconds", 150.0))
+	prep_sel = null
+	prep_drag = false
+	_update_vision()
+	if hud != null:
+		hud.show_prep(true)
+	Radio.say("prep_start", {"force": true})
+
+
+func end_prep() -> void:
+	if not prep:
+		return
+	prep_deselect()
+	prep = false
+	prep_drag = false
+	if ai != null:
+		ai.think_t = 0.5
+	_refresh_world()
+	_update_vision()
+	if hud != null:
+		hud.show_prep(false)
+		hud.toast("BATTLE STARTED - good hunting")
+	Sfx.play("alarm", -8.0, 0.5)
+	Radio.say("battle_start", {"force": true})
+
+
+func _prep_process(delta: float) -> void:
+	if prep_t > 0.0:
+		prep_t -= delta
+		if prep_t <= 0.0:
+			end_prep()
+			return
+	_grid_t -= delta
+	if _grid_t <= 0.0:
+		_rebuild_grid()
+	_world_t -= delta
+	if _world_t <= 0.0:
+		_refresh_world()
+	_vis_t -= delta
+	if _vis_t <= 0.0:
+		_update_vision()
+	queue_redraw()
+
+
+func set_fog(on: bool) -> void:
+	fog_enabled = on
+	if fog != null:
+		fog.set_enabled(on)
+	_update_vision()
+
+
+func prep_deselect() -> void:
+	if prep_sel != null and is_instance_valid(prep_sel):
+		prep_sel.selected = false
+		prep_sel.queue_redraw()
+		if prep_sel.overlay != null:
+			prep_sel.overlay.queue_redraw()
+	prep_sel = null
+	prep_drag = false
+
+
+func _prep_select(c: Combatant) -> void:
+	prep_deselect()
+	prep_sel = c
+	if c != null:
+		c.selected = true
+		c.queue_redraw()
+		if c.overlay != null:
+			c.overlay.queue_redraw()
+
+
+func prep_pos_ok(c: Combatant, p: Vector2) -> bool:
+	var d := c.def
+	if not zone_ok(0, d, p):
+		return false
+	var nr := float(d.get("size", 40)) * 0.42 * GameData.sprite_scale()
+	if not can_place_structure(p, nr, c):
+		return false
+	if d.has("coastal") and Water.dist_to_water(p, 2) > float(d.get("coastal", 150)):
+		return false
+	return true
+
+
+func _prep_pick(mp: Vector2) -> Combatant:
+	var best: Combatant = null
+	var best_d := INF
+	for n in get_tree().get_nodes_in_group("team0"):
+		var c := n as Combatant
+		if c == null or c.dead or c.is_queued_for_deletion() or c.kind == "unit" or c.kind == "base" or c.is_trap():
+			continue
+		var d := c.position.distance_to(mp)
+		if d <= c.radius + 10.0 and d < best_d:
+			best_d = d
+			best = c
+	return best
+
+
+func prep_rotate(step: int) -> void:
+	if prep_sel == null or not is_instance_valid(prep_sel):
+		hud.toast("Select a building first (click it)")
+		return
+	if not prep_sel.can_rotate():
+		hud.toast("%s turns by itself" % str(prep_sel.def.get("name", prep_sel.id)))
+		return
+	prep_sel.set_facing(prep_sel.facing + float(step) * PI * 0.5)
+	Sfx.play("click", -6.0, 0.03)
+
+
+func prep_sell() -> void:
+	if prep_sel == null or not is_instance_valid(prep_sel):
+		return
+	if not prep_sel.prep_bought:
+		hud.toast("Starting buildings cannot be sold - move or rotate them")
+		return
+	money[0] += float(prep_sel.def.get("cost", 0))
+	deploy_cd[0][prep_sel.id] = 0.0
+	var c := prep_sel
+	prep_deselect()
+	c.dead = true
+	c.queue_free()
+	_refresh_world()
+	hud.toast("Sold for a full refund")
+
+
+# ---- build designs (layouts)
+
+func layout_path(slot: String) -> String:
+	var f := str(GameData.team_faction[0])
+	return "user://layouts/%s_%s.json" % [f if f != "" else "generic", slot]
+
+
+func collect_layout() -> Array:
+	var out: Array = []
+	for n in get_tree().get_nodes_in_group("team0"):
+		var c := n as Combatant
+		if c == null or c.dead or c.is_queued_for_deletion() or c.is_trap():
+			continue
+		if c.kind != "national" and c.kind != "structure":
+			continue
+		out.append({"k": c.kind, "id": c.id, "x": c.position.x, "y": c.position.y, "f": c.facing})
+	return out
+
+
+func save_layout(slot: String) -> void:
+	var items := collect_layout()
+	var f := FileAccess.open(layout_path(slot), FileAccess.WRITE)
+	if f == null:
+		hud.toast("Could not save the design")
+		return
+	f.store_string(JSON.stringify({"v": 1, "items": items}))
+	f.close()
+	hud.toast("Build design %s saved (%d buildings)" % [slot.to_upper(), items.size()])
+
+
+func has_layout(slot: String) -> bool:
+	return FileAccess.file_exists(layout_path(slot))
+
+
+func load_layout(slot: String) -> void:
+	if not has_layout(slot):
+		hud.toast("Design %s is empty" % slot.to_upper())
+		return
+	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(layout_path(slot)))
+	if typeof(parsed) != TYPE_DICTIONARY:
+		hud.toast("Design file is damaged")
+		return
+	var items: Array = parsed.get("items", [])
+	var r := apply_layout(items)
+	hud.toast("Design %s: %d moved, %d bought, %d skipped" % [slot.to_upper(), int(r["moved"]), int(r["bought"]), int(r["skipped"])])
+
+
+## Moves owned buildings to the saved spots (matched by type), then buys what is missing if you can afford it.
+func apply_layout(items: Array) -> Dictionary:
+	var moved := 0
+	var bought := 0
+	var skipped := 0
+	prep_deselect()
+	var owned: Array[Combatant] = []
+	for n in get_tree().get_nodes_in_group("team0"):
+		var c := n as Combatant
+		if c != null and not c.dead and not c.is_queued_for_deletion() and not c.is_trap() and (c.kind == "national" or c.kind == "structure"):
+			owned.append(c)
+	var pairs: Array = []
+	var leftovers: Array = []
+	for it in items:
+		var kind := str(it.get("k", ""))
+		var id := str(it.get("id", ""))
+		var pos := Vector2(float(it.get("x", 0.0)), float(it.get("y", 0.0)))
+		var pick: Combatant = null
+		var pd := INF
+		for c: Combatant in owned:
+			if c.kind == kind and c.id == id:
+				var dd: float = c.position.distance_to(pos)
+				if dd < pd:
+					pd = dd
+					pick = c
+		if pick != null:
+			owned.erase(pick)
+			pairs.append([pick, pos, float(it.get("f", 0.0)), pick.position])
+		else:
+			leftovers.append(it)
+	for pr in pairs:
+		pr[0].position = Vector2(-9999.0, -9999.0)
+	for pr in pairs:
+		var c: Combatant = pr[0]
+		var target: Vector2 = pr[1]
+		if prep_pos_ok(c, target):
+			c.position = target
+			moved += 1
+		else:
+			var alt := _free_spot(c.def, pr[3])
+			c.position = alt if alt.x >= 0.0 else pr[3]
+			skipped += 1
+		if c.can_rotate():
+			c.set_facing(float(pr[2]))
+	for it in leftovers:
+		var pos2 := Vector2(float(it.get("x", 0.0)), float(it.get("y", 0.0)))
+		var err := deploy(0, str(it.get("k", "")), str(it.get("id", "")), pos2, float(it.get("f", 0.0)))
+		if err == "":
+			bought += 1
+		else:
+			skipped += 1
+	_refresh_world()
+	return {"moved": moved, "bought": bought, "skipped": skipped}
+
+
+func mirror_layout() -> void:
+	var items := collect_layout()
+	for it in items:
+		it["y"] = FIELD_TOP + FIELD_BOTTOM - float(it["y"])
+		it["f"] = -float(it["f"])
+	var r := apply_layout(items)
+	hud.toast("Mirrored north-south (%d moved, %d skipped)" % [int(r["moved"]), int(r["skipped"])])
+
+
+func reset_layout() -> void:
+	var items: Array = []
+	for e in GameData.country:
+		var id := str(e[0])
+		var pos := Vector2(float(e[1]), float(e[2]))
+		items.append({"k": "national", "id": id, "x": pos.x, "y": pos.y, "f": default_facing(GameData.def_for(0, "national", id), pos)})
+	var r := apply_layout(items)
+	hud.toast("Country layout reset (%d moved)" % int(r["moved"]))
+
+
+func _hover_structure(mp: Vector2) -> Combatant:
+	return _prep_pick(mp)
+
+
 # --------------------------------------------------------------------- loop
 
 func _process(delta: float) -> void:
 	_update_camera(delta)
 	if over:
+		return
+	if prep:
+		_prep_process(delta)
 		return
 	elapsed += delta
 	_tick_production(delta)
@@ -1235,6 +1851,16 @@ func _process(delta: float) -> void:
 	_world_t -= delta
 	if _world_t <= 0.0:
 		_refresh_world()
+	_vis_t -= delta
+	if _vis_t <= 0.0:
+		_update_vision()
+	var si := 0
+	while si < smokes.size():
+		smokes[si]["age"] = float(smokes[si]["age"]) + delta
+		if float(smokes[si]["age"]) >= float(smokes[si]["t"]):
+			smokes.remove_at(si)
+		else:
+			si += 1
 	money[0] += float(_income[0]) * delta * float(income_mult[0])
 	money[1] += float(_income[1]) * delta * ai_income_mult * float(income_mult[1])
 	for t in 2:
@@ -1271,6 +1897,21 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo:
 		_command_key((event as InputEventKey).keycode)
 		return
+	if prep and event is InputEventMouseMotion and prep_drag and prep_sel != null and is_instance_valid(prep_sel):
+		var np := get_local_mouse_position() + prep_off
+		prep_sel.position = np
+		prep_valid = prep_pos_ok(prep_sel, np)
+		return
+	if prep and event is InputEventMouseButton and (event as InputEventMouseButton).button_index == MOUSE_BUTTON_LEFT \
+			and not (event as InputEventMouseButton).pressed and prep_drag:
+		prep_drag = false
+		if prep_sel != null and is_instance_valid(prep_sel):
+			if not prep_valid:
+				prep_sel.position = prep_orig
+				hud.toast("Cannot place it there")
+			else:
+				_refresh_world()
+		return
 	if event is InputEventMouseMotion and _box_active:
 		if get_local_mouse_position().distance_to(_box_start) > 8.0:
 			_box_moved = true
@@ -1283,12 +1924,23 @@ func _unhandled_input(event: InputEvent) -> void:
 				if mp.y > float(Water.Y_MAX) or mp.y < float(Water.Y_MIN) or mp.x < 0.0 or mp.x > float(W):
 					return
 				if sel_kind != "":
-					var err := deploy(0, sel_kind, sel_id, mp)
+					var pd := GameData.def_for(0, sel_kind, sel_id)
+					var err := deploy(0, sel_kind, sel_id, mp, ghost_facing(pd, mp) if (sel_kind == "structure" or sel_kind == "national") else INF)
 					if err != "":
 						hud.toast(err)
 						Sfx.play("click", -2.0, 0.1)
 					elif sel_kind == "strategic":
 						select("", "")      # missiles are one-shot: avoid accidental double launches
+				elif prep:
+					var pk := _prep_pick(mp)
+					if pk != null:
+						_prep_select(pk)
+						prep_drag = true
+						prep_off = pk.position - mp
+						prep_orig = pk.position
+						prep_valid = true
+					else:
+						prep_deselect()
 				elif _cmd_mode == "rally":
 					rally[0] = mp
 					_cmd_mode = ""
@@ -1365,7 +2017,42 @@ func _draw() -> void:
 	if _cmd_mode == "attack_move":
 		var mp2 := get_local_mouse_position()
 		draw_arc(mp2, 16.0, 0.0, TAU, 20, Color(MilTheme.WARN, 0.9), 2.0)
+	_draw_smoke()
+	_draw_prep_overlay()
 	_draw_ghost()
+
+
+func _draw_smoke() -> void:
+	for sm in smokes:
+		var life := 1.0 - float(sm["age"]) / float(sm["t"])
+		var a := clampf(minf(life * 1.6, 1.0), 0.0, 1.0) * 0.5
+		var r := float(sm["r"])
+		var c0: Vector2 = sm["pos"]
+		var grow := minf(float(sm["age"]) * 2.0, 1.0)
+		for i in 7:
+			var ang := float(i) * 0.9 + float(sm["age"]) * 0.12
+			var off := Vector2.from_angle(ang) * r * 0.45 * grow
+			draw_circle(c0 + off, r * (0.5 + 0.08 * float(i % 3)) * grow, Color(0.72, 0.74, 0.72, a * 0.6))
+		draw_circle(c0, r * 0.7 * grow, Color(0.8, 0.82, 0.8, a * 0.7))
+
+
+func _draw_prep_overlay() -> void:
+	if not prep:
+		return
+	if prep_sel != null and is_instance_valid(prep_sel):
+		var c := prep_sel
+		var col := MilTheme.GOOD if (not prep_drag or prep_valid) else MilTheme.BAD
+		draw_arc(c.position, c.radius + 12.0, 0.0, TAU, 32, Color(col, 0.9), 2.0)
+		if c.can_rotate():
+			var front := deg_to_rad(float(c.def.get("art_front", 0.0)))
+			var dir := Vector2.from_angle(c.facing + front)
+			var tip := c.position + dir * (c.radius + 40.0)
+			draw_line(c.position + dir * (c.radius + 10.0), tip, Color(MilTheme.AMBER, 0.95), 3.0)
+			var side := dir.orthogonal() * 7.0
+			draw_colored_polygon(PackedVector2Array([tip + dir * 10.0, tip + side, tip - side]), Color(MilTheme.AMBER, 0.95))
+		var rr := float(c.def.get("range", 0))
+		if rr > 0.0:
+			draw_arc(c.position, rr, 0.0, TAU, 64, Color(col, 0.4), 1.5)
 
 
 func _dashed_vline(x: float, col: Color) -> void:
@@ -1421,7 +2108,18 @@ func _draw_ghost() -> void:
 	var tex := SpriteLib.get_texture(str(d.get("sprite", sel_id)), str(d.get("shape", "box")))
 	var sz := float(d.get("size", 32)) * GameData.sprite_scale()
 	var asp := float(tex.get_height()) / maxf(float(tex.get_width()), 1.0)
-	draw_texture_rect(tex, Rect2(mp - Vector2(sz, sz * asp) * 0.5, Vector2(sz, sz * asp)), false, tint)
+	var gface := 0.0
+	var rot_ok: bool = (sel_kind == "structure" or sel_kind == "national") and not bool(d.get("rotate", sel_kind == "structure"))
+	if rot_ok:
+		gface = ghost_facing(d, mp)
+	draw_set_transform(mp, gface, Vector2.ONE)
+	draw_texture_rect(tex, Rect2(-Vector2(sz, sz * asp) * 0.5, Vector2(sz, sz * asp)), false, tint)
+	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+	if rot_ok and d.has("art_front"):
+		var gdir := Vector2.from_angle(gface + deg_to_rad(float(d.get("art_front", 0.0))))
+		var gtip := mp + gdir * (sz * 0.5 + 26.0)
+		draw_line(mp + gdir * (sz * 0.5), gtip, Color(MilTheme.AMBER, 0.95), 3.0)
+		draw_colored_polygon(PackedVector2Array([gtip + gdir * 9.0, gtip + gdir.orthogonal() * 6.0, gtip - gdir.orthogonal() * 6.0]), Color(MilTheme.AMBER, 0.95))
 	MilTheme.draw_brackets(self, Rect2(mp - Vector2(sz, sz * asp) * 0.5, Vector2(sz, sz * asp)).grow(4.0), Color(tint, 0.95), 9.0, 2.0)
 	var r := float(d.get("range", 0))
 	if r > 0.0:
@@ -1455,6 +2153,9 @@ func serialize() -> Dictionary:
 		"rally": [rally[0].x, rally[0].y],
 		"stance": stance,
 		"autopilot": autopilot,
+		"fog": fog.export_explored() if fog != null else "",
+		"fog_on": fog_enabled,
+		"plan_focus": plan_focus,
 		"queues": _queues_to_array(),
 		"entities": ents,
 		"ai": ai.to_dict() if ai != null else {},
@@ -1543,6 +2244,11 @@ func deserialize(data: Dictionary) -> bool:
 	_setup_ai(difficulty)
 	ai.from_dict(data.get("ai", {}))
 	stance = str(data.get("stance", "assault"))
+	plan_focus = str(data.get("plan_focus", "auto"))
+	fog_enabled = bool(data.get("fog_on", fog_enabled))
+	if fog != null:
+		fog.set_enabled(fog_enabled)
+		fog.import_explored(str(data.get("fog", "")))
 	set_autopilot(bool(data.get("autopilot", false)), false)
 	autosave_t = AUTOSAVE_INTERVAL
 	focus_camera(Vector2(820.0, 520.0))
