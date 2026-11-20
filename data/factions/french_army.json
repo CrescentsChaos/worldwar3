@@ -1,0 +1,1274 @@
+{
+ "name": "French Army",
+ "era": "Modern (2020s)",
+ "tagline": "Fortress, legion, and force de frappe.",
+ "desc": "An independent nuclear power with an expeditionary army: agile infantry, wheeled armor, a strong air force and a national deterrent. No super-heavy tank, battleship, flamethrower vehicle or cluster munitions.",
+ "mods": [
+  {
+   "match": "tab:infantry",
+   "speed": 1.1
+  },
+  {
+   "match": "kind:strategic",
+   "cost": 0.9
+  },
+  {
+   "match": "kind:structure",
+   "hp": 1.05
+  }
+ ],
+ "income": 0.97,
+ "money": 1.0,
+ "ban": [
+  "mammoth",
+  "battleship",
+  "flame_tank",
+  "cluster_missile"
+ ],
+ "names": {
+  "rifleman": "HK416F Fantassin",
+  "assault": "FAMAS Felin Assaulter",
+  "bazooka": "Eryx / MMP Team",
+  "manpads": "Mistral 3 Team",
+  "mg_gunner": "Minimi / MAG 58 Gunner",
+  "grenadier": "FELIN Grenadier",
+  "sniper": "PGM Hecate II Sniper",
+  "flamer": "LRAC 89 Rocket Gunner",
+  "medic": "Auxiliaire Sanitaire",
+  "engineer": "Genie Combat Engineer",
+  "commando": "Legion Etrangere Commando",
+  "jeep": "VBL Scout Car",
+  "armored_car": "AMX-10 RC",
+  "apc": "VBCI IFV",
+  "light_tank": "EBRC Jaguar",
+  "tank": "Leclerc Tank",
+  "heavy_tank": "Leclerc XLR",
+  "tank_destroyer": "AMX-10 RC with MMP",
+  "artillery": "AuF1 TA SPG",
+  "howitzer": "CAESAR 155 mm",
+  "mlrs": "LRU MLRS",
+  "aa_truck": "VAB Mistral AA",
+  "sam_truck": "VL MICA Launcher",
+  "repair_vehicle": "Leclerc DNG ARV",
+  "drone": "Larinae Loitering Munition",
+  "fighter": "Rafale C",
+  "interceptor_jet": "Mirage 2000-5",
+  "stealth_fighter": "nEUROn Stealth UCAV",
+  "strike_jet": "Rafale B Strike",
+  "helicopter": "Tigre HAP",
+  "gunship": "Tigre HAD Gunship",
+  "light_bomber": "Mirage 2000D",
+  "bomber": "Mirage IV Bomber",
+  "heavy_bomber": "Mirage IVA Strategic",
+  "stealth_bomber": "SCAF NGF Stealth",
+  "diver": "Commando Hubert",
+  "patrol_boat": "Vedette Patrol Boat",
+  "gunboat": "Gowind OPV",
+  "missile_boat": "La Fayette Frigate",
+  "destroyer": "FREMM Aquitaine",
+  "cruiser": "Horizon-class (Forbin)",
+  "submarine": "Barracuda (Suffren)",
+  "aircraft_carrier": "Charles de Gaulle (R91)",
+  "mg_turret": "AAT-52 MG Nest",
+  "pillbox": "Maginot Pillbox",
+  "at_gun": "MMP ATGM Post",
+  "cannon_turret": "Maginot Casemate",
+  "mortar_pit": "MO-120-RT Mortar",
+  "flak_battery": "Tarasque 20 mm AA",
+  "sam_site": "Crotale NG SAM",
+  "heavy_battery": "TRF1 155 mm Battery",
+  "railgun": "ISL Railgun Battery",
+  "ciws": "Simbad Mistral CIWS",
+  "interceptor_battery": "SAMP/T Battery",
+  "abm_battery": "SAMP/T NG",
+  "barricade": "Hedgehog Barrier",
+  "repair_depot": "Atelier Mobile",
+  "coastal_battery": "Exocet MM40 Battery",
+  "tactical_missile": "Hades Tactical",
+  "cruise_missile": "SCALP-EG",
+  "bunker_buster": "AASM Hammer",
+  "ballistic_missile": "S3D Plateau d'Albion",
+  "hypersonic": "ASN4G Hypersonic",
+  "tactical_nuke": "ASMPA TN 81",
+  "nuke": "M51 SLBM",
+  "mega_nuke": "M51 MIRV Salvo"
+ },
+ "strategies": {
+  "maginot": {
+   "name": "Ligne Maginot",
+   "desc": "Concrete forts everywhere. Starts with a hardened front line.",
+   "style": "defense",
+   "mods": [
+    {
+     "match": "kind:structure",
+     "hp": 1.5,
+     "cost": 0.85
+    }
+   ],
+   "setup": [
+    [
+     "structure",
+     "pillbox",
+     972,
+     414.0,
+     1
+    ],
+    [
+     "structure",
+     "pillbox",
+     948,
+     504.0,
+     1
+    ],
+    [
+     "structure",
+     "pillbox",
+     972,
+     594.0,
+     1
+    ],
+    [
+     "structure",
+     "cannon_turret",
+     945,
+     439.0,
+     1
+    ],
+    [
+     "structure",
+     "cannon_turret",
+     921,
+     569.0,
+     1
+    ],
+    [
+     "structure",
+     "at_gun",
+     920,
+     450,
+     1
+    ],
+    [
+     "structure",
+     "at_gun",
+     920,
+     560,
+     1
+    ],
+    [
+     "structure",
+     "heavy_battery",
+     870,
+     504,
+     1
+    ]
+   ],
+   "income": 1.0,
+   "money": 1.0
+  },
+  "force_de_frappe": {
+   "name": "Force de Frappe",
+   "desc": "Independent nuclear deterrent: cheap, fast-recharging strategic weapons.",
+   "style": "missile",
+   "mods": [
+    {
+     "match": "kind:strategic",
+     "cost": 0.7,
+     "cooldown": 0.75
+    }
+   ],
+   "setup": [
+    [
+     "structure",
+     "interceptor_battery",
+     500,
+     440,
+     1
+    ],
+    [
+     "structure",
+     "ciws",
+     100,
+     420,
+     1
+    ]
+   ],
+   "income": 1.0,
+   "money": 1.0
+  },
+  "legion": {
+   "name": "Legion Etrangere",
+   "desc": "Tough, cheap elite infantry. Starts with legionnaires and commandos.",
+   "style": "infantry",
+   "mods": [
+    {
+     "match": "tab:infantry",
+     "cost": 0.75,
+     "hp": 1.2,
+     "damage": 1.1
+    },
+    {
+     "match": "id:commando",
+     "cost": 0.7
+    }
+   ],
+   "setup": [
+    [
+     "unit",
+     "rifleman",
+     930,
+     504,
+     8
+    ],
+    [
+     "unit",
+     "commando",
+     950,
+     470,
+     2
+    ],
+    [
+     "unit",
+     "mg_gunner",
+     945,
+     545,
+     2
+    ]
+   ],
+   "income": 1.0,
+   "money": 1.0
+  }
+ },
+ "roster": {
+  "rifleman": {
+   "name": "HK416F Fantassin",
+   "class": "Rifleman",
+   "desc": "Short-stroke gas-piston 5.56 mm rifle replacing the FAMAS from 2017; far more reliable in dust and wet.",
+   "specs": "5.56x45 mm | 3.5 kg | 30-rd",
+   "hp": 70,
+   "speed": 54,
+   "range": 135,
+   "damage": 7,
+   "cooldown": 0.65,
+   "cost": 50,
+   "sprite": "french_army_rifleman"
+  },
+  "assault": {
+   "name": "FAMAS Felin Assaulter",
+   "class": "Bullpup assault rifle",
+   "desc": "Compact bullpup with a very high rate of fire (~1,000 rpm), still in service with units not yet re-equipped.",
+   "specs": "5.56 mm | 3.6 kg | 1,000 rpm",
+   "hp": 80,
+   "speed": 68,
+   "range": 92,
+   "damage": 5.5,
+   "cooldown": 0.17,
+   "cost": 75,
+   "sprite": "french_army_assault"
+  },
+  "bazooka": {
+   "name": "Eryx / MMP Team",
+   "class": "Guided anti-tank",
+   "desc": "MMP (Missile Moyenne Portee) tandem-warhead ATGM with fire-and-forget or man-in-loop; 4 km range.",
+   "specs": "MMP | 4 km | tandem",
+   "hp": 80,
+   "speed": 42,
+   "range": 250,
+   "damage": 140,
+   "cooldown": 4.0,
+   "proj": "atgm",
+   "pierce": 24,
+   "splash": 16,
+   "vs": {
+    "armor": 1.5,
+    "vehicle": 1.35
+   },
+   "cost": 160,
+   "sprite": "french_army_bazooka"
+  },
+  "manpads": {
+   "name": "Mistral 3 Team",
+   "class": "Man-portable SAM",
+   "desc": "Infrared-homing missile with 6 km range; seeker discriminates decoys well.",
+   "specs": "Mistral 3 | 20 kg | 6 km",
+   "hp": 70,
+   "speed": 46,
+   "range": 255,
+   "damage": 40,
+   "cooldown": 1.7,
+   "cost": 120,
+   "sprite": "french_army_manpads"
+  },
+  "mg_gunner": {
+   "name": "Minimi / MAG 58 Gunner",
+   "class": "Machine gunner",
+   "desc": "FN Minimi 5.56 mm light machine gun for the section and MAG 58 for vehicle crews.",
+   "specs": "5.56 mm | 7 kg | 850 rpm",
+   "hp": 90,
+   "armor": 1,
+   "speed": 40,
+   "range": 175,
+   "damage": 7,
+   "cooldown": 0.12,
+   "cost": 110,
+   "sprite": "french_army_mg_gunner"
+  },
+  "grenadier": {
+   "name": "FELIN Grenadier",
+   "class": "Grenadier",
+   "desc": "FELIN soldier system with a 40 mm HK GLM launcher and integrated optics.",
+   "specs": "40 mm | 1.5 kg | HK GLM",
+   "hp": 80,
+   "range": 155,
+   "damage": 32,
+   "cooldown": 1.8,
+   "splash": 38,
+   "vs": {
+    "infantry": 1.3
+   },
+   "cost": 100,
+   "sprite": "french_army_grenadier"
+  },
+  "sniper": {
+   "name": "PGM Hecate II Sniper",
+   "class": "Anti-materiel sniper",
+   "desc": "Bolt-action .50 BMG rifle with 1,800 m range; also used to destroy IEDs from afar.",
+   "specs": "12.7x99 mm | 13.8 kg | 1,800 m",
+   "hp": 55,
+   "range": 345,
+   "damage": 62,
+   "cooldown": 2.6,
+   "vs": {
+    "infantry": 3.0,
+    "vehicle": 0.5,
+    "armor": 0.12,
+    "structure": 0.2
+   },
+   "cost": 160,
+   "sprite": "french_army_sniper"
+  },
+  "flamer": {
+   "name": "LRAC 89 Rocket Gunner",
+   "class": "Assault rocket",
+   "desc": "89 mm rocket launcher with HEAT and HE rounds for fortifications; France retired flamethrowers decades ago.",
+   "specs": "89 mm | 5.3 kg | 400 m",
+   "hp": 95,
+   "armor": 1,
+   "speed": 42,
+   "range": 120,
+   "damage": 70,
+   "cooldown": 2.6,
+   "proj": "rocket",
+   "splash": 36,
+   "pierce": 6,
+   "vs": {
+    "infantry": 1.6,
+    "structure": 1.5
+   },
+   "prefer": [
+    "infantry"
+   ],
+   "cost": 95,
+   "sprite": "french_army_flamer"
+  },
+  "medic": {
+   "name": "Auxiliaire Sanitaire",
+   "class": "Combat medic",
+   "desc": "Service de Sante des Armees medic; tourniquets, hemostatic dressings and rapid evacuation.",
+   "specs": "Medical kit | SSA",
+   "hp": 70,
+   "speed": 58,
+   "heal": {
+    "rate": 18,
+    "radius": 125,
+    "cls": [
+     "infantry"
+    ]
+   },
+   "cost": 95,
+   "sprite": "french_army_medic"
+  },
+  "engineer": {
+   "name": "Genie Combat Engineer",
+   "class": "Combat engineer",
+   "desc": "Genie de combat: clears mines and obstacles, builds field fortifications.",
+   "specs": "Mine clearing | demolition",
+   "hp": 90,
+   "heal": {
+    "rate": 30,
+    "radius": 110,
+    "cls": [
+     "vehicle",
+     "armor",
+     "structure"
+    ]
+   },
+   "cost": 130,
+   "sprite": "french_army_engineer"
+  },
+  "commando": {
+   "name": "Legion Etrangere Commando",
+   "class": "Legion commando",
+   "desc": "Foreign Legion paratroopers (2e REP) with HK416F and night vision; high endurance and discipline.",
+   "specs": "HK416F | FELIN | 2e REP",
+   "hp": 160,
+   "armor": 3,
+   "speed": 64,
+   "range": 200,
+   "damage": 22,
+   "cooldown": 0.28,
+   "pierce": 5,
+   "cost": 290,
+   "sprite": "french_army_commando"
+  },
+  "jeep": {
+   "name": "VBL Scout Car",
+   "class": "Light armored vehicle",
+   "desc": "Light 4x4 armored reconnaissance vehicle, 3.5 t; amphibious without preparation.",
+   "specs": "3.5 t | 100 km/h | amphibious",
+   "hp": 190,
+   "armor": 3,
+   "speed": 125,
+   "range": 150,
+   "damage": 12,
+   "cooldown": 0.3,
+   "cost": 150,
+   "sprite": "french_army_jeep"
+  },
+  "armored_car": {
+   "name": "AMX-10 RC",
+   "class": "Wheeled reconnaissance tank",
+   "desc": "Six-wheeled armored car with 105 mm gun; very fast and quiet but light armor.",
+   "specs": "15.9 t | 105 mm | 85 km/h",
+   "hp": 320,
+   "armor": 6,
+   "speed": 108,
+   "range": 210,
+   "damage": 34,
+   "cooldown": 1.6,
+   "proj": "shell",
+   "splash": 18,
+   "pierce": 6,
+   "cost": 140,
+   "sprite": "french_army_armored_car"
+  },
+  "apc": {
+   "name": "VBCI IFV",
+   "class": "Infantry fighting vehicle",
+   "desc": "8x8 wheeled IFV with 25 mm cannon; 8 dismounts. Rolls fast on roads.",
+   "specs": "29 t | 25 mm | 3+8",
+   "hp": 520,
+   "armor": 8,
+   "speed": 95,
+   "range": 195,
+   "damage": 12,
+   "cooldown": 0.22,
+   "cargo": [
+    "rifleman",
+    "rifleman",
+    "bazooka"
+   ],
+   "cost": 260,
+   "sprite": "french_army_apc"
+  },
+  "light_tank": {
+   "name": "EBRC Jaguar",
+   "class": "Reconnaissance vehicle",
+   "desc": "6x6 wheeled armored recon vehicle with 40 mm CTA cannon, replacing the AMX-10 RC and ERC-90.",
+   "specs": "25 t | 40 mm CTA | 6x6",
+   "hp": 360,
+   "armor": 7,
+   "speed": 96,
+   "range": 215,
+   "damage": 24,
+   "cooldown": 0.4,
+   "proj": "bullet",
+   "pierce": 6,
+   "cost": 270,
+   "sprite": "french_army_light_tank"
+  },
+  "tank": {
+   "name": "Leclerc Tank",
+   "class": "Main battle tank",
+   "desc": "120 mm smoothbore with autoloader, 3-man crew and excellent fire control; lighter than most MBTs.",
+   "specs": "57 t | 3 crew | 120 mm CN120",
+   "hp": 620,
+   "armor": 11,
+   "speed": 64,
+   "range": 250,
+   "damage": 48,
+   "cooldown": 1.5,
+   "splash": 30,
+   "cost": 340,
+   "sprite": "french_army_tank"
+  },
+  "heavy_tank": {
+   "name": "Leclerc XLR",
+   "class": "Upgraded MBT",
+   "desc": "Upgraded Leclerc with new sights, ERA and digital systems: more armor and a data link.",
+   "specs": "~57 t | 3 crew | digital",
+   "hp": 1200,
+   "armor": 20,
+   "speed": 48,
+   "range": 270,
+   "damage": 80,
+   "cooldown": 1.8,
+   "splash": 42,
+   "cost": 540,
+   "sprite": "french_army_heavy_tank"
+  },
+  "tank_destroyer": {
+   "name": "AMX-10 RC with MMP",
+   "class": "Wheeled tank destroyer",
+   "desc": "Wheeled platform with MMP-class guided missile, derived from AMX-10 RC.",
+   "specs": "MMP | 6x6 | 4 km",
+   "hp": 380,
+   "armor": 7,
+   "speed": 95,
+   "range": 370,
+   "damage": 140,
+   "cooldown": 3.3,
+   "pierce": 22,
+   "vs": {
+    "armor": 1.5,
+    "infantry": 0.6
+   },
+   "cost": 360,
+   "sprite": "french_army_tank_destroyer"
+  },
+  "artillery": {
+   "name": "AuF1 TA SPG",
+   "class": "Self-propelled howitzer",
+   "desc": "155 mm/40 turret on AMX-30 chassis; still in service, being replaced by CAESAR.",
+   "specs": "41 t | 155 mm/40 | 4 crew",
+   "hp": 210,
+   "armor": 3,
+   "speed": 34,
+   "range": 520,
+   "damage": 70,
+   "cooldown": 3.2,
+   "min_range": 120,
+   "splash": 85,
+   "cost": 490,
+   "sprite": "french_army_artillery"
+  },
+  "howitzer": {
+   "name": "CAESAR 155 mm",
+   "class": "Truck howitzer",
+   "desc": "155 mm/52 gun on a 6x6 truck chassis; shoots and scoots in under 60 seconds. Widely exported and used in Ukraine.",
+   "specs": "18 t | 155 mm/52 | 42 km",
+   "hp": 190,
+   "armor": 1,
+   "speed": 46,
+   "range": 740,
+   "damage": 118,
+   "cooldown": 3.6,
+   "min_range": 200,
+   "splash": 95,
+   "vs": {
+    "structure": 1.3
+   },
+   "cost": 710,
+   "sprite": "french_army_howitzer"
+  },
+  "mlrs": {
+   "name": "LRU MLRS",
+   "class": "Rocket artillery",
+   "desc": "French version of the M270 with GMLRS rockets; 70+ km range.",
+   "specs": "25 t | 12 rockets | 70+ km",
+   "hp": 250,
+   "armor": 2,
+   "speed": 34,
+   "range": 490,
+   "damage": 42,
+   "cooldown": 1.0,
+   "min_range": 140,
+   "splash": 72,
+   "cost": 720,
+   "sprite": "french_army_mlrs"
+  },
+  "aa_truck": {
+   "name": "VAB Mistral AA",
+   "class": "Short-range air defense",
+   "desc": "VAB 4x4 with Mistral missile launcher; protects convoys against helicopters and drones.",
+   "specs": "13 t | Mistral | 4x4",
+   "hp": 330,
+   "armor": 3,
+   "speed": 82,
+   "range": 300,
+   "damage": 40,
+   "cooldown": 1.4,
+   "proj": "rocket",
+   "cost": 180,
+   "sprite": "french_army_aa_truck"
+  },
+  "sam_truck": {
+   "name": "VL MICA Launcher",
+   "class": "Area SAM",
+   "desc": "Vertical launch MICA IR/EM missile on a truck; 20 km range and radar guidance.",
+   "specs": "MICA VL | 20 km | active",
+   "hp": 300,
+   "armor": 3,
+   "speed": 56,
+   "range": 420,
+   "damage": 75,
+   "cooldown": 1.4,
+   "cost": 400,
+   "sprite": "french_army_sam_truck"
+  },
+  "repair_vehicle": {
+   "name": "Leclerc DNG ARV",
+   "class": "Armored recovery",
+   "desc": "Leclerc-based Depanneur-Niveleur with dozer blade, crane and winch.",
+   "specs": "55 t | 2 crew | dozer",
+   "hp": 410,
+   "armor": 6,
+   "speed": 58,
+   "heal": {
+    "rate": 30,
+    "radius": 125,
+    "cls": [
+     "vehicle",
+     "armor"
+    ]
+   },
+   "cost": 230,
+   "sprite": "french_army_repair_vehicle"
+  },
+  "drone": {
+   "name": "Larinae Loitering Munition",
+   "class": "Loitering munition",
+   "desc": "French Larinae munition from MBDA Cervus family: 40+ km reach and 3-kg warhead.",
+   "specs": "MBDA | 3 kg warhead",
+   "hp": 40,
+   "speed": 235,
+   "damage": 115,
+   "splash": 48,
+   "cost": 85,
+   "sprite": "french_army_drone"
+  },
+  "fighter": {
+   "name": "Rafale C",
+   "class": "Omnirole fighter",
+   "desc": "Dassault Rafale: delta-canard with Meteor, Mica and SCALP-EG; ~10,000 pounds payload.",
+   "specs": "Mach 1.8 | 2 M88 | 1 crew",
+   "hp": 250,
+   "speed": 235,
+   "range": 245,
+   "damage": 19,
+   "cooldown": 0.27,
+   "cost": 510,
+   "sprite": "french_army_fighter"
+  },
+  "interceptor_jet": {
+   "name": "Mirage 2000-5",
+   "class": "Air-defense fighter",
+   "desc": "Delta-wing fighter with RDY radar and MICA missiles; a pure air-defense jet.",
+   "specs": "Mach 2.2 | RDY radar | MICA",
+   "hp": 205,
+   "speed": 275,
+   "range": 315,
+   "damage": 24,
+   "cooldown": 0.26,
+   "vs": {
+    "air": 1.4
+   },
+   "cost": 530,
+   "sprite": "french_army_interceptor_jet"
+  },
+  "stealth_fighter": {
+   "name": "nEUROn Stealth UCAV",
+   "class": "Stealth drone demonstrator",
+   "desc": "Dassault-led European UCAV demonstrator (first flight 2012); a stealth flying wing used to test the SCAF drone.",
+   "specs": "Demonstrator | 6 t | stealth",
+   "hp": 230,
+   "speed": 290,
+   "range": 240,
+   "damage": 30,
+   "cooldown": 0.25,
+   "stealth": 0.5,
+   "cost": 830,
+   "sprite": "french_army_stealth_fighter"
+  },
+  "strike_jet": {
+   "name": "Rafale B Strike",
+   "class": "Strike Rafale",
+   "desc": "Two-seat Rafale B with AASM Hammer, SCALP and the nuclear ASMPA.",
+   "specs": "Mach 1.8 | 2 crew | Hammer",
+   "hp": 290,
+   "armor": 2,
+   "speed": 215,
+   "range": 215,
+   "damage": 34,
+   "cooldown": 0.25,
+   "pierce": 10,
+   "vs": {
+    "armor": 1.4
+   },
+   "cost": 550,
+   "sprite": "french_army_strike_jet"
+  },
+  "helicopter": {
+   "name": "Tigre HAP",
+   "class": "Attack helicopter",
+   "desc": "Eurocopter Tigre support/escort variant with a 30 mm cannon and rockets.",
+   "specs": "6 t | 2 crew | 30 mm",
+   "hp": 380,
+   "armor": 4,
+   "speed": 118,
+   "range": 235,
+   "damage": 26,
+   "cooldown": 0.8,
+   "cost": 500,
+   "sprite": "french_army_helicopter"
+  },
+  "gunship": {
+   "name": "Tigre HAD Gunship",
+   "class": "Heavy attack helicopter",
+   "desc": "Tigre with Hellfire II and Mistral; heavier armament and countermeasures.",
+   "specs": "6.1 t | Hellfire | Mistral",
+   "hp": 560,
+   "armor": 5,
+   "speed": 114,
+   "range": 250,
+   "damage": 34,
+   "cooldown": 0.8,
+   "cost": 480,
+   "sprite": "french_army_gunship"
+  },
+  "light_bomber": {
+   "name": "Mirage 2000D",
+   "class": "Conventional strike",
+   "desc": "Mirage 2000 conversions to precision strike with Laser-guided bombs and SCALP; ageing.",
+   "specs": "Mach 2 | 2 crew | GBU-12/SCALP",
+   "hp": 270,
+   "speed": 200,
+   "damage": 80,
+   "splash": 68,
+   "cost": 390,
+   "sprite": "french_army_light_bomber"
+  },
+  "bomber": {
+   "name": "Mirage IV Bomber",
+   "class": "Nuclear bomber",
+   "desc": "Supersonic Mach 2 bomber for the nuclear force de frappe, in service 1964-2005; Reconnaissance P version to 2005.",
+   "specs": "Mach 2.2 | 2 crew | AN-22",
+   "hp": 440,
+   "speed": 200,
+   "damage": 120,
+   "splash": 90,
+   "cost": 660,
+   "sprite": "french_army_bomber"
+  },
+  "heavy_bomber": {
+   "name": "Mirage IVA Strategic",
+   "class": "Nuclear bomber",
+   "desc": "Strategic Mirage IV variant carrying a 60-kt AN-22 gravity bomb or the ASMP missile.",
+   "specs": "Mach 2.2 | AN-22 | ASMP",
+   "hp": 520,
+   "speed": 195,
+   "range": 52,
+   "damage": 170,
+   "cooldown": 0.6,
+   "splash": 122,
+   "vs": {
+    "structure": 1.4
+   },
+   "cost": 920,
+   "sprite": "french_army_heavy_bomber"
+  },
+  "stealth_bomber": {
+   "name": "SCAF NGF Stealth",
+   "class": "Future fighter",
+   "desc": "Next-Generation Fighter of the Future Combat Air System (France, Germany, Spain); planned for the 2040s.",
+   "specs": "Concept | stealth | NGF",
+   "hp": 480,
+   "speed": 260,
+   "damage": 250,
+   "cooldown": 0.9,
+   "splash": 112,
+   "stealth": 0.5,
+   "vs": {
+    "structure": 1.3
+   },
+   "cost": 1450,
+   "sprite": "french_army_stealth_bomber"
+  },
+  "diver": {
+   "name": "Commando Hubert",
+   "class": "Combat swimmer",
+   "desc": "French Navy combat swimmers (Commando Hubert) are among the world's best; mines and demolition.",
+   "specs": "Rebreather | limpet mines",
+   "hp": 70,
+   "range": 55,
+   "damage": 100,
+   "cooldown": 3.5,
+   "cost": 130,
+   "sprite": "french_army_diver"
+  },
+  "patrol_boat": {
+   "name": "Vedette Patrol Boat",
+   "class": "Coastal patrol",
+   "desc": "Fast patrol launch for coastal and port duties.",
+   "specs": "~30 t | 30 kn | 12.7 mm",
+   "hp": 170,
+   "speed": 115,
+   "range": 190,
+   "damage": 8,
+   "cooldown": 0.18,
+   "cost": 150,
+   "sprite": "french_army_patrol_boat"
+  },
+  "gunboat": {
+   "name": "Gowind OPV",
+   "class": "Offshore patrol vessel",
+   "desc": "1,000 t OPV with a 20 mm gun and flight deck; economical patrol vessel.",
+   "specs": "1,000 t | 21 kn | 20 mm",
+   "hp": 410,
+   "armor": 4,
+   "speed": 82,
+   "range": 270,
+   "damage": 32,
+   "cooldown": 1.3,
+   "splash": 24,
+   "cost": 280,
+   "sprite": "french_army_gunboat"
+  },
+  "missile_boat": {
+   "name": "La Fayette Frigate",
+   "class": "Stealth frigate",
+   "desc": "3,600 t frigate with Exocet, Crotale and a 100 mm gun; one of the first stealth-shaped warships.",
+   "specs": "3,600 t | 25 kn | Exocet/Crotale",
+   "hp": 360,
+   "armor": 3,
+   "speed": 96,
+   "range": 335,
+   "damage": 56,
+   "cooldown": 1.5,
+   "splash": 18,
+   "vs": {
+    "air": 1.25,
+    "ship": 1.2
+   },
+   "cost": 440,
+   "sprite": "french_army_missile_boat"
+  },
+  "destroyer": {
+   "name": "FREMM Aquitaine",
+   "class": "Multi-mission frigate",
+   "desc": "6,000 t ASW/AAW frigate with 16 VLS Aster and Exocet/MdCN missiles.",
+   "specs": "6,000 t | 27 kn | 32 VLS",
+   "hp": 980,
+   "armor": 10,
+   "speed": 70,
+   "range": 300,
+   "damage": 42,
+   "cooldown": 1.1,
+   "splash": 35,
+   "sub_damage": 135,
+   "cost": 680,
+   "sprite": "french_army_destroyer"
+  },
+  "cruiser": {
+   "name": "Horizon-class (Forbin)",
+   "class": "Air-defense destroyer",
+   "desc": "7,000 t PAAMS destroyer with 48 VLS cells; Europe's top AAW surface ships.",
+   "specs": "7,000 t | 29 kn | 48 VLS",
+   "hp": 1750,
+   "armor": 15,
+   "speed": 58,
+   "range": 430,
+   "damage": 86,
+   "cooldown": 2.0,
+   "splash": 55,
+   "cost": 1150,
+   "sprite": "french_army_cruiser"
+  },
+  "submarine": {
+   "name": "Barracuda (Suffren)",
+   "class": "Attack submarine",
+   "desc": "4,700 t nuclear attack sub with F21 torpedoes and MdCN cruise missiles.",
+   "specs": "5,300 t | 25 kn | F21",
+   "hp": 430,
+   "armor": 6,
+   "speed": 60,
+   "range": 285,
+   "damage": 285,
+   "cooldown": 4.0,
+   "cost": 720,
+   "sprite": "french_army_submarine"
+  },
+  "aircraft_carrier": {
+   "name": "Charles de Gaulle (R91)",
+   "class": "Nuclear carrier",
+   "desc": "42,000 t nuclear-powered carrier with catapults and ~40 aircraft; the only non-US nuclear carrier.",
+   "specs": "42,000 t | 27 kn | 40 aircraft",
+   "hp": 4000,
+   "armor": 14,
+   "speed": 33,
+   "spawn_every": 26,
+   "cost": 2500,
+   "sprite": "french_army_aircraft_carrier"
+  },
+  "mg_turret": {
+   "name": "AAT-52 MG Nest",
+   "class": "MG nest",
+   "desc": "7.62 mm AAT-52 on tripod in a fortified position.",
+   "specs": "7.62 mm | 11 kg | 900 rpm",
+   "hp": 390,
+   "armor": 4,
+   "range": 215,
+   "damage": 8,
+   "cooldown": 0.14,
+   "cost": 170,
+   "sprite": "french_army_mg_turret"
+  },
+  "pillbox": {
+   "name": "Maginot Pillbox",
+   "class": "Fortification",
+   "desc": "Maginot Line petit ouvrage: armored cloche with MGs behind thick concrete.",
+   "specs": "Reinforced concrete | cloche",
+   "hp": 780,
+   "armor": 11,
+   "range": 190,
+   "damage": 12,
+   "cooldown": 0.15,
+   "cost": 230,
+   "sprite": "french_army_pillbox"
+  },
+  "at_gun": {
+   "name": "MMP ATGM Post",
+   "class": "ATGM post",
+   "desc": "Fixed MMP launcher with 4 km range and a tandem warhead.",
+   "specs": "MMP | 4 km | tandem",
+   "hp": 420,
+   "armor": 7,
+   "range": 340,
+   "damage": 112,
+   "cooldown": 2.4,
+   "pierce": 14,
+   "vs": {
+    "armor": 1.5
+   },
+   "cost": 300,
+   "sprite": "french_army_at_gun"
+  },
+  "cannon_turret": {
+   "name": "Maginot Casemate",
+   "class": "Casemate gun",
+   "desc": "47 mm turret and 75 mm casemate guns in the Maginot Line.",
+   "specs": "75 mm | casemate",
+   "hp": 860,
+   "armor": 15,
+   "range": 310,
+   "damage": 58,
+   "cooldown": 2.0,
+   "splash": 35,
+   "cost": 330,
+   "sprite": "french_army_cannon_turret"
+  },
+  "mortar_pit": {
+   "name": "MO-120-RT Mortar",
+   "class": "Heavy mortar",
+   "desc": "120 mm rifled mortar with 8 km range; more accurate than smoothbore tubes.",
+   "specs": "120 mm | 8 km | rifled",
+   "hp": 270,
+   "armor": 3,
+   "range": 440,
+   "damage": 62,
+   "cooldown": 2.2,
+   "min_range": 100,
+   "splash": 60,
+   "vs": {
+    "infantry": 1.3
+   },
+   "cost": 290,
+   "sprite": "french_army_mortar_pit"
+  },
+  "flak_battery": {
+   "name": "Tarasque 20 mm AA",
+   "class": "Light AA gun",
+   "desc": "Fast-firing 20 mm cannon on a mobile mount; used against low-flying aircraft and drones.",
+   "specs": "20 mm | 740 rpm",
+   "hp": 410,
+   "armor": 4,
+   "range": 320,
+   "damage": 18,
+   "cooldown": 0.35,
+   "splash": 45,
+   "cost": 310,
+   "sprite": "french_army_flak_battery"
+  },
+  "sam_site": {
+   "name": "Crotale NG SAM",
+   "class": "Short-range SAM",
+   "desc": "All-weather short-range SAM with radar and IR; 11 km.",
+   "specs": "Crotale NG | 11 km | radar",
+   "hp": 330,
+   "armor": 2,
+   "range": 400,
+   "damage": 58,
+   "cooldown": 1.3,
+   "cost": 280,
+   "sprite": "french_army_sam_site"
+  },
+  "heavy_battery": {
+   "name": "TRF1 155 mm Battery",
+   "class": "Towed howitzer",
+   "desc": "Towed 155 mm/40 TRF1 howitzer; 24 km, long in service.",
+   "specs": "155 mm/40 | 10 t | 24 km",
+   "hp": 350,
+   "armor": 4,
+   "range": 650,
+   "damage": 92,
+   "cooldown": 3.9,
+   "min_range": 150,
+   "splash": 92,
+   "cost": 520,
+   "sprite": "french_army_heavy_battery"
+  },
+  "railgun": {
+   "name": "ISL Railgun Battery",
+   "class": "Experimental railgun",
+   "desc": "Franco-German ISL research railgun test fixture; reached 8 MJ muzzle energy.",
+   "specs": "8 MJ | Mach 6 | ISL lab",
+   "hp": 600,
+   "armor": 15,
+   "range": 630,
+   "damage": 300,
+   "cooldown": 4.5,
+   "pierce": 38,
+   "cost": 1050,
+   "sprite": "french_army_railgun"
+  },
+  "ciws": {
+   "name": "Simbad Mistral CIWS",
+   "class": "Short-range naval AA",
+   "desc": "Twin Mistral launcher for close defence, used on ships and ground sites.",
+   "specs": "Mistral x2 | 6 km",
+   "hp": 380,
+   "armor": 6,
+   "range": 270,
+   "damage": 14,
+   "cooldown": 0.2,
+   "targets": [
+    "air",
+    "missile"
+   ],
+   "cost": 370,
+   "sprite": "french_army_ciws"
+  },
+  "interceptor_battery": {
+   "name": "SAMP/T Battery",
+   "class": "Area SAM",
+   "desc": "Aster 30 missiles with Arabel radar; 100 km range, Mach 4.5.",
+   "specs": "Aster 30 | 100 km | Arabel",
+   "hp": 390,
+   "armor": 4,
+   "range": 650,
+   "damage": 132,
+   "cooldown": 1.6,
+   "cost": 710,
+   "sprite": "french_army_interceptor_battery"
+  },
+  "abm_battery": {
+   "name": "SAMP/T NG",
+   "class": "Ballistic defence battery",
+   "desc": "Upgraded SAMP/T with Aster 30 B1NT and Ground Fire radar to counter ballistic missiles.",
+   "specs": "Aster 30 B1NT | 150 km",
+   "hp": 600,
+   "armor": 8,
+   "range": 940,
+   "damage": 262,
+   "cooldown": 1.4,
+   "cost": 1400,
+   "sprite": "french_army_abm_battery"
+  },
+  "barricade": {
+   "name": "Hedgehog Barrier",
+   "class": "Obstacle",
+   "desc": "Czech hedgehog steel barrier; tough against vehicles.",
+   "specs": "Steel | 3 t",
+   "hp": 900,
+   "armor": 14,
+   "cost": 80,
+   "sprite": "french_army_barricade"
+  },
+  "repair_depot": {
+   "name": "Atelier Mobile",
+   "class": "Mobile workshop",
+   "desc": "Mobile maintenance for armor and artillery.",
+   "specs": "Mobile | winch",
+   "hp": 410,
+   "armor": 4,
+   "heal": {
+    "rate": 22,
+    "radius": 150,
+    "cls": [
+     "vehicle",
+     "armor",
+     "structure"
+    ]
+   },
+   "cost": 350,
+   "sprite": "french_army_repair_depot"
+  },
+  "coastal_battery": {
+   "name": "Exocet MM40 Battery",
+   "class": "Coastal anti-ship",
+   "desc": "Truck-mounted Exocet MM40 Block 3: 200 km sea-skimming missile.",
+   "specs": "Exocet MM40 | 200 km",
+   "hp": 780,
+   "armor": 12,
+   "range": 490,
+   "damage": 100,
+   "cooldown": 2.4,
+   "splash": 45,
+   "vs": {
+    "ship": 1.6
+   },
+   "cost": 480,
+   "sprite": "french_army_coastal_battery"
+  },
+  "tactical_missile": {
+   "name": "Hades Tactical",
+   "class": "Pre-strategic missile",
+   "desc": "480 km ballistic missile (retired 1997); modelled as stock.",
+   "specs": "480 km | 500 kg",
+   "damage": 135,
+   "splash": 78,
+   "cost": 160,
+   "sprite": "french_army_tactical_missile"
+  },
+  "cruise_missile": {
+   "name": "SCALP-EG",
+   "class": "Cruise missile",
+   "desc": "Stealthy long-range 450 km cruise missile with 450 kg warhead.",
+   "specs": "450 km | 450 kg",
+   "damage": 260,
+   "splash": 105,
+   "cost": 300,
+   "sprite": "french_army_cruise_missile"
+  },
+  "bunker_buster": {
+   "name": "AASM Hammer",
+   "class": "Guided bomb",
+   "desc": "250 kg modular bomb with GPS/INS and IR seeker, ranges 70 km.",
+   "specs": "250 kg | modular",
+   "damage": 620,
+   "splash": 60,
+   "cost": 570,
+   "sprite": "french_army_bunker_buster"
+  },
+  "ballistic_missile": {
+   "name": "S3D Plateau d'Albion",
+   "class": "IRBM",
+   "desc": "Silo-based two-stage IRBM carrying a 1.2 Mt warhead, in service 1980-96; modelled as reactivated stock.",
+   "specs": "3,500 km | 1.2 Mt | silo",
+   "damage": 720,
+   "splash": 175,
+   "cost": 820,
+   "sprite": "french_army_ballistic_missile"
+  },
+  "hypersonic": {
+   "name": "ASN4G Hypersonic",
+   "class": "Nuclear missile",
+   "desc": "Future nuclear ASN4G ramjet/ hypersonic; planned.",
+   "specs": "Mach 8 | planned",
+   "damage": 1080,
+   "splash": 150,
+   "cost": 1400,
+   "sprite": "french_army_hypersonic"
+  },
+  "tactical_nuke": {
+   "name": "ASMPA TN 81",
+   "class": "Air-launched nuke",
+   "desc": "Nuclear cruise missile with TNA warhead 300 kt; Rafale/Mirage.",
+   "specs": "300 kt | ramjet | 500 km",
+   "damage": 1900,
+   "splash": 228,
+   "cost": 1700,
+   "sprite": "french_army_tactical_nuke"
+  },
+  "nuke": {
+   "name": "M51 SLBM",
+   "class": "SLBM",
+   "desc": "M51 submarine-launched ballistic missile with six TNO warheads of 100 kt, 10,000 km range.",
+   "specs": "6 x 100 kt | 10,000 km",
+   "damage": 3500,
+   "splash": 330,
+   "cost": 2900,
+   "sprite": "french_army_nuke"
+  },
+  "mega_nuke": {
+   "name": "M51 MIRV Salvo",
+   "class": "SLBM salvo",
+   "desc": "Triomphant-class load of 16 M51 missiles.",
+   "specs": "16 missiles | 96 warheads",
+   "damage": 6800,
+   "splash": 550,
+   "cost": 6250,
+   "sprite": "french_army_mega_nuke"
+  },
+  "shotgunner": {
+   "name": "Fusilier de Choc"
+  },
+  "marksman": {
+   "name": "FR-F2 Tireur d'Elite"
+  },
+  "mortar_team": {
+   "name": "MO-81 Mortar Crew"
+  },
+  "javelin": {
+   "name": "ERYX Missile Team"
+  },
+  "riot_trooper": {
+   "name": "Fantassin Blinde"
+  },
+  "sapper": {
+   "name": "Sapeur du Genie"
+  },
+  "officer": {
+   "name": "Chef de Section"
+  },
+  "k9": {
+   "name": "Chien Piege"
+  },
+  "mine_flail": {
+   "name": "AMX-30 EBG Engineer Tank"
+  },
+  "torpedo_boat": {
+   "name": "Vedette Lance-Torpilles"
+  },
+  "frigate": {
+   "name": "Floreal-class Frigate"
+  },
+  "minelayer": {
+   "name": "Marine Nationale Minelayer"
+  },
+  "midget_sub": {
+   "name": "Minisous-marin Gnome"
+  },
+  "cruise_sub": {
+   "name": "Suffren-class SSN (SCALP Naval)"
+  },
+  "sandbag_nest": {
+   "name": "AAT-52 Sandbag Nest"
+  },
+  "watchtower": {
+   "name": "Mirador de Garde"
+  },
+  "sniper_nest": {
+   "name": "FR-F2 Sniper Nest"
+  },
+  "flame_bunker": {
+   "name": "Bunker Lance-Flammes"
+  },
+  "torpedo_battery": {
+   "name": "Batterie Lance-Torpilles"
+  },
+  "observation_post": {
+   "name": "Poste d'Observation"
+  }
+ }
+}

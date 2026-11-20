@@ -1,0 +1,411 @@
+{
+ "metropolis": {
+  "name": "Metropolis",
+  "tab": "infrastructure",
+  "role": "national",
+  "shape": "structure",
+  "layer": "ground",
+  "cost": 1800,
+  "hp": 2400,
+  "armor": 6,
+  "speed": 0,
+  "size": 157,
+  "range": 0,
+  "damage": 0,
+  "deploy_cd": 10.0,
+  "limit": 2,
+  "desc": "Big city: +4 income per second.",
+  "rotate": false,
+  "income": 4
+ },
+ "town": {
+  "name": "Town",
+  "tab": "infrastructure",
+  "role": "national",
+  "shape": "structure",
+  "layer": "ground",
+  "cost": 650,
+  "hp": 900,
+  "armor": 2,
+  "speed": 0,
+  "size": 101,
+  "range": 0,
+  "damage": 0,
+  "deploy_cd": 10.0,
+  "limit": 4,
+  "desc": "Small town: +1.5 income per second.",
+  "rotate": false,
+  "income": 1.5
+ },
+ "oil_refinery": {
+  "name": "Oil Refinery",
+  "tab": "infrastructure",
+  "role": "national",
+  "shape": "structure",
+  "layer": "ground",
+  "cost": 1300,
+  "hp": 1300,
+  "armor": 4,
+  "speed": 0,
+  "size": 126,
+  "range": 0,
+  "damage": 0,
+  "deploy_cd": 10.0,
+  "limit": 2,
+  "desc": "+3 income per second. Explodes when destroyed.",
+  "rotate": false,
+  "income": 3,
+  "death_blast": {
+   "radius": 140,
+   "damage": 260
+  }
+ },
+ "power_plant": {
+  "name": "Power Plant",
+  "tab": "infrastructure",
+  "role": "national",
+  "shape": "structure",
+  "layer": "ground",
+  "cost": 1000,
+  "hp": 1100,
+  "armor": 4,
+  "speed": 0,
+  "size": 123,
+  "range": 0,
+  "damage": 0,
+  "deploy_cd": 10.0,
+  "limit": 2,
+  "desc": "Powers SAMs, interceptors, railguns, CIWS and radars.",
+  "rotate": false,
+  "provides": [
+   "power"
+  ],
+  "death_blast": {
+   "radius": 110,
+   "damage": 160
+  }
+ },
+ "barracks": {
+  "name": "Barracks",
+  "tab": "infrastructure",
+  "role": "national",
+  "shape": "structure",
+  "layer": "ground",
+  "cost": 800,
+  "hp": 1100,
+  "armor": 6,
+  "speed": 0,
+  "size": 120,
+  "range": 0,
+  "damage": 0,
+  "deploy_cd": 10.0,
+  "limit": 3,
+  "desc": "Unlocks elite infantry and trains free troops.",
+  "rotate": false,
+  "provides": [
+   "barracks"
+  ],
+  "spawns": [
+   "rifleman",
+   "assault",
+   "bazooka",
+   "recon_quad"
+  ],
+  "spawn_every": 15,
+  "supply": {
+   "radius": 250,
+   "rate": 0.07
+  }
+ },
+ "factory": {
+  "name": "War Factory",
+  "tab": "infrastructure",
+  "role": "national",
+  "shape": "structure",
+  "layer": "ground",
+  "cost": 1300,
+  "hp": 1500,
+  "armor": 8,
+  "speed": 0,
+  "size": 140,
+  "range": 0,
+  "damage": 0,
+  "deploy_cd": 10.0,
+  "limit": 2,
+  "desc": "Unlocks heavy vehicles and builds free light vehicles.",
+  "rotate": false,
+  "provides": [
+   "factory"
+  ],
+  "spawns": [
+   "jeep",
+   "armored_car"
+  ],
+  "spawn_every": 38,
+  "supply": {
+   "radius": 270,
+   "rate": 0.07
+  }
+ },
+ "airbase": {
+  "name": "Airbase",
+  "tab": "infrastructure",
+  "role": "national",
+  "shape": "structure",
+  "layer": "ground",
+  "cost": 1800,
+  "hp": 1400,
+  "armor": 5,
+  "speed": 0,
+  "size": 188,
+  "range": 0,
+  "damage": 0,
+  "deploy_cd": 10.0,
+  "limit": 2,
+  "desc": "Required for all aircraft. Scrambles free drones and fighters.",
+  "rotate": false,
+  "provides": [
+   "airbase"
+  ],
+  "spawns": [
+   "drone",
+   "fighter",
+   "scout_uav"
+  ],
+  "spawn_every": 42,
+  "supply": {
+   "radius": 330,
+   "rate": 0.09,
+   "rearm": true
+  }
+ },
+ "radar_station": {
+  "name": "Radar Station",
+  "tab": "infrastructure",
+  "role": "national",
+  "shape": "structure",
+  "layer": "ground",
+  "cost": 700,
+  "hp": 520,
+  "armor": 2,
+  "speed": 0,
+  "size": 87,
+  "range": 0,
+  "damage": 0,
+  "deploy_cd": 10.0,
+  "limit": 2,
+  "desc": "Extends SAM and interceptor range. Spots for howitzers.",
+  "rotate": false,
+  "provides": [
+   "radar"
+  ]
+ },
+ "missile_silo": {
+  "name": "Missile Silo",
+  "tab": "infrastructure",
+  "role": "national",
+  "shape": "structure",
+  "layer": "ground",
+  "cost": 2000,
+  "hp": 1700,
+  "armor": 20,
+  "speed": 0,
+  "size": 101,
+  "range": 0,
+  "damage": 0,
+  "deploy_cd": 10.0,
+  "limit": 3,
+  "desc": "Required for ballistic missiles and nukes. Launches from here.",
+  "rotate": false,
+  "provides": [
+   "silo"
+  ]
+ },
+ "tech_center": {
+  "name": "Tech Center",
+  "tab": "infrastructure",
+  "role": "national",
+  "shape": "structure",
+  "layer": "ground",
+  "cost": 1700,
+  "hp": 1100,
+  "armor": 6,
+  "speed": 0,
+  "size": 129,
+  "range": 0,
+  "damage": 0,
+  "deploy_cd": 10.0,
+  "limit": 1,
+  "desc": "Unlocks stealth aircraft, super-heavy armor, ABMs and doomsday weapons.",
+  "rotate": false,
+  "provides": [
+   "tech"
+  ]
+ },
+ "fortress": {
+  "name": "Fortress",
+  "tab": "infrastructure",
+  "role": "national",
+  "shape": "structure",
+  "layer": "ground",
+  "cost": 2200,
+  "hp": 3400,
+  "armor": 18,
+  "speed": 0,
+  "size": 165,
+  "range": 380,
+  "damage": 70,
+  "deploy_cd": 10.0,
+  "limit": 2,
+  "desc": "Massive stronghold with a heavy cannon.",
+  "rotate": false,
+  "cooldown": 1.5,
+  "proj": "shell",
+  "targets": [
+   "ground"
+  ],
+  "splash": 45
+ },
+ "naval_port": {
+  "name": "Naval Port",
+  "tab": "infrastructure",
+  "role": "national",
+  "shape": "structure",
+  "layer": "ground",
+  "cost": 1400,
+  "hp": 1300,
+  "armor": 6,
+  "speed": 0,
+  "size": 154,
+  "range": 0,
+  "damage": 0,
+  "deploy_cd": 10.0,
+  "limit": 2,
+  "desc": "Unlocks boats, ships and subs. Must be on the coast. Launches free patrol boats and gunboats.",
+  "rotate": false,
+  "provides": [
+   "port"
+  ],
+  "spawns": [
+   "patrol_boat",
+   "gunboat",
+   "naval_scout"
+  ],
+  "spawn_every": 48,
+  "coastal": 150,
+  "art_front": 90,
+  "face_water": true,
+  "supply": {
+   "radius": 320,
+   "rate": 0.07
+  }
+ },
+ "field_hospital": {
+  "name": "Field Hospital",
+  "tab": "infrastructure",
+  "role": "national",
+  "shape": "structure",
+  "layer": "ground",
+  "cost": 650,
+  "hp": 700,
+  "armor": 5,
+  "speed": 0,
+  "size": 101,
+  "range": 0,
+  "damage": 0,
+  "deploy_cd": 8.0,
+  "limit": 3,
+  "desc": "Heals wounded infantry nearby. Keeps your troops in the fight.",
+  "rotate": false,
+  "heal": {
+   "rate": 16,
+   "radius": 250,
+   "cls": [
+    "infantry"
+   ]
+  }
+ },
+ "supply_depot": {
+  "name": "Supply Depot",
+  "tab": "infrastructure",
+  "role": "national",
+  "shape": "structure",
+  "layer": "ground",
+  "cost": 700,
+  "hp": 800,
+  "armor": 5,
+  "speed": 0,
+  "size": 106,
+  "range": 0,
+  "damage": 0,
+  "deploy_cd": 8.0,
+  "limit": 4,
+  "desc": "Stockpiles materiel: +3 income per second. Reloads every unit near it and refills supply trucks.",
+  "rotate": false,
+  "income": 3,
+  "supply": {
+   "radius": 360,
+   "rate": 0.1
+  }
+ },
+ "fuel_depot": {
+  "name": "Fuel Depot",
+  "tab": "infrastructure",
+  "role": "national",
+  "shape": "structure",
+  "layer": "ground",
+  "cost": 500,
+  "hp": 500,
+  "armor": 5,
+  "speed": 0,
+  "size": 92,
+  "range": 0,
+  "damage": 0,
+  "deploy_cd": 8.0,
+  "limit": 3,
+  "desc": "Bulk fuel storage: +2 income. Explodes violently when destroyed!",
+  "rotate": false,
+  "income": 2,
+  "death_blast": {
+   "radius": 130,
+   "damage": 170
+  }
+ },
+ "forward_base": {
+  "name": "Forward Operating Base",
+  "tab": "infrastructure",
+  "role": "national",
+  "shape": "structure",
+  "layer": "ground",
+  "cost": 1200,
+  "hp": 1500,
+  "armor": 8,
+  "speed": 0,
+  "size": 129,
+  "range": 250,
+  "damage": 10,
+  "deploy_cd": 12.0,
+  "limit": 3,
+  "desc": "Fortified outpost that can be built far forward. Acts as a Barracks, trains free troops and has its own gun. Reloads friendly units nearby.",
+  "rotate": false,
+  "provides": [
+   "barracks"
+  ],
+  "spawns": [
+   "rifleman",
+   "shotgunner",
+   "mg_gunner"
+  ],
+  "spawn_every": 18,
+  "cooldown": 0.25,
+  "proj": "bullet",
+  "targets": [
+   "ground"
+  ],
+  "forward": true,
+  "supply": {
+   "radius": 300,
+   "rate": 0.07
+  }
+ }
+}

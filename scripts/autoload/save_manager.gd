@@ -7,6 +7,7 @@ const SLOTS := ["slot1", "slot2", "slot3", "auto"]
 
 ## Set by the main menu before switching to the battle scene.
 var pending_load: String = ""
+var pending_map: String = ""         # battlefield id chosen in the pre-match screen ("" = default map)
 var pending_difficulty: String = "normal"
 ## Armies chosen on the prematch screen ("" = generic roster, e.g. when a tool starts a battle directly).
 var pending_p_faction: String = ""

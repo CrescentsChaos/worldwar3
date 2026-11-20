@@ -576,7 +576,7 @@ func _unit_slot(d: Dictionary) -> String:
 	if str(d.get("tab", "")) == "air":
 		return "air"
 	var role := str(d.get("role", ""))
-	if role == "artillery" or role == "anti_air" or role == "support":
+	if role == "artillery" or role == "anti_air" or role == "support" or role == "logistics" or role == "transport":
 		return "mid"
 	return "front"
 
@@ -697,6 +697,23 @@ func _role_w(role: String, sc: Dictionary) -> float:
 			return 0.3
 		"diver":
 			return 0.15
+		"logistics", "transport":
+			var n_log := 0
+			var n_inf := 0
+			var n_fight := 0
+			for n2 in battle.get_tree().get_nodes_in_group("team%d" % team):
+				var c2 := n2 as Combatant
+				if c2 == null or c2.dead or c2.kind != "unit":
+					continue
+				if str(c2.def.get("role", "")) == role:
+					n_log += 1
+				elif c2.cls == "infantry":
+					n_inf += 1
+				elif c2.layer == "ground":
+					n_fight += 1
+			if role == "logistics":
+				return 1.5 if n_log * 9 < n_fight + n_inf and n_fight + n_inf >= 5 else 0.05
+			return 0.8 if n_log * 10 < n_inf and n_inf >= 6 else 0.05
 		"recon":
 			var n_scouts := 0
 			for n in battle.get_tree().get_nodes_in_group("team%d" % team):

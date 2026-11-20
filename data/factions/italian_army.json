@@ -1,0 +1,1271 @@
+{
+ "name": "Italian Royal Army",
+ "era": "WW2 (1940-43, late-war prototypes)",
+ "tagline": "Fast, stylish, and underfunded.",
+ "desc": "Regio Esercito and Regia Marina: elegant, brave and underfunded. Fast Bersaglieri, fine guns (the 90/53) and a good navy, but light, poorly armored tanks and few aircraft. No rocket artillery, drones, helicopters, super-heavy tank or stealth bomber; the nuclear slots are what-ifs.",
+ "mods": [
+  {
+   "match": "tab:navy",
+   "cost": 0.85
+  },
+  {
+   "match": "tab:vehicles",
+   "cost": 0.9,
+   "hp": 0.9
+  },
+  {
+   "match": "tab:infantry",
+   "speed": 1.05
+  }
+ ],
+ "income": 0.95,
+ "money": 1.0,
+ "ban": [
+  "mlrs",
+  "drone",
+  "helicopter",
+  "stealth_bomber",
+  "mammoth",
+  "transport_heli"
+ ],
+ "names": {
+  "rifleman": "Carcano M91/38 Bersagliere",
+  "assault": "Beretta MAB 38A SMG",
+  "bazooka": "Solothurn 20 mm AT Rifle",
+  "manpads": "Breda 20 mm AA Gunner",
+  "mg_gunner": "Breda 30 LMG Gunner",
+  "grenadier": "SRCM Mod. 35 Grenadier",
+  "sniper": "Carcano Cecchino",
+  "flamer": "Lanciafiamme Mod. 35",
+  "medic": "Sanitari Medic",
+  "engineer": "Genio Sapper",
+  "commando": "Folgore Paratrooper",
+  "jeep": "Fiat 508 CM Coloniale",
+  "armored_car": "AB 41 Autoblinda",
+  "apc": "AS 42 Sahariana",
+  "light_tank": "L6/40 Light Tank",
+  "tank": "M13/40 Medium Tank",
+  "heavy_tank": "P26/40 Heavy Tank",
+  "tank_destroyer": "Semovente 90/53",
+  "flame_tank": "L3 Flame Tankette",
+  "artillery": "Semovente 75/18",
+  "howitzer": "Cannone 149/40 Mod. 35",
+  "aa_truck": "Breda 20/65 AA Truck",
+  "sam_truck": "Autocannone 90/53",
+  "repair_vehicle": "Recovery Tractor",
+  "fighter": "Macchi C.202 Folgore",
+  "interceptor_jet": "Macchi C.205 Veltro",
+  "stealth_fighter": "Reggiane Re.2005 Sagittario",
+  "strike_jet": "Breda Ba.65",
+  "gunship": "Breda Ba.88 Lince",
+  "light_bomber": "SM.79 Sparviero",
+  "bomber": "Cant Z.1007bis Alcione",
+  "heavy_bomber": "Piaggio P.108B",
+  "diver": "Decima MAS Frogman",
+  "patrol_boat": "MAS Torpedo Boat",
+  "gunboat": "Cannoniera Gunboat",
+  "missile_boat": "MTM Explosive Boat",
+  "destroyer": "Soldati-class Destroyer",
+  "cruiser": "Zara-class Heavy Cruiser",
+  "battleship": "Littorio-class Battleship",
+  "submarine": "Marcello-class Sub",
+  "aircraft_carrier": "Aquila Carrier",
+  "mg_turret": "Breda 37 MG Nest",
+  "pillbox": "Vallo Alpino Bunker",
+  "at_gun": "Cannone 47/32",
+  "cannon_turret": "Cannone 75/27 Bunker",
+  "mortar_pit": "Brixia 45 mm Mortar",
+  "flak_battery": "Breda 20/65 AA",
+  "sam_site": "Cannone 90/53 AA",
+  "heavy_battery": "Cannone 152/40 Battery",
+  "railgun": "381 mm Coastal Gun",
+  "ciws": "Scotti 20 mm AA",
+  "interceptor_battery": "90/53 AA Barrage Battery",
+  "abm_battery": "Heavy AA Barrage Battery",
+  "barricade": "Dragon's Teeth",
+  "repair_depot": "Officina Mobile",
+  "coastal_battery": "Batteria Costiera 152/40",
+  "tactical_missile": "Rocket Salvo",
+  "cruise_missile": "Aerosilurante Torpedo",
+  "cluster_missile": "Spezzoni Cluster Bomb",
+  "bunker_buster": "Bomba Perforante",
+  "ballistic_missile": "Razzo Strategico (what-if)",
+  "hypersonic": "Campini Rocket Jet (what-if)",
+  "tactical_nuke": "Fisica Tactical Bomb (what-if)",
+  "nuke": "Bomba Atomica (what-if)",
+  "mega_nuke": "Bomba Finale (what-if)"
+ },
+ "strategies": {
+  "ariete": {
+   "name": "Ariete Armoured",
+   "desc": "Light fast armor and armored cars. Starts with a mobile column.",
+   "style": "offense",
+   "mods": [
+    {
+     "match": "tab:vehicles",
+     "cost": 0.85,
+     "speed": 1.1
+    }
+   ],
+   "setup": [
+    [
+     "unit",
+     "tank",
+     905,
+     470,
+     3
+    ],
+    [
+     "unit",
+     "armored_car",
+     880,
+     545,
+     2
+    ]
+   ],
+   "income": 1.0,
+   "money": 1.0
+  },
+  "alpini": {
+   "name": "Alpini Mountain Defense",
+   "desc": "Dug-in alpine strongpoints. Starts with pillboxes, AT guns and mortars.",
+   "style": "defense",
+   "mods": [
+    {
+     "match": "kind:structure",
+     "hp": 1.3,
+     "cost": 0.8
+    },
+    {
+     "match": "tab:infantry",
+     "hp": 1.15
+    }
+   ],
+   "setup": [
+    [
+     "structure",
+     "pillbox",
+     972,
+     414.0,
+     1
+    ],
+    [
+     "structure",
+     "pillbox",
+     948,
+     504.0,
+     1
+    ],
+    [
+     "structure",
+     "pillbox",
+     972,
+     594.0,
+     1
+    ],
+    [
+     "structure",
+     "at_gun",
+     945,
+     414.0,
+     1
+    ],
+    [
+     "structure",
+     "at_gun",
+     921,
+     504.0,
+     1
+    ],
+    [
+     "structure",
+     "at_gun",
+     945,
+     594.0,
+     1
+    ],
+    [
+     "structure",
+     "mortar_pit",
+     910,
+     450,
+     1
+    ],
+    [
+     "structure",
+     "mortar_pit",
+     910,
+     560,
+     1
+    ],
+    [
+     "structure",
+     "mg_turret",
+     985,
+     410,
+     1
+    ]
+   ],
+   "income": 1.0,
+   "money": 1.0
+  },
+  "regia_marina": {
+   "name": "Regia Marina",
+   "desc": "Mediterranean sea power. Starts with a small fleet.",
+   "style": "naval",
+   "mods": [
+    {
+     "match": "tab:navy",
+     "cost": 0.7,
+     "hp": 1.1
+    }
+   ],
+   "setup": [
+    [
+     "unit",
+     "patrol_boat",
+     450,
+     100,
+     2
+    ],
+    [
+     "unit",
+     "submarine",
+     450,
+     905,
+     1
+    ],
+    [
+     "unit",
+     "destroyer",
+     500,
+     130,
+     1
+    ]
+   ],
+   "income": 1.0,
+   "money": 1.0
+  }
+ },
+ "roster": {
+  "rifleman": {
+   "name": "Carcano M91/38 Bersagliere",
+   "class": "Bolt-action rifleman",
+   "desc": "6.5 mm Carcano: light, accurate and cheap but low-powered. Bersaglieri are fast infantry with plumed helmets.",
+   "specs": "6.5x52 mm | 3.8 kg | 6-rd clip",
+   "hp": 68,
+   "speed": 54,
+   "range": 135,
+   "damage": 9,
+   "cooldown": 1.15,
+   "cost": 45,
+   "sprite": "italian_army_rifleman"
+  },
+  "assault": {
+   "name": "Beretta MAB 38A SMG",
+   "class": "Submachine gun",
+   "desc": "Well-made 9 mm SMG with a 40-round magazine; widely admired and used by the Germans too.",
+   "specs": "9x19 mm | 4.2 kg | 600 rpm",
+   "hp": 80,
+   "speed": 66,
+   "range": 90,
+   "damage": 5,
+   "cooldown": 0.14,
+   "cost": 75,
+   "sprite": "italian_army_assault"
+  },
+  "bazooka": {
+   "name": "Solothurn 20 mm AT Rifle",
+   "class": "Anti-tank rifle",
+   "desc": "Semi-automatic 20 mm anti-tank rifle with a 20 mm round; penetrates light tanks only.",
+   "specs": "20x138 mm | 50 kg | 5-rd",
+   "hp": 80,
+   "speed": 38,
+   "range": 160,
+   "damage": 36,
+   "cooldown": 1.8,
+   "proj": "bullet",
+   "pierce": 7,
+   "vs": {
+    "armor": 1.0,
+    "vehicle": 1.3
+   },
+   "prefer": [
+    "armor",
+    "vehicle"
+   ],
+   "cost": 100,
+   "sprite": "italian_army_bazooka"
+  },
+  "manpads": {
+   "name": "Breda 20 mm AA Gunner",
+   "class": "Light AA gun",
+   "desc": "Breda Mod. 35 20 mm autocannon on a wheeled mount, mainly the army's AA defense.",
+   "specs": "20x138 mm | 330 kg | 240 rpm",
+   "hp": 75,
+   "speed": 38,
+   "range": 230,
+   "damage": 14,
+   "cooldown": 0.2,
+   "proj": "bullet",
+   "cost": 115,
+   "sprite": "italian_army_manpads"
+  },
+  "mg_gunner": {
+   "name": "Breda 30 LMG Gunner",
+   "class": "Light machine gun",
+   "desc": "6.5 mm LMG with a 20-round fixed magazine; sensitive to dirt and dust.",
+   "specs": "6.5 mm | 10 kg | 450 rpm",
+   "hp": 88,
+   "armor": 1,
+   "speed": 40,
+   "range": 170,
+   "damage": 6,
+   "cooldown": 0.16,
+   "cost": 90,
+   "sprite": "italian_army_mg_gunner"
+  },
+  "grenadier": {
+   "name": "SRCM Mod. 35 Grenadier",
+   "class": "Grenadier",
+   "desc": "Small red SRCM grenades: handy but weak; supplemented by rifle grenades.",
+   "specs": "SRCM Mod.35 | 0.2 kg",
+   "hp": 80,
+   "range": 105,
+   "damage": 26,
+   "cooldown": 2.0,
+   "splash": 32,
+   "vs": {
+    "infantry": 1.25
+   },
+   "cost": 80,
+   "sprite": "italian_army_grenadier"
+  },
+  "sniper": {
+   "name": "Carcano Cecchino",
+   "class": "Sniper",
+   "desc": "Carcano with a telescopic sight, used by selected marksmen on the Alpine front.",
+   "specs": "6.5 mm | scope | 600 m",
+   "hp": 55,
+   "range": 300,
+   "damage": 44,
+   "cooldown": 2.7,
+   "vs": {
+    "infantry": 3.0,
+    "vehicle": 0.3,
+    "armor": 0.08,
+    "structure": 0.1
+   },
+   "cost": 130,
+   "sprite": "italian_army_sniper"
+  },
+  "flamer": {
+   "name": "Lanciafiamme Mod. 35",
+   "class": "Flamethrower",
+   "desc": "Italian backpack flamethrower used by assault engineers against bunkers.",
+   "specs": "22 kg | 20 m",
+   "hp": 100,
+   "armor": 1,
+   "speed": 40,
+   "range": 52,
+   "damage": 9,
+   "cooldown": 0.12,
+   "splash": 26,
+   "pierce": 4,
+   "vs": {
+    "infantry": 1.8,
+    "structure": 1.3
+   },
+   "prefer": [
+    "infantry"
+   ],
+   "cost": 120,
+   "sprite": "italian_army_flamer"
+  },
+  "medic": {
+   "name": "Sanitari Medic",
+   "class": "Medic",
+   "desc": "Stretcher-bearers and sanitari with bandages and morphine.",
+   "specs": "Medical bag",
+   "hp": 65,
+   "speed": 56,
+   "heal": {
+    "rate": 12,
+    "radius": 120,
+    "cls": [
+     "infantry"
+    ]
+   },
+   "cost": 75,
+   "sprite": "italian_army_medic"
+  },
+  "engineer": {
+   "name": "Genio Sapper",
+   "class": "Combat engineer",
+   "desc": "Genio engineers lay mines, build bridges and demolish obstacles.",
+   "specs": "Mines | satchel charges",
+   "hp": 90,
+   "heal": {
+    "rate": 22,
+    "radius": 110,
+    "cls": [
+     "vehicle",
+     "armor",
+     "structure"
+    ]
+   },
+   "cost": 120,
+   "sprite": "italian_army_engineer"
+  },
+  "commando": {
+   "name": "Folgore Paratrooper",
+   "class": "Elite paratrooper",
+   "desc": "The Folgore Division fought to the last at El Alamein; the Brits called them the best Axis troops there.",
+   "specs": "Beretta MAB | grenades",
+   "hp": 150,
+   "armor": 1,
+   "speed": 62,
+   "range": 150,
+   "damage": 15,
+   "cooldown": 0.22,
+   "pierce": 3,
+   "cost": 230,
+   "sprite": "italian_army_commando"
+  },
+  "jeep": {
+   "name": "Fiat 508 CM Coloniale",
+   "class": "Light car",
+   "desc": "Small scout car based on the Balilla; a few with MG mounts.",
+   "specs": "1 t | 32 hp | 80 km/h",
+   "hp": 115,
+   "speed": 108,
+   "range": 140,
+   "damage": 7,
+   "cooldown": 0.3,
+   "cost": 90,
+   "sprite": "italian_army_jeep"
+  },
+  "armored_car": {
+   "name": "AB 41 Autoblinda",
+   "class": "Armored car",
+   "desc": "Eight-wheeled armored car with a 20 mm Breda and reversible driver; good desert scout.",
+   "specs": "7.5 t | 20 mm | 78 km/h",
+   "hp": 200,
+   "armor": 3,
+   "speed": 100,
+   "range": 170,
+   "damage": 16,
+   "cooldown": 0.3,
+   "pierce": 2,
+   "cost": 150,
+   "sprite": "italian_army_armored_car"
+  },
+  "apc": {
+   "name": "AS 42 Sahariana",
+   "class": "Desert scout vehicle",
+   "desc": "Light desert patrol truck with a 20 mm AT gun or MGs; fast in sand.",
+   "specs": "3.5 t | 4 crew | 20 mm",
+   "hp": 250,
+   "armor": 2,
+   "speed": 100,
+   "range": 165,
+   "damage": 14,
+   "cooldown": 0.25,
+   "cargo": [
+    "rifleman",
+    "rifleman"
+   ],
+   "cost": 170,
+   "sprite": "italian_army_apc"
+  },
+  "light_tank": {
+   "name": "L6/40 Light Tank",
+   "class": "Light tank",
+   "desc": "Light tank with a 20 mm Breda cannon; not good against anything heavier.",
+   "specs": "6.8 t | 2 crew | 20 mm",
+   "hp": 190,
+   "armor": 3,
+   "speed": 90,
+   "range": 180,
+   "damage": 14,
+   "cooldown": 0.25,
+   "proj": "bullet",
+   "pierce": 3,
+   "cost": 230,
+   "sprite": "italian_army_light_tank"
+  },
+  "tank": {
+   "name": "M13/40 Medium Tank",
+   "class": "Medium tank",
+   "desc": "Riveted 14-ton tank with a 47 mm gun; poor armor and slow, but with decent engine.",
+   "specs": "14 t | 4 crew | 47/32",
+   "hp": 340,
+   "armor": 4,
+   "speed": 55,
+   "range": 205,
+   "damage": 32,
+   "cooldown": 1.6,
+   "splash": 18,
+   "cost": 170,
+   "sprite": "italian_army_tank"
+  },
+  "heavy_tank": {
+   "name": "P26/40 Heavy Tank",
+   "class": "Heavy tank",
+   "desc": "Italy's best tank design: 26 t with a 75/34 gun and 60 mm armor. Only a handful were completed.",
+   "specs": "26 t | 4 crew | 75/34",
+   "hp": 700,
+   "armor": 9,
+   "speed": 40,
+   "range": 235,
+   "damage": 46,
+   "cooldown": 1.9,
+   "splash": 28,
+   "cost": 330,
+   "sprite": "italian_army_heavy_tank"
+  },
+  "tank_destroyer": {
+   "name": "Semovente 90/53",
+   "class": "Tank destroyer",
+   "desc": "M41 chassis with the dual-purpose 90/53 gun; deadly but very rare (~30 built).",
+   "specs": "16 t | 3 crew | 90/53",
+   "hp": 360,
+   "armor": 5,
+   "speed": 40,
+   "range": 345,
+   "damage": 130,
+   "cooldown": 3.6,
+   "pierce": 18,
+   "vs": {
+    "armor": 1.5,
+    "infantry": 0.6
+   },
+   "cost": 280,
+   "sprite": "italian_army_tank_destroyer"
+  },
+  "flame_tank": {
+   "name": "L3 Flame Tankette",
+   "class": "Flamethrower tankette",
+   "desc": "Tiny CV 33 tankette with a flamethrower and fuel trailer.",
+   "specs": "3.2 t | 2 crew | flame",
+   "hp": 150,
+   "armor": 3,
+   "speed": 68,
+   "range": 70,
+   "damage": 10,
+   "cooldown": 0.12,
+   "splash": 30,
+   "pierce": 4,
+   "cost": 130,
+   "sprite": "italian_army_flame_tank"
+  },
+  "artillery": {
+   "name": "Semovente 75/18",
+   "class": "Assault gun",
+   "desc": "Compact SPG with a short 75 mm howitzer: very good at supporting infantry.",
+   "specs": "13 t | 3 crew | 75/18",
+   "hp": 200,
+   "armor": 3,
+   "speed": 55,
+   "range": 360,
+   "damage": 60,
+   "cooldown": 2.4,
+   "min_range": 100,
+   "splash": 60,
+   "cost": 460,
+   "sprite": "italian_army_artillery"
+  },
+  "howitzer": {
+   "name": "Cannone 149/40 Mod. 35",
+   "class": "Heavy gun",
+   "desc": "Heavy field gun with 23 km range; towed by tractor.",
+   "specs": "149 mm | 11 t | 23 km",
+   "hp": 270,
+   "armor": 2,
+   "speed": 18,
+   "range": 620,
+   "damage": 105,
+   "cooldown": 4.2,
+   "min_range": 180,
+   "splash": 88,
+   "vs": {
+    "structure": 1.3
+   },
+   "cost": 650,
+   "sprite": "italian_army_howitzer"
+  },
+  "aa_truck": {
+   "name": "Breda 20/65 AA Truck",
+   "class": "AA truck",
+   "desc": "Breda 20 mm cannon on a truck for mobile air defense.",
+   "specs": "20 mm | truck | 240 rpm",
+   "hp": 230,
+   "speed": 60,
+   "range": 255,
+   "damage": 14,
+   "cooldown": 0.2,
+   "cost": 220,
+   "sprite": "italian_army_aa_truck"
+  },
+  "sam_truck": {
+   "name": "Autocannone 90/53",
+   "class": "Heavy AA truck",
+   "desc": "Heavy AA 90/53 cannon on Lancia 3Ro truck; the famed gun also fires against tanks.",
+   "specs": "90/53 | truck | 12 km",
+   "hp": 330,
+   "armor": 3,
+   "speed": 46,
+   "range": 420,
+   "damage": 62,
+   "cooldown": 1.5,
+   "proj": "flak",
+   "splash": 45,
+   "splash_air_only": true,
+   "cost": 410,
+   "sprite": "italian_army_sam_truck"
+  },
+  "repair_vehicle": {
+   "name": "Recovery Tractor",
+   "class": "Recovery vehicle",
+   "desc": "Heavy tractor with winch used to recover tanks and guns.",
+   "specs": "Tractor | winch",
+   "hp": 380,
+   "armor": 3,
+   "speed": 50,
+   "heal": {
+    "rate": 22,
+    "radius": 120,
+    "cls": [
+     "vehicle",
+     "armor"
+    ]
+   },
+   "cost": 180,
+   "sprite": "italian_army_repair_vehicle"
+  },
+  "fighter": {
+   "name": "Macchi C.202 Folgore",
+   "class": "Fighter",
+   "desc": "Italian fighter with a German DB 601 engine; agile and well-liked, but armed with only machine guns.",
+   "specs": "DB 601 | 2 x 12.7 mm | 600 km/h",
+   "hp": 190,
+   "speed": 220,
+   "range": 215,
+   "damage": 15,
+   "cooldown": 0.26,
+   "cost": 400,
+   "sprite": "italian_army_fighter"
+  },
+  "interceptor_jet": {
+   "name": "Macchi C.205 Veltro",
+   "class": "Fighter",
+   "desc": "Improved C.202 with two 20 mm cannons and 12.7 mm MGs.",
+   "specs": "DB 605 | 2x 20 mm | 640 km/h",
+   "hp": 205,
+   "speed": 230,
+   "range": 240,
+   "damage": 21,
+   "cooldown": 0.25,
+   "vs": {
+    "air": 1.3
+   },
+   "cost": 470,
+   "sprite": "italian_army_interceptor_jet"
+  },
+  "stealth_fighter": {
+   "name": "Reggiane Re.2005 Sagittario",
+   "class": "Top Italian fighter",
+   "desc": "Probably the best Italian fighter of the war, with 20 mm cannons; few were built.",
+   "specs": "DB 605 | 3x 20 mm | 678 km/h",
+   "hp": 230,
+   "speed": 250,
+   "range": 250,
+   "damage": 24,
+   "cooldown": 0.25,
+   "stealth": 0,
+   "cost": 750,
+   "sprite": "italian_army_stealth_fighter"
+  },
+  "strike_jet": {
+   "name": "Breda Ba.65",
+   "class": "Ground-attack plane",
+   "desc": "Single-engine attack monoplane; slow and lightly armored.",
+   "specs": "Gnome-Rhone | 4 x MG | 430 km/h",
+   "hp": 200,
+   "speed": 140,
+   "range": 185,
+   "damage": 22,
+   "cooldown": 0.3,
+   "pierce": 4,
+   "cost": 320,
+   "sprite": "italian_army_strike_jet"
+  },
+  "gunship": {
+   "name": "Breda Ba.88 Lince",
+   "class": "Attack aircraft",
+   "desc": "Twin-engined attack aircraft that performed disastrously; used as decoys on airfields.",
+   "specs": "2 engines | 3 MG | 490 km/h",
+   "hp": 340,
+   "armor": 1,
+   "speed": 150,
+   "range": 200,
+   "damage": 26,
+   "cooldown": 0.4,
+   "targets": [
+    "ground"
+   ],
+   "cost": 480,
+   "sprite": "italian_army_gunship"
+  },
+  "light_bomber": {
+   "name": "SM.79 Sparviero",
+   "class": "Torpedo bomber",
+   "desc": "Three-engine bomber and torpedo bomber, nicknamed 'hunchback'.",
+   "specs": "3 engines | 1.2 t | 430 km/h",
+   "hp": 280,
+   "speed": 170,
+   "damage": 78,
+   "splash": 66,
+   "cost": 380,
+   "sprite": "italian_army_light_bomber"
+  },
+  "bomber": {
+   "name": "Cant Z.1007bis Alcione",
+   "class": "Medium bomber",
+   "desc": "Three-engine wooden medium bomber, good load but vulnerable.",
+   "specs": "3 engines | 1.2 t | 450 km/h",
+   "hp": 400,
+   "speed": 160,
+   "damage": 105,
+   "splash": 85,
+   "cost": 580,
+   "sprite": "italian_army_bomber"
+  },
+  "heavy_bomber": {
+   "name": "Piaggio P.108B",
+   "class": "Heavy bomber",
+   "desc": "Four-engine heavy bomber (Italy's only one); about 160 km/h slower than the B-17.",
+   "specs": "4 engines | 3.5 t | 430 km/h",
+   "hp": 780,
+   "armor": 3,
+   "speed": 135,
+   "damage": 165,
+   "cooldown": 0.55,
+   "splash": 120,
+   "vs": {
+    "structure": 1.5
+   },
+   "cost": 1050,
+   "sprite": "italian_army_heavy_bomber"
+  },
+  "diver": {
+   "name": "Decima MAS Frogman",
+   "class": "Combat swimmer",
+   "desc": "X MAS combat swimmers sank multiple British ships at Alexandria with 'maiale' human torpedoes.",
+   "specs": "Pirelli suit | limpet mine",
+   "hp": 70,
+   "range": 55,
+   "damage": 100,
+   "cooldown": 3.5,
+   "cost": 130,
+   "sprite": "italian_army_diver"
+  },
+  "patrol_boat": {
+   "name": "MAS Torpedo Boat",
+   "class": "Motor torpedo boat",
+   "desc": "Fast MAS boat with two torpedoes and a 20 mm gun.",
+   "specs": "24 t | 44 kn | 2 torpedoes",
+   "hp": 160,
+   "speed": 130,
+   "range": 185,
+   "damage": 7,
+   "cooldown": 0.2,
+   "cost": 130,
+   "sprite": "italian_army_patrol_boat"
+  },
+  "gunboat": {
+   "name": "Cannoniera Gunboat",
+   "class": "Gunboat",
+   "desc": "Small coastal gunboat with 76 mm gun.",
+   "specs": "600 t | 15 kn | 76 mm",
+   "hp": 380,
+   "armor": 3,
+   "speed": 62,
+   "range": 260,
+   "damage": 30,
+   "cooldown": 1.4,
+   "splash": 24,
+   "cost": 240,
+   "sprite": "italian_army_gunboat"
+  },
+  "missile_boat": {
+   "name": "MTM Explosive Boat",
+   "class": "Explosive motorboat",
+   "desc": "Barchino explosive motorboat: the pilot steers it at the target and bails out. Sank HMS York at Suda Bay, 1941.",
+   "specs": "1 pilot | 330 kg charge | 30 kn",
+   "hp": 90,
+   "speed": 120,
+   "range": 16,
+   "damage": 200,
+   "cooldown": 0.5,
+   "kamikaze": true,
+   "splash": 50,
+   "size": 66,
+   "vs": {
+    "ship": 1.6
+   },
+   "cost": 210,
+   "sprite": "italian_army_missile_boat"
+  },
+  "destroyer": {
+   "name": "Soldati-class Destroyer",
+   "class": "Destroyer",
+   "desc": "1,800-ton destroyer with four 120 mm guns, fast but shortly armed with AA.",
+   "specs": "1,800 t | 39 kn | 4 x 120 mm",
+   "hp": 880,
+   "armor": 7,
+   "speed": 76,
+   "range": 280,
+   "damage": 38,
+   "cooldown": 1.1,
+   "splash": 32,
+   "sub_damage": 105,
+   "cost": 580,
+   "sprite": "italian_army_destroyer"
+  },
+  "cruiser": {
+   "name": "Zara-class Heavy Cruiser",
+   "class": "Heavy cruiser",
+   "desc": "Eight 203 mm guns and 150 mm belt; three lost at Matapan in 1941.",
+   "specs": "11,500 t | 32 kn | 8 x 203",
+   "hp": 1700,
+   "armor": 15,
+   "speed": 58,
+   "range": 430,
+   "damage": 82,
+   "cooldown": 2.1,
+   "splash": 54,
+   "cost": 1100,
+   "sprite": "italian_army_cruiser"
+  },
+  "battleship": {
+   "name": "Littorio-class Battleship",
+   "class": "Battleship",
+   "desc": "Nine 381 mm guns, fast 30-knot battleship: Littorio and Vittorio Veneto; Roma sunk by a Fritz X in 1943.",
+   "specs": "40,000 t | 30 kn | 9 x 381",
+   "hp": 3200,
+   "armor": 24,
+   "speed": 40,
+   "range": 550,
+   "damage": 148,
+   "cooldown": 3.0,
+   "splash": 78,
+   "vs": {
+    "structure": 1.5
+   },
+   "cost": 1950,
+   "sprite": "italian_army_battleship"
+  },
+  "submarine": {
+   "name": "Marcello-class Sub",
+   "class": "Submarine",
+   "desc": "1,000 ton submarine with eight torpedo tubes; relatively slow.",
+   "specs": "1,000 t | 17 kn | 8 tubes",
+   "hp": 330,
+   "armor": 4,
+   "speed": 55,
+   "range": 250,
+   "damage": 240,
+   "cooldown": 4.2,
+   "cost": 540,
+   "sprite": "italian_army_submarine"
+  },
+  "aircraft_carrier": {
+   "name": "Aquila Carrier",
+   "class": "Carrier",
+   "desc": "Converted liner Roma; carried 51 aircraft; never completed.",
+   "specs": "23,500 t | 30 kn | ~50 aircraft",
+   "hp": 3200,
+   "armor": 10,
+   "speed": 36,
+   "spawn_every": 36,
+   "cost": 2150,
+   "sprite": "italian_army_aircraft_carrier"
+  },
+  "mg_turret": {
+   "name": "Breda 37 MG Nest",
+   "class": "Machine-gun nest",
+   "desc": "8 mm Breda M37 heavy machine gun in a sandbagged position.",
+   "specs": "8 mm | 19 kg | 450 rpm",
+   "hp": 380,
+   "armor": 4,
+   "range": 215,
+   "damage": 8,
+   "cooldown": 0.15,
+   "cost": 160,
+   "sprite": "italian_army_mg_turret"
+  },
+  "pillbox": {
+   "name": "Vallo Alpino Bunker",
+   "class": "Alpine fortification",
+   "desc": "Concrete bunker from the Alpine Wall with interlocking fire.",
+   "specs": "Concrete | MG/ 47 mm",
+   "hp": 780,
+   "armor": 11,
+   "range": 190,
+   "damage": 12,
+   "cooldown": 0.15,
+   "cost": 230,
+   "sprite": "italian_army_pillbox"
+  },
+  "at_gun": {
+   "name": "Cannone 47/32",
+   "class": "Anti-tank gun",
+   "desc": "Light 47 mm gun adapted from Austrian Bohler design; portable and cheap.",
+   "specs": "47 mm | 0.3 t | 700 m",
+   "hp": 380,
+   "armor": 5,
+   "range": 285,
+   "damage": 80,
+   "cooldown": 1.8,
+   "proj": "shell",
+   "pierce": 8,
+   "vs": {
+    "armor": 1.4
+   },
+   "cost": 250,
+   "sprite": "italian_army_at_gun"
+  },
+  "cannon_turret": {
+   "name": "Cannone 75/27 Bunker",
+   "class": "Casemate gun",
+   "desc": "Casemated 75 mm field gun.",
+   "specs": "75 mm | casemate",
+   "hp": 820,
+   "armor": 14,
+   "range": 305,
+   "damage": 56,
+   "cooldown": 2.0,
+   "splash": 35,
+   "cost": 320,
+   "sprite": "italian_army_cannon_turret"
+  },
+  "mortar_pit": {
+   "name": "Brixia 45 mm Mortar",
+   "class": "Light mortar",
+   "desc": "Light 45 mm grenade launcher with a range of 500 m.",
+   "specs": "45 mm | 15 kg | 500 m",
+   "hp": 230,
+   "armor": 2,
+   "range": 330,
+   "damage": 34,
+   "cooldown": 1.3,
+   "min_range": 60,
+   "splash": 38,
+   "vs": {
+    "infantry": 1.3
+   },
+   "cost": 230,
+   "sprite": "italian_army_mortar_pit"
+  },
+  "flak_battery": {
+   "name": "Breda 20/65 AA",
+   "class": "Light AA gun",
+   "desc": "20 mm AA gun on a four-wheeled mount.",
+   "specs": "20 mm | 240 rpm",
+   "hp": 410,
+   "armor": 4,
+   "range": 310,
+   "damage": 18,
+   "cooldown": 0.4,
+   "splash": 42,
+   "needs_power": false,
+   "cost": 290,
+   "sprite": "italian_army_flak_battery"
+  },
+  "sam_site": {
+   "name": "Cannone 90/53 AA",
+   "class": "Heavy AA gun",
+   "desc": "Superb dual-purpose 90 mm gun; excellent but limited in number.",
+   "specs": "90 mm | 12 km ceiling",
+   "hp": 330,
+   "armor": 3,
+   "range": 410,
+   "damage": 62,
+   "cooldown": 1.4,
+   "proj": "flak",
+   "splash": 50,
+   "splash_air_only": true,
+   "needs_power": false,
+   "cost": 330,
+   "sprite": "italian_army_sam_site"
+  },
+  "heavy_battery": {
+   "name": "Cannone 152/40 Battery",
+   "class": "Heavy gun battery",
+   "desc": "152 mm/40 heavy guns.",
+   "specs": "152 mm | 15 km",
+   "hp": 360,
+   "armor": 4,
+   "range": 650,
+   "damage": 96,
+   "cooldown": 4.0,
+   "min_range": 150,
+   "splash": 94,
+   "cost": 530,
+   "sprite": "italian_army_heavy_battery"
+  },
+  "railgun": {
+   "name": "381 mm Coastal Gun",
+   "class": "Heavy coastal gun",
+   "desc": "Battleship-caliber 381 mm coastal batteries.",
+   "specs": "381 mm | 100 t | 30 km",
+   "hp": 620,
+   "armor": 16,
+   "range": 640,
+   "damage": 310,
+   "cooldown": 4.8,
+   "pierce": 38,
+   "needs_power": false,
+   "cost": 1050,
+   "sprite": "italian_army_railgun"
+  },
+  "ciws": {
+   "name": "Scotti 20 mm AA",
+   "class": "Twin AA",
+   "desc": "Scotti twin 20 mm AA mount used on ships and coastal defenses.",
+   "specs": "20 mm x2 | 450 rpm",
+   "hp": 380,
+   "armor": 6,
+   "range": 270,
+   "damage": 11,
+   "cooldown": 0.1,
+   "needs_power": false,
+   "cost": 460,
+   "sprite": "italian_army_ciws"
+  },
+  "interceptor_battery": {
+   "name": "90/53 AA Barrage Battery",
+   "class": "AA barrage",
+   "desc": "Concentrated 90 mm fire against incoming rockets and aircraft.",
+   "specs": "90 mm | barrage",
+   "hp": 380,
+   "armor": 4,
+   "range": 590,
+   "damage": 118,
+   "cooldown": 1.8,
+   "cost": 620,
+   "sprite": "italian_army_interceptor_battery"
+  },
+  "abm_battery": {
+   "name": "Heavy AA Barrage Battery",
+   "class": "Heavy AA barrage",
+   "desc": "Heavy AA batteries operating in barrage mode; the best air-defence available.",
+   "specs": "105 mm | barrage",
+   "hp": 560,
+   "armor": 7,
+   "range": 830,
+   "damage": 220,
+   "cooldown": 1.7,
+   "cost": 1100,
+   "sprite": "italian_army_abm_battery"
+  },
+  "barricade": {
+   "name": "Dragon's Teeth",
+   "class": "Anti-tank obstacle",
+   "desc": "Concrete pyramids for tank defense.",
+   "specs": "Concrete",
+   "hp": 900,
+   "armor": 14,
+   "cost": 80,
+   "sprite": "italian_army_barricade"
+  },
+  "repair_depot": {
+   "name": "Officina Mobile",
+   "class": "Mobile workshop",
+   "desc": "Mobile Officina repair truck.",
+   "specs": "Mobile workshop",
+   "hp": 400,
+   "armor": 4,
+   "heal": {
+    "rate": 18,
+    "radius": 150,
+    "cls": [
+     "vehicle",
+     "armor",
+     "structure"
+    ]
+   },
+   "needs_power": false,
+   "cost": 320,
+   "sprite": "italian_army_repair_depot"
+  },
+  "coastal_battery": {
+   "name": "Batteria Costiera 152/40",
+   "class": "Coastal battery",
+   "desc": "152 mm coastal guns in concrete emplacements.",
+   "specs": "152 mm | 20 km",
+   "hp": 770,
+   "armor": 12,
+   "range": 470,
+   "damage": 92,
+   "cooldown": 2.4,
+   "splash": 45,
+   "vs": {
+    "ship": 1.6
+   },
+   "cost": 450,
+   "sprite": "italian_army_coastal_battery"
+  },
+  "tactical_missile": {
+   "name": "Rocket Salvo",
+   "class": "Rocket barrage",
+   "desc": "Improvised artillery rockets massed in salvos.",
+   "specs": "Rocket | 5 km",
+   "damage": 105,
+   "splash": 68,
+   "cost": 120,
+   "sprite": "italian_army_tactical_missile"
+  },
+  "cruise_missile": {
+   "name": "Aerosilurante Torpedo",
+   "class": "Aerial torpedo",
+   "desc": "Air-launched torpedo from SM.79 bombers.",
+   "specs": "450 mm | 5 km | air launched",
+   "damage": 235,
+   "splash": 100,
+   "cost": 270,
+   "sprite": "italian_army_cruise_missile"
+  },
+  "cluster_missile": {
+   "name": "Spezzoni Cluster Bomb",
+   "class": "Fragmentation bomblets",
+   "desc": "Containers of small spezzoni fragmentation bomblets.",
+   "specs": "12 kg | bomblets",
+   "damage": 160,
+   "splash": 195,
+   "cost": 490,
+   "sprite": "italian_army_cluster_missile"
+  },
+  "bunker_buster": {
+   "name": "Bomba Perforante",
+   "class": "Armor-piercing bomb",
+   "desc": "Heavy 500 kg AP bomb for armored decks and bunkers.",
+   "specs": "500 kg | AP",
+   "damage": 600,
+   "splash": 65,
+   "cost": 560,
+   "sprite": "italian_army_bunker_buster"
+  },
+  "ballistic_missile": {
+   "name": "Razzo Strategico (what-if)",
+   "class": "Rocket",
+   "desc": "Never built; what-if weapon. Italy had no long-range rocket program.",
+   "specs": "What-if | ~300 km",
+   "damage": 640,
+   "splash": 165,
+   "cost": 720,
+   "sprite": "italian_army_ballistic_missile"
+  },
+  "hypersonic": {
+   "name": "Campini Rocket Jet (what-if)",
+   "class": "Jet rocket",
+   "desc": "Never built; what-if weapon. The Campini Caproni N.1 was an experimental motorjet, not a weapon.",
+   "specs": "What-if | prototype",
+   "damage": 950,
+   "splash": 140,
+   "cost": 1200,
+   "sprite": "italian_army_hypersonic"
+  },
+  "tactical_nuke": {
+   "name": "Fisica Tactical Bomb (what-if)",
+   "class": "Atomic bomb",
+   "desc": "Never built; what-if weapon. Italian physicists emigrated; no weapon program existed.",
+   "specs": "What-if",
+   "damage": 1700,
+   "splash": 210,
+   "cost": 1500,
+   "sprite": "italian_army_tactical_nuke"
+  },
+  "nuke": {
+   "name": "Bomba Atomica (what-if)",
+   "class": "Atomic bomb",
+   "desc": "Never built; what-if weapon. Fiction for balance.",
+   "specs": "What-if",
+   "damage": 3100,
+   "splash": 310,
+   "cost": 2550,
+   "sprite": "italian_army_nuke"
+  },
+  "mega_nuke": {
+   "name": "Bomba Finale (what-if)",
+   "class": "Superweapon",
+   "desc": "Never built; what-if weapon. Fiction for balance.",
+   "specs": "What-if",
+   "damage": 6000,
+   "splash": 510,
+   "cost": 5350,
+   "sprite": "italian_army_mega_nuke"
+  },
+  "shotgunner": {
+   "name": "Arditi Raider"
+  },
+  "marksman": {
+   "name": "Carcano Tiratore Scelto"
+  },
+  "mortar_team": {
+   "name": "Mortaio da 81 Team"
+  },
+  "javelin": {
+   "name": "Cannone da 47/32 AT Team"
+  },
+  "riot_trooper": {
+   "name": "Corazzato Assault Trooper"
+  },
+  "sapper": {
+   "name": "Guastatore Sapper"
+  },
+  "officer": {
+   "name": "Capitano Company Commander"
+  },
+  "k9": {
+   "name": "Cane Esplosivo"
+  },
+  "mine_flail": {
+   "name": "L6/40 Mine Roller"
+  },
+  "torpedo_boat": {
+   "name": "MAS 500 Torpedo Boat"
+  },
+  "frigate": {
+   "name": "Spica-class Escort"
+  },
+  "minelayer": {
+   "name": "Regia Marina Minelayer"
+  },
+  "midget_sub": {
+   "name": "CB-class Midget Submarine"
+  },
+  "cruise_sub": {
+   "name": "Toti-class Missile Sub (what-if)"
+  },
+  "sandbag_nest": {
+   "name": "Breda 37 Sandbag Nest"
+  },
+  "watchtower": {
+   "name": "Torre di Guardia"
+  },
+  "sniper_nest": {
+   "name": "Nido del Tiratore"
+  },
+  "flame_bunker": {
+   "name": "Lanciafiamme Bunker"
+  },
+  "torpedo_battery": {
+   "name": "Batteria Siluranti"
+  },
+  "observation_post": {
+   "name": "Osservatorio Avanzato"
+  }
+ }
+}

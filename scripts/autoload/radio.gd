@@ -26,12 +26,13 @@ const COOLDOWN := {
 	"under_attack": 9.0, "unit_lost": 7.0, "kill": 10.0, "unit_ready": 3.5, "enemy_spotted": 9.0, "structure_spotted": 14.0,
 	"ack_move": 1.4, "ack_attack": 1.4, "ack_hold": 1.4, "retreat": 12.0, "smoke": 14.0, "recon_lost": 12.0,
 	"capital_hit": 14.0, "enemy_comms": 30.0, "power_down": 20.0, "repaired": 12.0, "dig_in": 40.0, "fortify": 10.0,
-	"intercept_ok": 6.0, "structure_lost": 4.0,
+	"intercept_ok": 6.0, "structure_lost": 4.0, "low_ammo": 14.0, "sector_taken": 5.0, "sector_lost": 8.0, "ack_board": 2.0,
+	"dropoff": 4.0, "rearm": 20.0,
 }
 const PRIO := {
 	"nuke_enemy": 3, "capital_hit": 3, "victory": 3, "defeat": 3, "battle_start": 3, "prep_start": 2,
 	"missile_enemy": 2, "structure_lost": 2, "power_down": 2, "under_attack": 1, "unit_lost": 1, "enemy_spotted": 1,
-	"structure_spotted": 1, "intercept_ok": 1, "recon_lost": 1,
+	"structure_spotted": 1, "intercept_ok": 1, "recon_lost": 1, "sector_lost": 2, "sector_taken": 1,
 }
 # {event: [speaker kind, [variants]]}   speaker kind: hq | unit | enemy
 const LINES := {
@@ -51,6 +52,27 @@ const LINES := {
 	"defeat": ["hq", [
 		"{hq}: capital has fallen. All stations, break contact. Break contact.",
 		"Mayday, mayday. Headquarters is lost.",
+	]],
+	"low_ammo": ["unit", [
+		"{cs}: running low on ammunition at {grid}. Need a resupply truck.",
+		"{cs}: Winchester soon, request resupply at {grid}.",
+		"{cs}: magazines nearly dry. Falling back to reload.",
+	]],
+	"sector_taken": ["hq", [
+		"{hq}: sector secured. It is feeding our supply and income now.",
+		"{hq} to all stations: we hold the zone. Resupply is flowing.",
+	]],
+	"sector_lost": ["hq", [
+		"{hq}: we lost a sector, the enemy is taking over the zone.",
+		"{hq} to all stations: sector overrun, they hold the ground now.",
+	]],
+	"ack_board": ["unit", [
+		"{cs}: mounting up.",
+		"{cs}: loading, get us moving.",
+	]],
+	"dropoff": ["unit", [
+		"{cs}: troops are on the ground at {grid}.",
+		"{cs}: dismount complete, infantry deployed.",
 	]],
 	"unit_ready": ["hq", [
 		"{hq}: {name} is ready for tasking.",

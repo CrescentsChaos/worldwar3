@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Builds factions.<id>.roster in data/units.json from tools/rosters/<id>.py.
+"""Builds factions.<id>.roster in data/factions/<id>.json from tools/rosters/<id>.py.
 
 Every roster entry is a complete, army-specific definition of one slot of the shared roster:
 its own name, class, description, real-world spec line and stats. Anything not given is
@@ -8,8 +8,8 @@ unless `cost=` is given. Run from the project root:  python3 tools/build_rosters
 """
 import json, math, importlib, sys, os
 sys.path.insert(0, os.path.dirname(__file__))
-P = "data/units.json"
-D = json.load(open(P))
+import datafiles as df
+D = df.load_all()
 GROUPS = {"unit": D["units"], "structure": D["structures"], "strategic": D["strategic"]}
 SLOT = {}
 for kind, g in GROUPS.items():
@@ -92,4 +92,4 @@ if __name__ == "__main__":
             n = build(fid); print(fid, n, "ok")
         except ModuleNotFoundError:
             print(fid, "no roster module yet")
-    json.dump(D, open(P, "w"), indent=1, ensure_ascii=False)
+    df.save_all(D)

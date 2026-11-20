@@ -1,0 +1,1312 @@
+{
+ "name": "Russian Ground Forces",
+ "era": "Modern (2020s)",
+ "tagline": "The god of war is artillery.",
+ "desc": "Doctrine built on massed fires: cheap self-propelled artillery and rocket launchers, tough vehicles with reactive armor and thick layered air defense. Premium air and naval assets are few, and sortie rates are low.",
+ "mods": [
+  {
+   "match": "role:artillery",
+   "cost": 0.9,
+   "damage": 1.1
+  },
+  {
+   "match": "tab:vehicles",
+   "hp": 1.05
+  }
+ ],
+ "income": 1.0,
+ "money": 1.0,
+ "ban": [],
+ "names": {
+  "rifleman": "AK-12 Motor Rifleman",
+  "assault": "AKS-74U Carbine Trooper",
+  "bazooka": "RPG-7VR Trooper",
+  "manpads": "Igla-S AA Team",
+  "mg_gunner": "PKM Machine Gunner",
+  "grenadier": "GP-34 Grenadier",
+  "sniper": "SV-98 Sniper",
+  "flamer": "RPO-A Shmel Gunner",
+  "medic": "Combat Medic",
+  "engineer": "Sapper Engineer",
+  "commando": "Spetsnaz GRU Operator",
+  "jeep": "GAZ Tigr",
+  "armored_car": "BRDM-2",
+  "apc": "BTR-82A",
+  "light_tank": "2S25 Sprut-SD",
+  "tank": "T-72B3M",
+  "heavy_tank": "T-90M Proryv",
+  "mammoth": "T-14 Armata",
+  "tank_destroyer": "9P149 Shturm-S",
+  "flame_tank": "TOS-1A Solntsepyok",
+  "artillery": "2S19 Msta-S",
+  "howitzer": "2S35 Koalitsiya-SV",
+  "mlrs": "BM-30 Smerch",
+  "aa_truck": "Pantsir-S1",
+  "sam_truck": "S-400 Triumf TEL",
+  "repair_vehicle": "BREM-1 ARV",
+  "drone": "Lancet-3 Loitering Munition",
+  "fighter": "Su-35S Flanker-E",
+  "interceptor_jet": "MiG-31BM Foxhound",
+  "stealth_fighter": "Su-57 Felon",
+  "strike_jet": "Su-34 Fullback",
+  "helicopter": "Ka-52 Alligator",
+  "gunship": "Mi-28NM Night Hunter",
+  "light_bomber": "Su-25SM3 Frogfoot",
+  "bomber": "Tu-22M3 Backfire",
+  "heavy_bomber": "Tu-160M White Swan",
+  "stealth_bomber": "PAK DA Stealth Bomber",
+  "diver": "Naval Spetsnaz Swimmer",
+  "patrol_boat": "Raptor Patrol Boat",
+  "gunboat": "Grachonok Anti-Sabotage Boat",
+  "missile_boat": "Buyan-M Corvette",
+  "destroyer": "Admiral Gorshkov (Project 22350)",
+  "cruiser": "Slava-class Cruiser",
+  "battleship": "Kirov-class Battlecruiser",
+  "submarine": "Yasen-M Submarine",
+  "aircraft_carrier": "Admiral Kuznetsov",
+  "mg_turret": "Kord 12.7 mm HMG Position",
+  "pillbox": "Reinforced Firing Point",
+  "at_gun": "9K111 Fagot Post",
+  "cannon_turret": "Dug-In T-72 Turret",
+  "mortar_pit": "2B11 Sani 120 mm Mortar",
+  "flak_battery": "ZU-23-2 AA Gun",
+  "sam_site": "Tor-M2 SAM Site",
+  "heavy_battery": "2A36 Giatsint-B Battery",
+  "railgun": "Peresvet Laser Complex",
+  "ciws": "Pantsir-SM CIWS",
+  "interceptor_battery": "S-400 Triumf Battery",
+  "abm_battery": "S-500 Prometey",
+  "barricade": "Dragon's Teeth",
+  "repair_depot": "Mobile Repair Base",
+  "coastal_battery": "Bastion-P Coastal Battery",
+  "tactical_missile": "9K79 Tochka-U",
+  "cruise_missile": "3M14 Kalibr",
+  "cluster_missile": "9M55K Smerch Cluster",
+  "bunker_buster": "KAB-1500 Guided Bomb",
+  "ballistic_missile": "9M723 Iskander-M",
+  "hypersonic": "Kh-47M2 Kinzhal",
+  "tactical_nuke": "9M723 Nuclear Warhead",
+  "nuke": "RS-24 Yars ICBM",
+  "mega_nuke": "RS-28 Sarmat ICBM"
+ },
+ "strategies": {
+  "missile_doctrine": {
+   "name": "Missile & Artillery",
+   "desc": "Rockets and guns win wars. Cheap strikes; starts with rocket artillery.",
+   "style": "missile",
+   "mods": [
+    {
+     "match": "kind:strategic",
+     "cost": 0.8,
+     "cooldown": 0.85
+    },
+    {
+     "match": "role:artillery",
+     "damage": 1.15
+    }
+   ],
+   "setup": [
+    [
+     "unit",
+     "mlrs",
+     880,
+     470,
+     2
+    ],
+    [
+     "unit",
+     "tank",
+     920,
+     504,
+     2
+    ]
+   ],
+   "income": 1.0,
+   "money": 1.0
+  },
+  "layered_ad": {
+   "name": "Layered Air Defense",
+   "desc": "S-400 umbrella. Starts with SAMs, CIWS and interceptors.",
+   "style": "defense",
+   "mods": [
+    {
+     "match": "role:anti_air",
+     "cost": 0.7,
+     "hp": 1.2
+    },
+    {
+     "match": "role:interceptor",
+     "cost": 0.75
+    }
+   ],
+   "setup": [
+    [
+     "structure",
+     "sam_site",
+     360,
+     430,
+     1
+    ],
+    [
+     "structure",
+     "sam_site",
+     650,
+     430,
+     1
+    ],
+    [
+     "structure",
+     "ciws",
+     100,
+     420,
+     1
+    ],
+    [
+     "structure",
+     "interceptor_battery",
+     500,
+     440,
+     1
+    ]
+   ],
+   "income": 1.0,
+   "money": 1.0
+  },
+  "armored_wedge": {
+   "name": "Armored Wedge",
+   "desc": "Cheaper, tougher armor. Starts with a tank spearhead.",
+   "style": "offense",
+   "mods": [
+    {
+     "match": "tab:vehicles",
+     "cost": 0.88,
+     "hp": 1.1
+    }
+   ],
+   "setup": [
+    [
+     "unit",
+     "tank",
+     905,
+     470,
+     3
+    ],
+    [
+     "unit",
+     "apc",
+     885,
+     545,
+     2
+    ],
+    [
+     "unit",
+     "flame_tank",
+     925,
+     504,
+     1
+    ]
+   ],
+   "income": 1.0,
+   "money": 1.0
+  }
+ },
+ "roster": {
+  "rifleman": {
+   "name": "AK-12 Motor Rifleman",
+   "class": "Rifleman",
+   "desc": "5.45 mm rifle with a modernised AK action; simple, rugged and cheap to field. Motor rifle troops ride in vehicles.",
+   "specs": "5.45x39 mm | 3.3 kg | 30-rd",
+   "hp": 72,
+   "range": 130,
+   "damage": 7,
+   "cooldown": 0.62,
+   "cost": 55,
+   "sprite": "russian_gf_rifleman"
+  },
+  "assault": {
+   "name": "AKS-74U Carbine Trooper",
+   "class": "Compact carbine",
+   "desc": "Short AK-74 variant for vehicle crews and urban fighting; lots of muzzle flash and little accuracy.",
+   "specs": "5.45 mm | 2.7 kg | 735 rpm",
+   "hp": 80,
+   "speed": 68,
+   "range": 85,
+   "damage": 5.5,
+   "cooldown": 0.2,
+   "cost": 65,
+   "sprite": "russian_gf_assault"
+  },
+  "bazooka": {
+   "name": "RPG-7VR Trooper",
+   "class": "Rocket launcher",
+   "desc": "Reloadable launcher with a tandem 105 mm warhead; cheap, simple and used everywhere.",
+   "specs": "40/105 mm | 7 kg | 300 m",
+   "hp": 80,
+   "speed": 42,
+   "range": 155,
+   "damage": 88,
+   "cooldown": 3.0,
+   "pierce": 14,
+   "splash": 20,
+   "vs": {
+    "armor": 1.3,
+    "vehicle": 1.3
+   },
+   "cost": 130,
+   "sprite": "russian_gf_bazooka"
+  },
+  "manpads": {
+   "name": "Igla-S AA Team",
+   "class": "Man-portable SAM",
+   "desc": "Infrared-homing missile with 6 km reach and a proximity fuse; widely exported.",
+   "specs": "72 mm | 18 kg | 6 km",
+   "hp": 70,
+   "speed": 44,
+   "range": 250,
+   "damage": 38,
+   "cooldown": 1.8,
+   "cost": 110,
+   "sprite": "russian_gf_manpads"
+  },
+  "mg_gunner": {
+   "name": "PKM Machine Gunner",
+   "class": "General-purpose MG",
+   "desc": "7.62x54R belt-fed machine gun, very rugged; the platoon's base of fire.",
+   "specs": "7.62x54R | 8.4 kg | 650 rpm",
+   "hp": 92,
+   "armor": 1,
+   "speed": 40,
+   "range": 180,
+   "damage": 8,
+   "cooldown": 0.15,
+   "cost": 110,
+   "sprite": "russian_gf_mg_gunner"
+  },
+  "grenadier": {
+   "name": "GP-34 Grenadier",
+   "class": "Grenadier",
+   "desc": "Under-barrel 40 mm grenade launcher on an AK; 400 m.",
+   "specs": "40 mm VOG-25 | 1.5 kg",
+   "hp": 80,
+   "range": 150,
+   "damage": 30,
+   "cooldown": 1.8,
+   "splash": 38,
+   "vs": {
+    "infantry": 1.3
+   },
+   "cost": 100,
+   "sprite": "russian_gf_grenadier"
+  },
+  "sniper": {
+   "name": "SV-98 Sniper",
+   "class": "Sniper rifle",
+   "desc": "7.62x54R bolt-action sniper rifle with 1,000 m effective range; accurate and cheap.",
+   "specs": "7.62x54R | 6 kg | 1,000 m",
+   "hp": 55,
+   "range": 330,
+   "damage": 55,
+   "cooldown": 2.6,
+   "vs": {
+    "infantry": 3.0,
+    "vehicle": 0.4,
+    "armor": 0.1,
+    "structure": 0.2
+   },
+   "cost": 150,
+   "sprite": "russian_gf_sniper"
+  },
+  "flamer": {
+   "name": "RPO-A Shmel Gunner",
+   "class": "Thermobaric rocket",
+   "desc": "93 mm disposable launcher with a thermobaric warhead equal to a 152 mm HE shell; devastating in buildings and bunkers.",
+   "specs": "93 mm | 11 kg | 600 m",
+   "hp": 100,
+   "armor": 1,
+   "speed": 42,
+   "range": 115,
+   "damage": 85,
+   "cooldown": 3.2,
+   "proj": "rocket",
+   "splash": 40,
+   "pierce": 6,
+   "vs": {
+    "infantry": 1.8,
+    "structure": 1.5
+   },
+   "prefer": [
+    "infantry"
+   ],
+   "cost": 95,
+   "sprite": "russian_gf_flamer"
+  },
+  "medic": {
+   "name": "Combat Medic",
+   "class": "Combat medic",
+   "desc": "Battalion medic with a modern IFAK; Russian casualty care has improved but is still behind NATO.",
+   "specs": "Medical kit | tourniquets",
+   "hp": 70,
+   "speed": 54,
+   "heal": {
+    "rate": 15,
+    "radius": 120,
+    "cls": [
+     "infantry"
+    ]
+   },
+   "cost": 85,
+   "sprite": "russian_gf_medic"
+  },
+  "engineer": {
+   "name": "Sapper Engineer",
+   "class": "Combat engineer",
+   "desc": "Engineer troops clear mines, build obstacles and demolish bridges. Russian engineers are numerous.",
+   "specs": "UR-77 | demolition",
+   "hp": 95,
+   "heal": {
+    "rate": 26,
+    "radius": 110,
+    "cls": [
+     "vehicle",
+     "armor",
+     "structure"
+    ]
+   },
+   "cost": 130,
+   "sprite": "russian_gf_engineer"
+  },
+  "commando": {
+   "name": "Spetsnaz GRU Operator",
+   "class": "Special forces",
+   "desc": "GRU Spetsnaz with suppressed AS Val or AK-12K, night vision and body armor; highly trained but few.",
+   "specs": "AS Val | 6B45 armor",
+   "hp": 160,
+   "armor": 3,
+   "speed": 64,
+   "range": 190,
+   "damage": 22,
+   "cooldown": 0.28,
+   "pierce": 5,
+   "cost": 290,
+   "sprite": "russian_gf_commando"
+  },
+  "jeep": {
+   "name": "GAZ Tigr",
+   "class": "Light armored vehicle",
+   "desc": "Armored 4x4 with a 7.62 mm PKT mount; fast and mine-resistant.",
+   "specs": "7 t | 125 km/h | PKT",
+   "hp": 200,
+   "armor": 3,
+   "speed": 125,
+   "range": 150,
+   "damage": 12,
+   "cooldown": 0.3,
+   "cost": 150,
+   "sprite": "russian_gf_jeep"
+  },
+  "armored_car": {
+   "name": "BRDM-2",
+   "class": "Amphibious scout car",
+   "desc": "Four-wheel amphibious scout car with a 14.5 mm KPVT; used since 1962.",
+   "specs": "7 t | 14.5 mm KPVT | amphibious",
+   "hp": 300,
+   "armor": 4,
+   "speed": 95,
+   "range": 180,
+   "damage": 22,
+   "cooldown": 0.22,
+   "cost": 240,
+   "sprite": "russian_gf_armored_car"
+  },
+  "apc": {
+   "name": "BTR-82A",
+   "class": "Wheeled APC",
+   "desc": "8x8 armored personnel carrier with a 30 mm 2A72 cannon and 7 dismounts.",
+   "specs": "15 t | 30 mm 2A72 | 3+7",
+   "hp": 480,
+   "armor": 7,
+   "speed": 90,
+   "range": 190,
+   "damage": 14,
+   "cooldown": 0.2,
+   "cargo": [
+    "rifleman",
+    "rifleman",
+    "bazooka"
+   ],
+   "cost": 280,
+   "sprite": "russian_gf_apc"
+  },
+  "light_tank": {
+   "name": "2S25 Sprut-SD",
+   "class": "Airborne light tank",
+   "desc": "Air-droppable 125 mm self-propelled gun, weighing 18 t; fast but lightly armored.",
+   "specs": "18 t | 125 mm 2A75 | amphibious",
+   "hp": 380,
+   "armor": 6,
+   "speed": 80,
+   "range": 230,
+   "damage": 52,
+   "cooldown": 1.8,
+   "splash": 26,
+   "cost": 260,
+   "sprite": "russian_gf_light_tank"
+  },
+  "tank": {
+   "name": "T-72B3M",
+   "class": "Main battle tank",
+   "desc": "Upgraded T-72 with Relikt ERA, 125 mm gun and an improved sight; the workhorse of the Russian tank force.",
+   "specs": "46 t | 3 crew | 125 mm 2A46M5",
+   "hp": 600,
+   "armor": 10,
+   "speed": 62,
+   "range": 245,
+   "damage": 48,
+   "cooldown": 1.7,
+   "splash": 30,
+   "cost": 310,
+   "sprite": "russian_gf_tank"
+  },
+  "heavy_tank": {
+   "name": "T-90M Proryv",
+   "class": "Heavy tank",
+   "desc": "Russia's best tank in service: Relikt ERA, Kaktus ERA, a new turret and a 125 mm gun.",
+   "specs": "48 t | 3 crew | 125 mm",
+   "hp": 1150,
+   "armor": 18,
+   "speed": 48,
+   "range": 260,
+   "damage": 80,
+   "cooldown": 1.8,
+   "splash": 42,
+   "cost": 520,
+   "sprite": "russian_gf_heavy_tank"
+  },
+  "mammoth": {
+   "name": "T-14 Armata",
+   "class": "Next-gen tank",
+   "desc": "Unmanned turret, armored capsule for the crew and Afghanit APS; very few built and in limited service.",
+   "specs": "55 t | 3 crew | 125 mm 2A82",
+   "hp": 2400,
+   "armor": 24,
+   "speed": 48,
+   "range": 305,
+   "damage": 105,
+   "cooldown": 1.5,
+   "splash": 52,
+   "pierce": 9,
+   "size": 62,
+   "cost": 980,
+   "sprite": "russian_gf_mammoth"
+  },
+  "tank_destroyer": {
+   "name": "9P149 Shturm-S",
+   "class": "ATGM carrier",
+   "desc": "MT-LB chassis with 9M120 Ataka missiles (6 km); radio-guided.",
+   "specs": "12 t | 9M120 | 6 km",
+   "hp": 340,
+   "armor": 7,
+   "speed": 60,
+   "range": 380,
+   "damage": 140,
+   "cooldown": 3.4,
+   "pierce": 22,
+   "vs": {
+    "armor": 1.5,
+    "infantry": 0.6
+   },
+   "cost": 330,
+   "sprite": "russian_gf_tank_destroyer"
+  },
+  "flame_tank": {
+   "name": "TOS-1A Solntsepyok",
+   "class": "Thermobaric MLRS",
+   "desc": "T-72 chassis with 24 x 220 mm thermobaric rockets; ranges up to 6 km. Destroys everything in a hectare.",
+   "specs": "45 t | 24 x 220 mm | 6 km",
+   "hp": 800,
+   "armor": 12,
+   "speed": 44,
+   "range": 240,
+   "damage": 220,
+   "cooldown": 7.0,
+   "proj": "rocket",
+   "min_range": 70,
+   "splash": 100,
+   "vs": {
+    "infantry": 1.8,
+    "structure": 1.5
+   },
+   "prefer": [
+    "infantry"
+   ],
+   "cost": 320,
+   "sprite": "russian_gf_flame_tank"
+  },
+  "artillery": {
+   "name": "2S19 Msta-S",
+   "class": "Self-propelled howitzer",
+   "desc": "152 mm turret on a T-80 chassis; ~8 rounds per min and 25 km range; Russia's standard SPG.",
+   "specs": "42 t | 152 mm | 24.7 km",
+   "hp": 240,
+   "armor": 4,
+   "speed": 34,
+   "range": 560,
+   "damage": 85,
+   "cooldown": 3.2,
+   "min_range": 130,
+   "splash": 90,
+   "cost": 600,
+   "sprite": "russian_gf_artillery"
+  },
+  "howitzer": {
+   "name": "2S35 Koalitsiya-SV",
+   "class": "Advanced SPG",
+   "desc": "Unmanned 152 mm turret with autoloader and a 70 km range with rocket-assisted projectiles; few built.",
+   "specs": "48 t | 152 mm | 70 km (claimed)",
+   "hp": 260,
+   "armor": 4,
+   "speed": 32,
+   "range": 780,
+   "damage": 130,
+   "cooldown": 3.5,
+   "min_range": 220,
+   "splash": 98,
+   "vs": {
+    "structure": 1.3
+   },
+   "cost": 900,
+   "sprite": "russian_gf_howitzer"
+  },
+  "mlrs": {
+   "name": "BM-30 Smerch",
+   "class": "Heavy MLRS",
+   "desc": "12 x 300 mm rockets, 20-90 km, huge saturation; seen as a high value.",
+   "specs": "43 t | 12 x 300 mm | 90 km",
+   "hp": 260,
+   "armor": 1,
+   "speed": 34,
+   "range": 560,
+   "damage": 55,
+   "cooldown": 1.2,
+   "min_range": 160,
+   "splash": 92,
+   "cost": 800,
+   "sprite": "russian_gf_mlrs"
+  },
+  "aa_truck": {
+   "name": "Pantsir-S1",
+   "class": "Gun-missile SHORAD",
+   "desc": "Twin 30 mm cannons plus 12 missiles on a truck; a fast short-range air defense with its own radar.",
+   "specs": "20 t | 2x 30 mm + 12 missiles",
+   "hp": 340,
+   "armor": 3,
+   "speed": 64,
+   "range": 335,
+   "damage": 24,
+   "cooldown": 0.14,
+   "cost": 340,
+   "sprite": "russian_gf_aa_truck"
+  },
+  "sam_truck": {
+   "name": "S-400 Triumf TEL",
+   "class": "Long-range SAM",
+   "desc": "Four-missile TEL with 40N6 missiles up to 400 km; the main medium/long-range SAM.",
+   "specs": "48N6 / 40N6 | 400 km claimed",
+   "hp": 300,
+   "armor": 3,
+   "speed": 55,
+   "range": 460,
+   "damage": 90,
+   "cooldown": 1.5,
+   "cost": 440,
+   "sprite": "russian_gf_sam_truck"
+  },
+  "repair_vehicle": {
+   "name": "BREM-1 ARV",
+   "class": "Armored recovery",
+   "desc": "T-72 chassis with crane and winch; can tow a tank across a river.",
+   "specs": "41 t | crane | winch",
+   "hp": 420,
+   "armor": 6,
+   "speed": 58,
+   "heal": {
+    "rate": 30,
+    "radius": 125,
+    "cls": [
+     "vehicle",
+     "armor"
+    ]
+   },
+   "cost": 240,
+   "sprite": "russian_gf_repair_vehicle"
+  },
+  "drone": {
+   "name": "Lancet-3 Loitering Munition",
+   "class": "Loitering munition",
+   "desc": "ZALA Lancet-3 with a 3 kg warhead; 40 km range and 40 minutes endurance. Widely used against artillery and armor.",
+   "specs": "12 kg | 40 min | 3 kg warhead",
+   "hp": 35,
+   "speed": 230,
+   "damage": 105,
+   "splash": 42,
+   "cost": 75,
+   "sprite": "russian_gf_drone"
+  },
+  "fighter": {
+   "name": "Su-35S Flanker-E",
+   "class": "Air-superiority fighter",
+   "desc": "Thrust-vectoring heavy fighter with the Irbis-E radar; very agile but not stealthy.",
+   "specs": "Mach 2.25 | 2 AL-41F1S | Irbis-E",
+   "hp": 280,
+   "speed": 235,
+   "range": 255,
+   "damage": 21,
+   "cooldown": 0.26,
+   "cost": 580,
+   "sprite": "russian_gf_fighter"
+  },
+  "interceptor_jet": {
+   "name": "MiG-31BM Foxhound",
+   "class": "Long-range interceptor",
+   "desc": "Mach 2.8 interceptor with a huge radar and R-33 missiles of 120 km range.",
+   "specs": "Mach 2.83 | R-33 | Zaslon-M",
+   "hp": 260,
+   "speed": 290,
+   "range": 340,
+   "damage": 28,
+   "cooldown": 0.27,
+   "vs": {
+    "air": 1.45
+   },
+   "cost": 640,
+   "sprite": "russian_gf_interceptor_jet"
+  },
+  "stealth_fighter": {
+   "name": "Su-57 Felon",
+   "class": "Stealth multirole",
+   "desc": "5th-gen fighter with partial stealth and supercruise; very few in service.",
+   "specs": "Mach 2 | supercruise | RCS ~0.1 m2",
+   "hp": 270,
+   "speed": 285,
+   "range": 255,
+   "damage": 28,
+   "cooldown": 0.25,
+   "stealth": 0.4,
+   "cost": 880,
+   "sprite": "russian_gf_stealth_fighter"
+  },
+  "strike_jet": {
+   "name": "Su-34 Fullback",
+   "class": "Strike fighter",
+   "desc": "Side-by-side crew, heavy armor and a long range for deep strike; 12 t of weapons.",
+   "specs": "Mach 1.8 | 2 crew | 8 t",
+   "hp": 330,
+   "armor": 4,
+   "speed": 195,
+   "range": 215,
+   "damage": 36,
+   "cooldown": 0.25,
+   "pierce": 12,
+   "vs": {
+    "armor": 1.4
+   },
+   "cost": 620,
+   "sprite": "russian_gf_strike_jet"
+  },
+  "helicopter": {
+   "name": "Ka-52 Alligator",
+   "class": "Attack helicopter",
+   "desc": "Coaxial rotor attack helicopter with ejection seats; Vikhr ATGMs and a 30 mm gun.",
+   "specs": "10 t | 2 crew | Vikhr ATGM",
+   "hp": 400,
+   "armor": 4,
+   "speed": 118,
+   "range": 240,
+   "damage": 28,
+   "cooldown": 0.8,
+   "sub_damage": 70,
+   "cost": 530,
+   "sprite": "russian_gf_helicopter"
+  },
+  "gunship": {
+   "name": "Mi-28NM Night Hunter",
+   "class": "Attack helicopter",
+   "desc": "Armored attack helicopter with tandem seating and a 30 mm cannon; new NM variant has radar.",
+   "specs": "11.7 t | 2 crew | 30 mm",
+   "hp": 600,
+   "armor": 6,
+   "speed": 112,
+   "range": 255,
+   "damage": 34,
+   "cooldown": 0.8,
+   "cost": 500,
+   "sprite": "russian_gf_gunship"
+  },
+  "light_bomber": {
+   "name": "Su-25SM3 Frogfoot",
+   "class": "Close air support",
+   "desc": "Armored subsonic attack jet; survives hits that would down other aircraft, with a 30 mm gun and 4 t of bombs.",
+   "specs": "Subsonic | 1 crew | 4 t",
+   "hp": 400,
+   "armor": 5,
+   "speed": 165,
+   "damage": 78,
+   "cooldown": 0.7,
+   "splash": 62,
+   "cost": 490,
+   "sprite": "russian_gf_light_bomber"
+  },
+  "bomber": {
+   "name": "Tu-22M3 Backfire",
+   "class": "Supersonic bomber",
+   "desc": "Variable-sweep bomber with Mach 1.8 dash and 24 t of ordnance; carries Kh-22 and Kh-32 missiles.",
+   "specs": "Mach 1.8 | 4 crew | 24 t",
+   "hp": 520,
+   "speed": 190,
+   "damage": 140,
+   "splash": 98,
+   "cost": 770,
+   "sprite": "russian_gf_bomber"
+  },
+  "heavy_bomber": {
+   "name": "Tu-160M White Swan",
+   "class": "Strategic bomber",
+   "desc": "Largest supersonic bomber ever built, 45 t payload including Kh-101 cruise missiles.",
+   "specs": "Mach 2.05 | 4 crew | 45 t",
+   "hp": 900,
+   "armor": 4,
+   "speed": 170,
+   "damage": 200,
+   "cooldown": 0.5,
+   "splash": 135,
+   "vs": {
+    "structure": 1.5
+   },
+   "cost": 1350,
+   "sprite": "russian_gf_heavy_bomber"
+  },
+  "stealth_bomber": {
+   "name": "PAK DA Stealth Bomber",
+   "class": "Future bomber",
+   "desc": "Flying-wing subsonic stealth bomber, in development; first flight not yet confirmed.",
+   "specs": "Subsonic | stealth | in development",
+   "hp": 520,
+   "speed": 190,
+   "damage": 260,
+   "cooldown": 0.9,
+   "splash": 120,
+   "stealth": 0.5,
+   "vs": {
+    "structure": 1.3
+   },
+   "cost": 1550,
+   "sprite": "russian_gf_stealth_bomber"
+  },
+  "diver": {
+   "name": "Naval Spetsnaz Swimmer",
+   "class": "Combat swimmer",
+   "desc": "Navy combat swimmers with APS underwater rifles and limpet mines.",
+   "specs": "Rebreather | APS rifle | mine",
+   "hp": 70,
+   "range": 55,
+   "damage": 100,
+   "cooldown": 3.5,
+   "cost": 130,
+   "sprite": "russian_gf_diver"
+  },
+  "patrol_boat": {
+   "name": "Raptor Patrol Boat",
+   "class": "Fast patrol craft",
+   "desc": "Project 03160 high-speed boat with a 14.5 mm MG; troop carrier and patrol.",
+   "specs": "23 t | 48 kn | 14.5 mm",
+   "hp": 190,
+   "speed": 125,
+   "range": 190,
+   "damage": 9,
+   "cooldown": 0.18,
+   "cost": 170,
+   "sprite": "russian_gf_patrol_boat"
+  },
+  "gunboat": {
+   "name": "Grachonok Anti-Sabotage Boat",
+   "class": "Anti-sabotage boat",
+   "desc": "Project 21980 with 14.5 mm and 30 mm guns plus a grenade launcher; protects ports from divers.",
+   "specs": "140 t | 25 kn | 14.5 + 30 mm",
+   "hp": 420,
+   "armor": 4,
+   "speed": 78,
+   "range": 270,
+   "damage": 33,
+   "cooldown": 1.3,
+   "splash": 24,
+   "sub_damage": 80,
+   "cost": 280,
+   "sprite": "russian_gf_gunboat"
+  },
+  "missile_boat": {
+   "name": "Buyan-M Corvette",
+   "class": "Missile corvette",
+   "desc": "950 t corvette with eight Kalibr cells and a 100 mm gun; a river-capable launch platform.",
+   "specs": "950 t | 25 kn | 8 Kalibr",
+   "hp": 380,
+   "armor": 3,
+   "speed": 100,
+   "range": 345,
+   "damage": 60,
+   "cooldown": 1.5,
+   "splash": 20,
+   "vs": {
+    "air": 1.25,
+    "ship": 1.2
+   },
+   "cost": 470,
+   "sprite": "russian_gf_missile_boat"
+  },
+  "destroyer": {
+   "name": "Admiral Gorshkov (Project 22350)",
+   "class": "Frigate",
+   "desc": "4,500 t frigate with 32 VLS cells (Kalibr/Oniks/Redut) and a 130 mm gun.",
+   "specs": "4,500 t | 29 kn | 32 VLS",
+   "hp": 1000,
+   "armor": 10,
+   "speed": 70,
+   "range": 300,
+   "damage": 44,
+   "cooldown": 1.1,
+   "splash": 36,
+   "sub_damage": 125,
+   "cost": 700,
+   "sprite": "russian_gf_destroyer"
+  },
+  "cruiser": {
+   "name": "Slava-class Cruiser",
+   "class": "Missile cruiser",
+   "desc": "11,500 t with 16 P-1000 Vulkan anti-ship missiles and S-300F SAMs.",
+   "specs": "11,500 t | 32 kn | 16 Vulkan",
+   "hp": 1850,
+   "armor": 17,
+   "speed": 56,
+   "range": 440,
+   "damage": 90,
+   "cooldown": 2.0,
+   "splash": 58,
+   "cost": 1250,
+   "sprite": "russian_gf_cruiser"
+  },
+  "battleship": {
+   "name": "Kirov-class Battlecruiser",
+   "class": "Nuclear battlecruiser",
+   "desc": "24,000 t nuclear cruiser (Pyotr Velikiy) with 20 Granit missiles; the world's largest non-carrier surface warship.",
+   "specs": "24,300 t | 32 kn | 20 Granit",
+   "hp": 3000,
+   "armor": 22,
+   "speed": 44,
+   "range": 570,
+   "damage": 145,
+   "cooldown": 3.0,
+   "splash": 78,
+   "vs": {
+    "structure": 1.5
+   },
+   "cost": 1850,
+   "sprite": "russian_gf_battleship"
+  },
+  "submarine": {
+   "name": "Yasen-M Submarine",
+   "class": "Attack submarine",
+   "desc": "Nuclear multi-purpose sub with 32 VLS cells for Kalibr/Oniks and heavy torpedoes.",
+   "specs": "13,800 t | 31 kn | 32 VLS",
+   "hp": 480,
+   "armor": 6,
+   "speed": 62,
+   "range": 290,
+   "damage": 300,
+   "cooldown": 3.8,
+   "cost": 800,
+   "sprite": "russian_gf_submarine"
+  },
+  "aircraft_carrier": {
+   "name": "Admiral Kuznetsov",
+   "class": "Aircraft carrier",
+   "desc": "Russia's only carrier: ski-jump deck, Su-33 and MiG-29K aircraft; prone to breakdowns and fires.",
+   "specs": "58,500 t | 29 kn | ~40 aircraft",
+   "hp": 3800,
+   "armor": 14,
+   "speed": 30,
+   "spawn_every": 40,
+   "cost": 2400,
+   "sprite": "russian_gf_aircraft_carrier"
+  },
+  "mg_turret": {
+   "name": "Kord 12.7 mm HMG Position",
+   "class": "Heavy machine gun",
+   "desc": "12.7x108 mm Kord on a tripod in a prepared position.",
+   "specs": "12.7 mm | 25 kg | 650 rpm",
+   "hp": 390,
+   "armor": 4,
+   "range": 225,
+   "damage": 11,
+   "cooldown": 0.16,
+   "cost": 190,
+   "sprite": "russian_gf_mg_turret"
+  },
+  "pillbox": {
+   "name": "Reinforced Firing Point",
+   "class": "Fortified post",
+   "desc": "Concrete and earth reinforced firing point with overhead cover.",
+   "specs": "Concrete | overhead cover",
+   "hp": 740,
+   "armor": 10,
+   "range": 190,
+   "damage": 12,
+   "cooldown": 0.15,
+   "cost": 230,
+   "sprite": "russian_gf_pillbox"
+  },
+  "at_gun": {
+   "name": "9K111 Fagot Post",
+   "class": "ATGM post",
+   "desc": "Wire-guided 9M111 missile, 2 km range; a simple, old design still in use.",
+   "specs": "9M111 | 2 km | wire-guided",
+   "hp": 410,
+   "armor": 7,
+   "range": 330,
+   "damage": 108,
+   "cooldown": 2.5,
+   "pierce": 13,
+   "vs": {
+    "armor": 1.5
+   },
+   "cost": 280,
+   "sprite": "russian_gf_at_gun"
+  },
+  "cannon_turret": {
+   "name": "Dug-In T-72 Turret",
+   "class": "Turret emplacement",
+   "desc": "T-72 turret in a buried position with a 125 mm gun; a common stopgap.",
+   "specs": "125 mm | dug-in",
+   "hp": 830,
+   "armor": 14,
+   "range": 310,
+   "damage": 60,
+   "cooldown": 2.0,
+   "splash": 36,
+   "cost": 330,
+   "sprite": "russian_gf_cannon_turret"
+  },
+  "mortar_pit": {
+   "name": "2B11 Sani 120 mm Mortar",
+   "class": "Heavy mortar",
+   "desc": "120 mm mortar with 7 km range and 15 rounds per minute.",
+   "specs": "120 mm | 210 kg | 7 km",
+   "hp": 270,
+   "armor": 3,
+   "range": 440,
+   "damage": 62,
+   "cooldown": 2.2,
+   "min_range": 100,
+   "splash": 60,
+   "vs": {
+    "infantry": 1.3
+   },
+   "cost": 290,
+   "sprite": "russian_gf_mortar_pit"
+  },
+  "flak_battery": {
+   "name": "ZU-23-2 AA Gun",
+   "class": "Twin AA gun",
+   "desc": "Twin 23 mm anti-aircraft gun, much used on trucks in the Ukraine war.",
+   "specs": "23 mm x2 | 2,000 rpm",
+   "hp": 400,
+   "armor": 4,
+   "range": 320,
+   "damage": 20,
+   "cooldown": 0.3,
+   "splash": 42,
+   "cost": 350,
+   "sprite": "russian_gf_flak_battery"
+  },
+  "sam_site": {
+   "name": "Tor-M2 SAM Site",
+   "class": "Short-range SAM",
+   "desc": "All-weather SAM with a 15 km range and a phased-array radar; very effective vs cruise missiles and drones.",
+   "specs": "9M338 | 15 km | 8 missiles",
+   "hp": 330,
+   "armor": 3,
+   "range": 410,
+   "damage": 60,
+   "cooldown": 1.2,
+   "cost": 310,
+   "sprite": "russian_gf_sam_site"
+  },
+  "heavy_battery": {
+   "name": "2A36 Giatsint-B Battery",
+   "class": "Gun battery",
+   "desc": "152 mm towed gun with 30 km range; very long and flat trajectories.",
+   "specs": "152 mm | 9.8 t | 30 km",
+   "hp": 360,
+   "armor": 4,
+   "range": 690,
+   "damage": 100,
+   "cooldown": 3.8,
+   "min_range": 150,
+   "splash": 96,
+   "cost": 570,
+   "sprite": "russian_gf_heavy_battery"
+  },
+  "railgun": {
+   "name": "Peresvet Laser Complex",
+   "class": "Laser system",
+   "desc": "Mobile combat laser system, in service since 2018; intended to blind optics and destroy drones.",
+   "specs": "Laser | mobile | 2018",
+   "hp": 600,
+   "armor": 14,
+   "range": 520,
+   "damage": 90,
+   "cooldown": 0.6,
+   "pierce": 15,
+   "targets": [
+    "ground",
+    "air"
+   ],
+   "proj": "rail",
+   "cost": 1300,
+   "sprite": "russian_gf_railgun"
+  },
+  "ciws": {
+   "name": "Pantsir-SM CIWS",
+   "class": "Close-in gun-missile",
+   "desc": "Gun-missile CIWS with radar, EO tracking and 30 mm guns.",
+   "specs": "30 mm x2 | missiles | radar",
+   "hp": 390,
+   "armor": 6,
+   "range": 285,
+   "damage": 14,
+   "cooldown": 0.1,
+   "cost": 520,
+   "sprite": "russian_gf_ciws"
+  },
+  "interceptor_battery": {
+   "name": "S-400 Triumf Battery",
+   "class": "Area air defense",
+   "desc": "Layered AD with multiple missiles (400 km); the core of Russian IADS.",
+   "specs": "48N6 | 40N6 | 91N6E",
+   "hp": 390,
+   "armor": 4,
+   "range": 700,
+   "damage": 140,
+   "cooldown": 1.5,
+   "cost": 770,
+   "sprite": "russian_gf_interceptor_battery"
+  },
+  "abm_battery": {
+   "name": "S-500 Prometey",
+   "class": "Anti-ballistic missile",
+   "desc": "New S-500 with 77N6 interceptors designed to hit ICBM warheads and hypersonic weapons.",
+   "specs": "77N6 | 600 km claimed",
+   "hp": 620,
+   "armor": 8,
+   "range": 980,
+   "damage": 270,
+   "cooldown": 1.4,
+   "cost": 1450,
+   "sprite": "russian_gf_abm_battery"
+  },
+  "barricade": {
+   "name": "Dragon's Teeth",
+   "class": "Anti-tank obstacle",
+   "desc": "Concrete pyramids for tank defense.",
+   "specs": "Reinforced concrete",
+   "hp": 950,
+   "armor": 14,
+   "cost": 80,
+   "sprite": "russian_gf_barricade"
+  },
+  "repair_depot": {
+   "name": "Mobile Repair Base",
+   "class": "Repair base",
+   "desc": "Mobile workshop (PRM) for armored vehicle repair.",
+   "specs": "Mobile | crane",
+   "hp": 410,
+   "armor": 4,
+   "heal": {
+    "rate": 22,
+    "radius": 150,
+    "cls": [
+     "vehicle",
+     "armor",
+     "structure"
+    ]
+   },
+   "cost": 350,
+   "sprite": "russian_gf_repair_depot"
+  },
+  "coastal_battery": {
+   "name": "Bastion-P Coastal Battery",
+   "class": "Coastal missile",
+   "desc": "Coastal defense with P-800 Oniks missiles; range up to 350 km.",
+   "specs": "P-800 Oniks | 350 km",
+   "hp": 790,
+   "armor": 12,
+   "range": 500,
+   "damage": 105,
+   "cooldown": 2.4,
+   "splash": 48,
+   "vs": {
+    "ship": 1.7
+   },
+   "cost": 500,
+   "sprite": "russian_gf_coastal_battery"
+  },
+  "tactical_missile": {
+   "name": "9K79 Tochka-U",
+   "class": "Tactical missile",
+   "desc": "Short-range ballistic missile, 120 km range with a 482 kg warhead.",
+   "specs": "120 km | 482 kg",
+   "damage": 135,
+   "splash": 76,
+   "cost": 160,
+   "sprite": "russian_gf_tactical_missile"
+  },
+  "cruise_missile": {
+   "name": "3M14 Kalibr",
+   "class": "Land-attack cruise missile",
+   "desc": "Subsonic missile with 450 kg warhead, 2,500 km range from ships and subs.",
+   "specs": "Subsonic | 2,500 km | 450 kg",
+   "damage": 270,
+   "splash": 105,
+   "cost": 310,
+   "sprite": "russian_gf_cruise_missile"
+  },
+  "cluster_missile": {
+   "name": "9M55K Smerch Cluster",
+   "class": "Cluster rocket",
+   "desc": "300 mm rocket carrying 72 submunitions; 90 km range.",
+   "specs": "300 mm | 72 submunitions",
+   "damage": 175,
+   "splash": 205,
+   "cost": 540,
+   "sprite": "russian_gf_cluster_missile"
+  },
+  "bunker_buster": {
+   "name": "KAB-1500 Guided Bomb",
+   "class": "Guided bomb",
+   "desc": "1,500 kg satellite- or laser-guided bomb with a concrete-piercing warhead.",
+   "specs": "1,500 kg | guided",
+   "damage": 700,
+   "splash": 70,
+   "cost": 650,
+   "sprite": "russian_gf_bunker_buster"
+  },
+  "ballistic_missile": {
+   "name": "9M723 Iskander-M",
+   "class": "Short-range ballistic",
+   "desc": "SRBM with maneuvering warhead and decoys; 500 km, 480 kg.",
+   "specs": "500 km | 480 kg | maneuvering",
+   "damage": 730,
+   "splash": 175,
+   "cost": 830,
+   "sprite": "russian_gf_ballistic_missile"
+  },
+  "hypersonic": {
+   "name": "Kh-47M2 Kinzhal",
+   "class": "Air-launched hypersonic",
+   "desc": "Mach 10 air-launched ballistic missile from MiG-31K; 2,000 km claimed.",
+   "specs": "Mach 10 | 2,000 km",
+   "damage": 1100,
+   "splash": 150,
+   "cost": 1400,
+   "sprite": "russian_gf_hypersonic"
+  },
+  "tactical_nuke": {
+   "name": "9M723 Nuclear Warhead",
+   "class": "Tactical nuclear warhead",
+   "desc": "Iskander-M with a nuclear warhead of 5-50 kt.",
+   "specs": "5-50 kt | 500 km",
+   "damage": 2000,
+   "splash": 230,
+   "cost": 1800,
+   "sprite": "russian_gf_tactical_nuke"
+  },
+  "nuke": {
+   "name": "RS-24 Yars ICBM",
+   "class": "ICBM",
+   "desc": "Mobile ICBM with up to four MIRVs of 150-300 kt; 11,000 km.",
+   "specs": "4 x ~150 kt | 11,000 km",
+   "damage": 3600,
+   "splash": 330,
+   "cost": 3000,
+   "sprite": "russian_gf_nuke"
+  },
+  "mega_nuke": {
+   "name": "RS-28 Sarmat ICBM",
+   "class": "Heavy ICBM",
+   "desc": "208-t liquid-fueled heavy ICBM with multiple warheads (up to 10+); 18,000 km. Flight tests are still under way.",
+   "specs": "208 t | 18,000 km | MIRVs",
+   "damage": 7000,
+   "splash": 560,
+   "cost": 6500,
+   "sprite": "russian_gf_mega_nuke"
+  },
+  "shotgunner": {
+   "name": "Spetsnaz Breacher (Saiga-12)"
+  },
+  "marksman": {
+   "name": "SVD Marksman"
+  },
+  "mortar_team": {
+   "name": "2B14 Podnos Mortar Crew"
+  },
+  "javelin": {
+   "name": "9M133 Kornet Team"
+  },
+  "riot_trooper": {
+   "name": "Ratnik Heavy Trooper"
+  },
+  "sapper": {
+   "name": "Engineer-Sapper (Mine Clearer)"
+  },
+  "officer": {
+   "name": "Platoon Commander (Ratnik)"
+  },
+  "k9": {
+   "name": "Demolition Dog"
+  },
+  "mine_flail": {
+   "name": "BMR-3M Mine Clearer"
+  },
+  "torpedo_boat": {
+   "name": "Project 206 Shershen"
+  },
+  "frigate": {
+   "name": "Admiral Gorshkov Frigate"
+  },
+  "minelayer": {
+   "name": "Russian Navy Minelayer"
+  },
+  "midget_sub": {
+   "name": "Triton-1M Midget Sub"
+  },
+  "cruise_sub": {
+   "name": "Oscar-II SSGN"
+  },
+  "sandbag_nest": {
+   "name": "PKM Sandbag Nest"
+  },
+  "watchtower": {
+   "name": "Border Watchtower"
+  },
+  "sniper_nest": {
+   "name": "SVD Sniper Nest"
+  },
+  "flame_bunker": {
+   "name": "TOS Flame Bunker"
+  },
+  "torpedo_battery": {
+   "name": "Coastal Torpedo Battery"
+  },
+  "observation_post": {
+   "name": "Forward Observer Post"
+  }
+ }
+}

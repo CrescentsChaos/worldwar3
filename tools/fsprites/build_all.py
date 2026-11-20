@@ -12,7 +12,9 @@ from PIL import Image
 import core, schemes, infantry, vehicles, air, navy, defenses, missiles
 
 ROOT = os.path.join(HERE, "..", "..")
-D = json.load(open(os.path.join(ROOT, "data", "units.json")))
+sys.path.insert(0, os.path.join(ROOT, "tools"))
+import datafiles as _df
+D = _df.load_all()
 OUT = os.path.join(ROOT, "assets", "sprites")
 
 INF = {"rifleman", "assault", "bazooka", "manpads", "mg_gunner", "grenadier", "sniper", "flamer", "medic", "engineer", "commando", "diver"}

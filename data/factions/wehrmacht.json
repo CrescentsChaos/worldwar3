@@ -1,0 +1,1351 @@
+{
+ "name": "Wehrmacht",
+ "era": "WW2 (1939-45, late-war prototypes)",
+ "tagline": "Engineering over numbers.",
+ "desc": "Combined-arms Wehrmacht of 1944: superb optics and long-range guns, but few vehicles built at great cost. Tech slots hold Luftwaffe jets and wonder weapons; the nuclear slots are what-ifs, as Germany never built a bomb.",
+ "mods": [
+  {
+   "match": "tab:vehicles",
+   "hp": 1.1,
+   "cost": 1.08
+  },
+  {
+   "match": "id:strike_jet",
+   "damage": 1.15
+  }
+ ],
+ "income": 0.95,
+ "money": 1.0,
+ "ban": [],
+ "names": {
+  "rifleman": "Kar98k Schuetze",
+  "assault": "StG 44 Sturmmann",
+  "bazooka": "Panzerschreck Team",
+  "manpads": "MG 34 AA Gunner",
+  "mg_gunner": "MG 42 Gunner",
+  "grenadier": "Sturmpionier",
+  "sniper": "Kar98k ZF39 Scharfschuetze",
+  "flamer": "Flammenwerfer 41",
+  "medic": "Sanitaeter",
+  "engineer": "Pionier",
+  "commando": "Fallschirmjaeger FG 42",
+  "jeep": "Kuebelwagen",
+  "armored_car": "Sd.Kfz. 234/2 Puma",
+  "apc": "Sd.Kfz. 251 Hanomag",
+  "light_tank": "Panzer III Ausf. N",
+  "tank": "Panzer IV Ausf. H",
+  "heavy_tank": "Tiger II (Koenigstiger)",
+  "mammoth": "Panzer VIII Maus",
+  "tank_destroyer": "Jagdpanther",
+  "flame_tank": "Flammpanzer III",
+  "artillery": "Wespe SPG",
+  "howitzer": "Hummel (15 cm sFH 18)",
+  "mlrs": "Panzerwerfer 42 Maultier",
+  "aa_truck": "Wirbelwind Flakpanzer",
+  "sam_truck": "Sd.Kfz. 7 8.8 cm Flak",
+  "repair_vehicle": "Bergepanther ARV",
+  "drone": "Mistel S2 Composite",
+  "fighter": "Bf 109 G-6",
+  "interceptor_jet": "Fw 190 A-8",
+  "stealth_fighter": "Me 262 A-1a Schwalbe",
+  "strike_jet": "Ju 87 G Stuka",
+  "helicopter": "Fl 282 Kolibri",
+  "gunship": "Hs 129 B-3",
+  "light_bomber": "Ju 88 A-4",
+  "bomber": "He 111 H-6",
+  "heavy_bomber": "He 177 A-5 Greif",
+  "stealth_bomber": "Horten Ho 229",
+  "diver": "Kampfschwimmer",
+  "patrol_boat": "S-100 Schnellboot",
+  "gunboat": "Siebel Ferry Gunboat",
+  "missile_boat": "T-24 Torpedoboot",
+  "destroyer": "Z-31 (Zerstoerer 1936A)",
+  "cruiser": "Admiral Hipper",
+  "battleship": "Bismarck",
+  "submarine": "U-boat Type XXI",
+  "aircraft_carrier": "Graf Zeppelin",
+  "mg_turret": "MG 42 Nest",
+  "pillbox": "Westwall Regelbau",
+  "at_gun": "PaK 40 7.5 cm",
+  "cannon_turret": "Panther-Turm Stellung",
+  "mortar_pit": "GrW 34 8 cm Mortar",
+  "flak_battery": "3.7 cm Flak 36/37",
+  "sam_site": "8.8 cm Flak 36/37",
+  "heavy_battery": "Batterie Todt 38 cm",
+  "railgun": "80 cm Schwerer Gustav",
+  "ciws": "Flakvierling 38",
+  "interceptor_battery": "Wasserfall SAM",
+  "abm_battery": "Enzian SAM Battery",
+  "barricade": "Tschechenigel Hedgehog",
+  "repair_depot": "Feldwerkstatt",
+  "coastal_battery": "15 cm Kuestenbatterie",
+  "tactical_missile": "Rheinbote",
+  "cruise_missile": "Fi 103 (V-1)",
+  "cluster_missile": "15 cm Nebelwerfer Salvo",
+  "bunker_buster": "PC 1400 X (Fritz X)",
+  "ballistic_missile": "A4 (V-2)",
+  "hypersonic": "A9/A10 Amerika-Rakete",
+  "tactical_nuke": "Uranbombe (what-if)",
+  "nuke": "A10 Uran-Rakete (what-if)",
+  "mega_nuke": "Wunderwaffe Zero (what-if)"
+ },
+ "strategies": {
+  "blitzkrieg": {
+   "name": "Blitzkrieg",
+   "desc": "Fast armor and Stukas hit before you can dig in. Starts with a panzer spearhead.",
+   "style": "offense",
+   "mods": [
+    {
+     "match": "tab:vehicles",
+     "speed": 1.2,
+     "cost": 0.9
+    },
+    {
+     "match": "id:strike_jet",
+     "cost": 0.85,
+     "speed": 1.1
+    }
+   ],
+   "setup": [
+    [
+     "unit",
+     "tank",
+     905,
+     470,
+     3
+    ],
+    [
+     "unit",
+     "jeep",
+     880,
+     545,
+     2
+    ],
+    [
+     "unit",
+     "strike_jet",
+     860,
+     504,
+     1
+    ]
+   ],
+   "income": 1.0,
+   "money": 0.9
+  },
+  "westwall": {
+   "name": "Westwall",
+   "desc": "Concrete, flak and 88s. Starts with a fortified front line.",
+   "style": "defense",
+   "mods": [
+    {
+     "match": "kind:structure",
+     "hp": 1.3,
+     "cost": 0.85
+    },
+    {
+     "match": "id:at_gun",
+     "damage": 1.2
+    }
+   ],
+   "setup": [
+    [
+     "structure",
+     "pillbox",
+     975,
+     424.0,
+     1
+    ],
+    [
+     "structure",
+     "pillbox",
+     951,
+     504.0,
+     1
+    ],
+    [
+     "structure",
+     "pillbox",
+     975,
+     584.0,
+     1
+    ],
+    [
+     "structure",
+     "at_gun",
+     950,
+     444.0,
+     1
+    ],
+    [
+     "structure",
+     "at_gun",
+     926,
+     564.0,
+     1
+    ],
+    [
+     "structure",
+     "mortar_pit",
+     930,
+     440,
+     1
+    ],
+    [
+     "structure",
+     "sam_site",
+     650,
+     430,
+     1
+    ]
+   ],
+   "income": 1.0,
+   "money": 1.0
+  },
+  "wunderwaffen": {
+   "name": "Wunderwaffen",
+   "desc": "Rockets and experimental superweapons, built cheap and fired often.",
+   "style": "missile",
+   "mods": [
+    {
+     "match": "kind:strategic",
+     "cost": 0.8,
+     "cooldown": 0.8
+    },
+    {
+     "match": "id:stealth_bomber",
+     "cost": 0.85
+    },
+    {
+     "match": "id:stealth_fighter",
+     "cost": 0.85
+    }
+   ],
+   "setup": [
+    [
+     "structure",
+     "interceptor_battery",
+     500,
+     440,
+     1
+    ]
+   ],
+   "income": 0.92,
+   "money": 1.0
+  }
+ },
+ "roster": {
+  "rifleman": {
+   "name": "Kar98k Schuetze",
+   "class": "Bolt-action rifleman",
+   "desc": "Standard German infantry rifle: accurate and sturdy, but its five-round bolt action fires slowly compared with later self-loaders.",
+   "specs": "7.92x57 mm | 3.9 kg | 5-rd clip",
+   "hp": 70,
+   "speed": 50,
+   "range": 140,
+   "damage": 10,
+   "cooldown": 1.1,
+   "cost": 50,
+   "sprite": "wehrmacht_rifleman"
+  },
+  "assault": {
+   "name": "StG 44 Sturmmann",
+   "class": "Assault rifle",
+   "desc": "First mass-produced assault rifle. Intermediate cartridge gives SMG handling with rifle range; arrived too late and in too small numbers.",
+   "specs": "7.92x33 mm | 5.2 kg | 30-rd mag",
+   "hp": 82,
+   "speed": 64,
+   "range": 105,
+   "damage": 6.5,
+   "cooldown": 0.2,
+   "cost": 75,
+   "sprite": "wehrmacht_assault"
+  },
+  "bazooka": {
+   "name": "Panzerschreck Team",
+   "class": "Rocket launcher",
+   "desc": "88 mm reloadable rocket launcher with a shaped-charge warhead, copied from the US bazooka. Short effective range and a back-blast.",
+   "specs": "88 mm RPzB 54 | 11 kg | 150 m",
+   "hp": 80,
+   "speed": 42,
+   "range": 150,
+   "damage": 72,
+   "cooldown": 3.0,
+   "pierce": 14,
+   "vs": {
+    "armor": 1.3,
+    "vehicle": 1.25
+   },
+   "cost": 120,
+   "sprite": "wehrmacht_bazooka"
+  },
+  "manpads": {
+   "name": "MG 34 AA Gunner",
+   "class": "Anti-aircraft machine gun",
+   "desc": "MG 34 on a tripod in the air-defence role. Can pester low-flying aircraft but cannot stop armored ground-attack planes.",
+   "specs": "7.92 mm | 1,000 rpm | Fliegerdreibein",
+   "hp": 75,
+   "speed": 40,
+   "range": 225,
+   "damage": 9,
+   "cooldown": 0.12,
+   "proj": "bullet",
+   "cost": 130,
+   "sprite": "wehrmacht_manpads"
+  },
+  "mg_gunner": {
+   "name": "MG 42 Gunner",
+   "class": "General-purpose MG",
+   "desc": "Fires 1,200 rounds per minute with a characteristic tearing sound; the pattern for modern GPMGs.",
+   "specs": "7.92x57 mm | 11.6 kg | 1,200 rpm",
+   "hp": 90,
+   "armor": 1,
+   "speed": 38,
+   "range": 185,
+   "damage": 7,
+   "cooldown": 0.12,
+   "cost": 110,
+   "sprite": "wehrmacht_mg_gunner"
+  },
+  "grenadier": {
+   "name": "Sturmpionier",
+   "class": "Assault pioneer",
+   "desc": "Stick grenades, satchel charges and flamethrower training for clearing bunkers and trenches.",
+   "specs": "Stielhandgranate 24 | 0.6 kg",
+   "hp": 85,
+   "range": 110,
+   "damage": 30,
+   "cooldown": 2.0,
+   "splash": 36,
+   "vs": {
+    "infantry": 1.25,
+    "structure": 1.2
+   },
+   "cost": 90,
+   "sprite": "wehrmacht_grenadier"
+  },
+  "sniper": {
+   "name": "Kar98k ZF39 Scharfschuetze",
+   "class": "Sniper",
+   "desc": "Kar98k with 1.5x ZF39 scope, selected for accuracy. Kills at 600 m but is slow to fire.",
+   "specs": "7.92 mm | ZF39 1.5x | 800 m",
+   "hp": 55,
+   "range": 325,
+   "damage": 50,
+   "cooldown": 2.8,
+   "vs": {
+    "infantry": 3.0,
+    "vehicle": 0.3,
+    "armor": 0.08,
+    "structure": 0.1
+   },
+   "cost": 140,
+   "sprite": "wehrmacht_sniper"
+  },
+  "flamer": {
+   "name": "Flammenwerfer 41",
+   "class": "Flamethrower",
+   "desc": "Man-portable flamethrower with 7 L of fuel and 25-35 m range for about 10 seconds. Terrifying vs bunkers, lethal to carry.",
+   "specs": "22 kg | 35 m | 10 s of fire",
+   "hp": 100,
+   "armor": 1,
+   "speed": 40,
+   "range": 60,
+   "damage": 9,
+   "cooldown": 0.12,
+   "splash": 26,
+   "pierce": 4,
+   "vs": {
+    "infantry": 1.8,
+    "structure": 1.3
+   },
+   "prefer": [
+    "infantry"
+   ],
+   "cost": 120,
+   "sprite": "wehrmacht_flamer"
+  },
+  "medic": {
+   "name": "Sanitaeter",
+   "class": "Medic",
+   "desc": "Unarmed medic with a bag of dressings and morphine; red cross armband is not always respected.",
+   "specs": "Medical bag | Red Cross brassard",
+   "hp": 70,
+   "speed": 54,
+   "heal": {
+    "rate": 14,
+    "radius": 120,
+    "cls": [
+     "infantry"
+    ]
+   },
+   "cost": 85,
+   "sprite": "wehrmacht_medic"
+  },
+  "engineer": {
+   "name": "Pionier",
+   "class": "Combat pioneer",
+   "desc": "Builds bridges, clears mines and demolishes obstacles; also fights as infantry when needed.",
+   "specs": "Satchel charge | Teller mines",
+   "hp": 95,
+   "heal": {
+    "rate": 24,
+    "radius": 110,
+    "cls": [
+     "vehicle",
+     "armor",
+     "structure"
+    ]
+   },
+   "cost": 120,
+   "sprite": "wehrmacht_engineer"
+  },
+  "commando": {
+   "name": "Fallschirmjaeger FG 42",
+   "class": "Elite paratrooper",
+   "desc": "Luftwaffe paratroopers armed with the FG 42 automatic rifle. Elite training, but few survive Crete-style losses.",
+   "specs": "FG 42 | 7.92x57 mm | 20-rd mag",
+   "hp": 150,
+   "armor": 1,
+   "speed": 60,
+   "range": 190,
+   "damage": 15,
+   "cooldown": 0.25,
+   "pierce": 3,
+   "cost": 230,
+   "sprite": "wehrmacht_commando"
+  },
+  "jeep": {
+   "name": "Kuebelwagen",
+   "class": "Light utility vehicle",
+   "desc": "VW Type 82 with air-cooled flat-four; light, simple and cheap. Unarmored and only lightly armed.",
+   "specs": "0.7 t | 24 hp | 80 km/h",
+   "hp": 130,
+   "armor": 0,
+   "speed": 118,
+   "range": 140,
+   "damage": 8,
+   "cooldown": 0.3,
+   "cost": 95,
+   "sprite": "wehrmacht_jeep"
+  },
+  "armored_car": {
+   "name": "Sd.Kfz. 234/2 Puma",
+   "class": "Heavy armored car",
+   "desc": "Eight-wheeled reconnaissance car with a 50 mm KwK 39/1, one of the best of the war. Fast and quiet but thinly armored.",
+   "specs": "11.7 t | 4 crew | 50 mm L/60",
+   "hp": 290,
+   "armor": 5,
+   "speed": 105,
+   "range": 205,
+   "damage": 30,
+   "cooldown": 1.6,
+   "proj": "shell",
+   "splash": 12,
+   "pierce": 6,
+   "cost": 120,
+   "sprite": "wehrmacht_armored_car"
+  },
+  "apc": {
+   "name": "Sd.Kfz. 251 Hanomag",
+   "class": "Armored half-track",
+   "desc": "Carries ten grenadiers with a front MG 34 and rear MG 42. Open-topped, so vulnerable to artillery airbursts.",
+   "specs": "8.5 t | 2+10 | 15 mm front",
+   "hp": 400,
+   "armor": 4,
+   "speed": 85,
+   "range": 175,
+   "damage": 9,
+   "cooldown": 0.15,
+   "cargo": [
+    "rifleman",
+    "rifleman",
+    "mg_gunner"
+   ],
+   "cost": 220,
+   "sprite": "wehrmacht_apc"
+  },
+  "light_tank": {
+   "name": "Panzer III Ausf. N",
+   "class": "Medium-light tank",
+   "desc": "Reworked Panzer III with a short 75 mm gun for infantry support; outclassed but numerous.",
+   "specs": "23 t | 5 crew | 7.5 cm KwK 37",
+   "hp": 300,
+   "armor": 5,
+   "speed": 84,
+   "range": 205,
+   "damage": 30,
+   "cooldown": 1.5,
+   "splash": 22,
+   "cost": 190,
+   "sprite": "wehrmacht_light_tank"
+  },
+  "tank": {
+   "name": "Panzer IV Ausf. H",
+   "class": "Medium tank",
+   "desc": "Reliable workhorse with a long 75 mm KwK 40 gun and Schuerzen skirts. Outgunned by the T-34-85 and IS-2 but widely produced.",
+   "specs": "25 t | 5 crew | 7.5 cm KwK 40 L/48",
+   "hp": 550,
+   "armor": 8,
+   "speed": 58,
+   "range": 235,
+   "damage": 44,
+   "cooldown": 1.7,
+   "splash": 26,
+   "cost": 270,
+   "sprite": "wehrmacht_tank"
+  },
+  "heavy_tank": {
+   "name": "Tiger II (Koenigstiger)",
+   "class": "Heavy tank",
+   "desc": "68-ton tank with a 88 mm KwK 43 L/71 and 150 mm sloped front armor. Nearly impenetrable from the front, short on range and fuel.",
+   "specs": "68.5 t | 5 crew | 8.8 cm KwK 43",
+   "hp": 1500,
+   "armor": 21,
+   "speed": 32,
+   "range": 285,
+   "damage": 88,
+   "cooldown": 2.4,
+   "splash": 40,
+   "cost": 540,
+   "sprite": "wehrmacht_heavy_tank"
+  },
+  "mammoth": {
+   "name": "Panzer VIII Maus",
+   "class": "Super-heavy tank",
+   "desc": "188-ton prototype with a 128 mm KwK 44 and 200 mm front armor. Only two were built; the engine could not move it fast.",
+   "specs": "188 t | 6 crew | 12.8 cm",
+   "hp": 3400,
+   "armor": 33,
+   "speed": 18,
+   "range": 300,
+   "damage": 118,
+   "cooldown": 2.3,
+   "splash": 55,
+   "pierce": 9,
+   "size": 69,
+   "cost": 990,
+   "sprite": "wehrmacht_mammoth"
+  },
+  "tank_destroyer": {
+   "name": "Jagdpanther",
+   "class": "Tank destroyer",
+   "desc": "Panther chassis with 8.8 cm PaK 43 L/71 in a fixed casemate. One of the best anti-tank vehicles of the war.",
+   "specs": "45.5 t | 5 crew | 8.8 cm PaK 43",
+   "hp": 520,
+   "armor": 12,
+   "speed": 52,
+   "range": 350,
+   "damage": 150,
+   "cooldown": 3.2,
+   "pierce": 20,
+   "vs": {
+    "armor": 1.5,
+    "infantry": 0.6
+   },
+   "cost": 430,
+   "sprite": "wehrmacht_tank_destroyer"
+  },
+  "flame_tank": {
+   "name": "Flammpanzer III",
+   "class": "Flame-thrower tank",
+   "desc": "Panzer III with a Flammenwerfer in the turret. Short range but destroys bunkers and infantry in cover.",
+   "specs": "22 t | 3 crew | ~60 m flame",
+   "hp": 480,
+   "armor": 7,
+   "speed": 58,
+   "range": 85,
+   "damage": 11,
+   "cooldown": 0.12,
+   "splash": 34,
+   "pierce": 6,
+   "cost": 270,
+   "sprite": "wehrmacht_flame_tank"
+  },
+  "artillery": {
+   "name": "Wespe SPG",
+   "class": "Self-propelled howitzer",
+   "desc": "10.5 cm leFH 18/2 gun on a Panzer II chassis. Thin armor but mobile enough to keep up with panzer units.",
+   "specs": "11 t | 5 crew | 10.5 cm leFH 18",
+   "hp": 160,
+   "armor": 1,
+   "speed": 38,
+   "range": 480,
+   "damage": 62,
+   "cooldown": 3.0,
+   "min_range": 110,
+   "splash": 75,
+   "cost": 400,
+   "sprite": "wehrmacht_artillery"
+  },
+  "howitzer": {
+   "name": "Hummel (15 cm sFH 18)",
+   "class": "Heavy SPG",
+   "desc": "15 cm heavy field howitzer on a Panzer III/IV chassis; one of the strongest mobile artillery pieces.",
+   "specs": "24 t | 5 crew | 15 cm sFH 18/1",
+   "hp": 240,
+   "armor": 2,
+   "speed": 26,
+   "range": 600,
+   "damage": 105,
+   "cooldown": 3.8,
+   "min_range": 180,
+   "splash": 88,
+   "vs": {
+    "structure": 1.3
+   },
+   "cost": 660,
+   "sprite": "wehrmacht_howitzer"
+  },
+  "mlrs": {
+   "name": "Panzerwerfer 42 Maultier",
+   "class": "Rocket artillery",
+   "desc": "Ten-barrel 15 cm rocket launcher on a half-track; fires in seconds and then relocates.",
+   "specs": "7.2 t | 10 x 15 cm | 7 km",
+   "hp": 200,
+   "armor": 1,
+   "speed": 36,
+   "range": 380,
+   "damage": 34,
+   "cooldown": 0.9,
+   "min_range": 120,
+   "splash": 62,
+   "cost": 560,
+   "sprite": "wehrmacht_mlrs"
+  },
+  "aa_truck": {
+   "name": "Wirbelwind Flakpanzer",
+   "class": "Self-propelled AA gun",
+   "desc": "Panzer IV hull with a quad 20 mm Flakvierling in an open turret. Highly effective against low aircraft and infantry.",
+   "specs": "25 t | 4x 2 cm | 1,800 rpm",
+   "hp": 450,
+   "armor": 6,
+   "speed": 55,
+   "range": 270,
+   "damage": 13,
+   "cooldown": 0.09,
+   "targets": [
+    "air",
+    "ground"
+   ],
+   "cost": 330,
+   "sprite": "wehrmacht_aa_truck"
+  },
+  "sam_truck": {
+   "name": "Sd.Kfz. 7 8.8 cm Flak",
+   "class": "Heavy AA half-track",
+   "desc": "The famous 88 mounted on a half-track; fires at altitudes up to 8,000 m and doubles as anti-tank gun.",
+   "specs": "15 t | 8.8 cm Flak 37 | 10 km ceiling",
+   "hp": 330,
+   "armor": 3,
+   "speed": 48,
+   "range": 420,
+   "damage": 62,
+   "cooldown": 1.5,
+   "proj": "flak",
+   "splash": 45,
+   "splash_air_only": true,
+   "cost": 410,
+   "sprite": "wehrmacht_sam_truck"
+  },
+  "repair_vehicle": {
+   "name": "Bergepanther ARV",
+   "class": "Recovery vehicle",
+   "desc": "Panther chassis with a winch and crane; recovered tanks under fire and returned them to workshops.",
+   "specs": "43 t | 4 crew | 40 t winch",
+   "hp": 430,
+   "armor": 6,
+   "speed": 52,
+   "heal": {
+    "rate": 28,
+    "radius": 120,
+    "cls": [
+     "vehicle",
+     "armor"
+    ]
+   },
+   "cost": 230,
+   "sprite": "wehrmacht_repair_vehicle"
+  },
+  "drone": {
+   "name": "Mistel S2 Composite",
+   "class": "Pilotless bomber",
+   "desc": "Obsolete Ju 88 loaded with a 3.8 t hollow-charge warhead and guided into the target by an Fw 190 mounted on top.",
+   "specs": "3.8 t warhead | Fw 190 + Ju 88",
+   "hp": 130,
+   "speed": 230,
+   "damage": 220,
+   "splash": 80,
+   "size": 17,
+   "cost": 170,
+   "sprite": "wehrmacht_drone"
+  },
+  "fighter": {
+   "name": "Bf 109 G-6",
+   "class": "Single-engine fighter",
+   "desc": "Main Luftwaffe fighter with a 20 mm cannon and two MG 131s. Small and agile but short on range.",
+   "specs": "DB 605 | 1,475 hp | 640 km/h",
+   "hp": 190,
+   "speed": 218,
+   "range": 225,
+   "damage": 16,
+   "cooldown": 0.28,
+   "cost": 400,
+   "sprite": "wehrmacht_fighter"
+  },
+  "interceptor_jet": {
+   "name": "Fw 190 A-8",
+   "class": "Heavy fighter",
+   "desc": "Radial-engine fighter with four 20 mm cannons and armor plate; the Sturmbock variant was made to shoot down bombers.",
+   "specs": "BMW 801 | 4 x MG 151/20",
+   "hp": 225,
+   "armor": 1,
+   "speed": 226,
+   "range": 245,
+   "damage": 23,
+   "cooldown": 0.26,
+   "vs": {
+    "air": 1.35
+   },
+   "cost": 510,
+   "sprite": "wehrmacht_interceptor_jet"
+  },
+  "stealth_fighter": {
+   "name": "Me 262 A-1a Schwalbe",
+   "class": "Jet fighter",
+   "desc": "First operational jet fighter, with four 30 mm MK 108 cannons; 150 km/h faster than any Allied fighter. Unreliable engines.",
+   "specs": "2x Jumo 004 | 870 km/h | 4x 30 mm",
+   "hp": 240,
+   "speed": 315,
+   "range": 240,
+   "damage": 34,
+   "cooldown": 0.3,
+   "stealth": 0,
+   "cost": 830,
+   "sprite": "wehrmacht_stealth_fighter"
+  },
+  "strike_jet": {
+   "name": "Ju 87 G Stuka",
+   "class": "Anti-tank dive bomber",
+   "desc": "Stuka fitted with two 37 mm BK 3.7 cannon; Hans-Ulrich Rudel destroyed over 500 tanks with the type.",
+   "specs": "2x BK 3.7 | 410 km/h | 2 crew",
+   "hp": 260,
+   "armor": 1,
+   "speed": 162,
+   "range": 200,
+   "damage": 40,
+   "cooldown": 0.5,
+   "pierce": 16,
+   "vs": {
+    "armor": 1.6
+   },
+   "cost": 400,
+   "sprite": "wehrmacht_strike_jet"
+  },
+  "helicopter": {
+   "name": "Fl 282 Kolibri",
+   "class": "Observation helicopter",
+   "desc": "Synchropter used for convoy spotting and anti-submarine patrol; only about 24 were built and none carried real firepower.",
+   "specs": "1 t | 2 intermeshing rotors | 150 km/h",
+   "hp": 220,
+   "speed": 105,
+   "range": 180,
+   "damage": 8,
+   "cooldown": 0.2,
+   "targets": [
+    "ground",
+    "sub"
+   ],
+   "sub_damage": 40,
+   "sub_splash": 30,
+   "cost": 400,
+   "sprite": "wehrmacht_helicopter"
+  },
+  "gunship": {
+   "name": "Hs 129 B-3",
+   "class": "Tank-buster",
+   "desc": "Twin-engine attack plane armoured against small arms; the B-3 carried a 7.5 cm BK 7.5 cannon. About 25 were built.",
+   "specs": "7.5 cm BK 7.5 | 12 mm armor",
+   "hp": 480,
+   "armor": 4,
+   "speed": 110,
+   "range": 230,
+   "damage": 80,
+   "cooldown": 1.2,
+   "proj": "shell",
+   "pierce": 16,
+   "splash": 15,
+   "vs": {
+    "armor": 1.5
+   },
+   "targets": [
+    "ground"
+   ],
+   "cost": 550,
+   "sprite": "wehrmacht_gunship"
+  },
+  "light_bomber": {
+   "name": "Ju 88 A-4",
+   "class": "Medium bomber",
+   "desc": "Fast, versatile twin-engine bomber also used as dive bomber and night fighter.",
+   "specs": "3 t bomb load | 450 km/h | 4 crew",
+   "hp": 280,
+   "speed": 175,
+   "damage": 82,
+   "splash": 68,
+   "cost": 390,
+   "sprite": "wehrmacht_light_bomber"
+  },
+  "bomber": {
+   "name": "He 111 H-6",
+   "class": "Medium bomber",
+   "desc": "Glass-nosed twin-engine bomber, vulnerable to fighters after the Battle of Britain.",
+   "specs": "2 t bombs | 400 km/h | 5 crew",
+   "hp": 420,
+   "speed": 150,
+   "damage": 115,
+   "splash": 90,
+   "cost": 620,
+   "sprite": "wehrmacht_bomber"
+  },
+  "heavy_bomber": {
+   "name": "He 177 A-5 Greif",
+   "class": "Heavy bomber",
+   "desc": "Four-engine bomber with two coupled engines; the tendency to catch fire limited its usefulness.",
+   "specs": "6 t bombs | 4 engines | 6 crew",
+   "hp": 800,
+   "armor": 3,
+   "speed": 130,
+   "damage": 170,
+   "cooldown": 0.55,
+   "splash": 125,
+   "vs": {
+    "structure": 1.5
+   },
+   "cost": 1100,
+   "sprite": "wehrmacht_heavy_bomber"
+  },
+  "stealth_bomber": {
+   "name": "Horten Ho 229",
+   "class": "Flying-wing jet",
+   "desc": "Jet flying wing with possible radar-absorbing glue; only prototypes flew. Modelled as a small stealthy bomber.",
+   "specs": "2x Jumo 004 | 1 t bombs | prototype",
+   "hp": 380,
+   "speed": 300,
+   "damage": 150,
+   "cooldown": 0.9,
+   "splash": 90,
+   "stealth": 0.3,
+   "vs": {
+    "structure": 1.3
+   },
+   "cost": 1000,
+   "sprite": "wehrmacht_stealth_bomber"
+  },
+  "diver": {
+   "name": "Kampfschwimmer",
+   "class": "Combat swimmer",
+   "desc": "Naval commandos using limpet mines against bridges and ships; trained late in the war at Venice.",
+   "specs": "Dräger rebreather | limpet mines",
+   "hp": 70,
+   "range": 55,
+   "damage": 90,
+   "cooldown": 3.5,
+   "cost": 130,
+   "sprite": "wehrmacht_diver"
+  },
+  "patrol_boat": {
+   "name": "S-100 Schnellboot",
+   "class": "Fast torpedo boat",
+   "desc": "Diesel-powered S-boats dashed at 40 knots to hit coastal convoys with torpedoes and 20 mm guns.",
+   "specs": "100 t | 42 kn | 2 torpedoes",
+   "hp": 190,
+   "speed": 125,
+   "range": 190,
+   "damage": 8,
+   "cooldown": 0.2,
+   "cost": 150,
+   "sprite": "wehrmacht_patrol_boat"
+  },
+  "gunboat": {
+   "name": "Siebel Ferry Gunboat",
+   "class": "Armored ferry",
+   "desc": "Catamaran ferry fitted with 88 mm guns and flak; invasion barge converted to river and coastal defence.",
+   "specs": "130 t | 8.8 cm + 3.7 cm",
+   "hp": 400,
+   "armor": 3,
+   "speed": 60,
+   "range": 280,
+   "damage": 36,
+   "cooldown": 1.5,
+   "splash": 26,
+   "cost": 260,
+   "sprite": "wehrmacht_gunboat"
+  },
+  "missile_boat": {
+   "name": "T-24 Torpedoboot",
+   "class": "Torpedo boat",
+   "desc": "Type 39 torpedo boat with four 10.5 cm guns and six torpedo tubes; larger than a destroyer escort.",
+   "specs": "1,300 t | 34 kn | 4 x 10.5 cm",
+   "hp": 360,
+   "armor": 3,
+   "speed": 100,
+   "range": 300,
+   "damage": 50,
+   "cooldown": 1.5,
+   "proj": "shell",
+   "splash": 22,
+   "cost": 410,
+   "sprite": "wehrmacht_missile_boat"
+  },
+  "destroyer": {
+   "name": "Z-31 (Zerstoerer 1936A)",
+   "class": "Destroyer",
+   "desc": "Large 3,000-ton destroyer with five 15 cm guns, ill-suited to rough seas. Fast but short-ranged.",
+   "specs": "3,000 t | 36 kn | 5 x 15 cm",
+   "hp": 950,
+   "armor": 9,
+   "speed": 72,
+   "range": 290,
+   "damage": 42,
+   "cooldown": 1.2,
+   "splash": 35,
+   "sub_damage": 110,
+   "cost": 630,
+   "sprite": "wehrmacht_destroyer"
+  },
+  "cruiser": {
+   "name": "Admiral Hipper",
+   "class": "Heavy cruiser",
+   "desc": "Eight 20.3 cm guns, 14,000 t. Bold raider with poor reliability from high-pressure steam plants.",
+   "specs": "14,000 t | 32.5 kn | 8 x 20.3 cm",
+   "hp": 1700,
+   "armor": 15,
+   "speed": 56,
+   "range": 420,
+   "damage": 84,
+   "cooldown": 2.2,
+   "splash": 56,
+   "cost": 1050,
+   "sprite": "wehrmacht_cruiser"
+  },
+  "battleship": {
+   "name": "Bismarck",
+   "class": "Battleship",
+   "desc": "Eight 38 cm guns and heavy armor. Sank HMS Hood in 1941 before being hunted down; the Kriegsmarine's only real peer to the Allies.",
+   "specs": "41,700 t | 30 kn | 8 x 38 cm",
+   "hp": 3300,
+   "armor": 25,
+   "speed": 40,
+   "range": 560,
+   "damage": 150,
+   "cooldown": 3.0,
+   "splash": 80,
+   "vs": {
+    "structure": 1.5
+   },
+   "cost": 2000,
+   "sprite": "wehrmacht_battleship"
+  },
+  "submarine": {
+   "name": "U-boat Type XXI",
+   "class": "Electro-boat",
+   "desc": "Streamlined with huge batteries; 17 knots submerged. Revolutionised submarine design but entered service in 1945.",
+   "specs": "1,600 t | 17 kn sub | 6 bow tubes",
+   "hp": 400,
+   "armor": 5,
+   "speed": 66,
+   "range": 270,
+   "damage": 270,
+   "cooldown": 3.6,
+   "cost": 700,
+   "sprite": "wehrmacht_submarine"
+  },
+  "aircraft_carrier": {
+   "name": "Graf Zeppelin",
+   "class": "Aircraft carrier",
+   "desc": "Launched in 1938 but never completed; planned for 40 aircraft. In game it carries a mixed, slow-cycling air group.",
+   "specs": "33,550 t | 32 kn | ~40 aircraft",
+   "hp": 3600,
+   "armor": 12,
+   "speed": 36,
+   "spawn_every": 34,
+   "cost": 2300,
+   "sprite": "wehrmacht_aircraft_carrier"
+  },
+  "mg_turret": {
+   "name": "MG 42 Nest",
+   "class": "Machine-gun nest",
+   "desc": "Stellung with MG 42 and interlocking arcs of fire; a few well-sited guns can halt a battalion.",
+   "specs": "7.92 mm | 1,200 rpm",
+   "hp": 390,
+   "armor": 4,
+   "range": 215,
+   "damage": 8,
+   "cooldown": 0.12,
+   "cost": 180,
+   "sprite": "wehrmacht_mg_turret"
+  },
+  "pillbox": {
+   "name": "Westwall Regelbau",
+   "class": "Concrete bunker",
+   "desc": "Standard design from the Siegfried Line: reinforced concrete up to 2 m thick, with MG embrasures.",
+   "specs": "2 m concrete | MG 34/42",
+   "hp": 760,
+   "armor": 11,
+   "range": 190,
+   "damage": 12,
+   "cooldown": 0.15,
+   "cost": 230,
+   "sprite": "wehrmacht_pillbox"
+  },
+  "at_gun": {
+   "name": "PaK 40 7.5 cm",
+   "class": "Anti-tank gun",
+   "desc": "Excellent 75 mm gun that could defeat most Allied tanks at 1,000 m; heavy to relocate.",
+   "specs": "7.5 cm | 1.5 t | 1,000 m pen.",
+   "hp": 400,
+   "armor": 6,
+   "range": 330,
+   "damage": 105,
+   "cooldown": 2.2,
+   "proj": "shell",
+   "pierce": 14,
+   "vs": {
+    "armor": 1.5
+   },
+   "cost": 290,
+   "sprite": "wehrmacht_at_gun"
+  },
+  "cannon_turret": {
+   "name": "Panther-Turm Stellung",
+   "class": "Turret bunker",
+   "desc": "Panther turret set on a concrete base; used on the Atlantic Wall and in Italy as a cheap, well-armored gun.",
+   "specs": "7.5 cm KwK 42 L/70 | 100 mm turret",
+   "hp": 820,
+   "armor": 14,
+   "range": 320,
+   "damage": 60,
+   "cooldown": 2.0,
+   "splash": 35,
+   "cost": 330,
+   "sprite": "wehrmacht_cannon_turret"
+  },
+  "mortar_pit": {
+   "name": "GrW 34 8 cm Mortar",
+   "class": "Mortar pit",
+   "desc": "Standard German 81 mm mortar with 2,400 m range; high rate of fire for its time.",
+   "specs": "8 cm | 57 kg | 2.4 km",
+   "hp": 250,
+   "armor": 2,
+   "range": 420,
+   "damage": 55,
+   "cooldown": 2.0,
+   "min_range": 90,
+   "splash": 55,
+   "vs": {
+    "infantry": 1.3
+   },
+   "cost": 270,
+   "sprite": "wehrmacht_mortar_pit"
+  },
+  "flak_battery": {
+   "name": "3.7 cm Flak 36/37",
+   "class": "Light AA gun",
+   "desc": "Automatic 37 mm gun; reasonable against low aircraft but short-ranged.",
+   "specs": "3.7 cm | 160 rpm | 4 km",
+   "hp": 410,
+   "armor": 4,
+   "range": 320,
+   "damage": 20,
+   "cooldown": 0.5,
+   "splash": 45,
+   "needs_power": false,
+   "cost": 280,
+   "sprite": "wehrmacht_flak_battery"
+  },
+  "sam_site": {
+   "name": "8.8 cm Flak 36/37",
+   "class": "Heavy AA gun",
+   "desc": "The 88: 8.8 cm shells up to 10 km. Excellent against aircraft and tanks alike.",
+   "specs": "8.8 cm | 15 rpm | 10 km ceiling",
+   "hp": 330,
+   "armor": 3,
+   "range": 410,
+   "damage": 62,
+   "cooldown": 1.5,
+   "proj": "flak",
+   "splash": 50,
+   "splash_air_only": true,
+   "needs_power": false,
+   "cost": 320,
+   "sprite": "wehrmacht_sam_site"
+  },
+  "heavy_battery": {
+   "name": "Batterie Todt 38 cm",
+   "class": "Coastal gun battery",
+   "desc": "Four 38 cm SK C/34 guns from the Atlantic Wall; capable of striking targets across the Channel.",
+   "specs": "38 cm | 800 kg shell | 55 km",
+   "hp": 360,
+   "armor": 5,
+   "range": 680,
+   "damage": 100,
+   "cooldown": 4.2,
+   "min_range": 150,
+   "splash": 95,
+   "cost": 550,
+   "sprite": "wehrmacht_heavy_battery"
+  },
+  "railgun": {
+   "name": "80 cm Schwerer Gustav",
+   "class": "Railway gun",
+   "desc": "Largest-calibre gun ever used in combat: 80 cm, shell 7.1 t. Only two built; used at Sevastopol 1942.",
+   "specs": "1,350 t | 80 cm | 47 km",
+   "hp": 620,
+   "armor": 16,
+   "range": 660,
+   "damage": 330,
+   "cooldown": 5.0,
+   "pierce": 40,
+   "needs_power": false,
+   "cost": 1100,
+   "sprite": "wehrmacht_railgun"
+  },
+  "ciws": {
+   "name": "Flakvierling 38",
+   "class": "Quad 20 mm AA",
+   "desc": "Four 20 mm Flak 38 on one mount; 1,800 rpm for a hail of fire against low aircraft.",
+   "specs": "4x 2 cm | 1,800 rpm",
+   "hp": 380,
+   "armor": 6,
+   "range": 275,
+   "damage": 12,
+   "cooldown": 0.09,
+   "needs_power": false,
+   "cost": 500,
+   "sprite": "wehrmacht_ciws"
+  },
+  "interceptor_battery": {
+   "name": "Wasserfall SAM",
+   "class": "Experimental SAM",
+   "desc": "Radio-guided liquid-fuel SAM; 35 flight tests but never fielded. Modelled as the Reich's missile screen.",
+   "specs": "7.8 m | Mach 0.8 | prototype",
+   "hp": 380,
+   "armor": 4,
+   "range": 600,
+   "damage": 125,
+   "cooldown": 1.8,
+   "cost": 640,
+   "sprite": "wehrmacht_interceptor_battery"
+  },
+  "abm_battery": {
+   "name": "Enzian SAM Battery",
+   "class": "Experimental SAM",
+   "desc": "Me 163-derived rocket-powered SAM. A paper project; no German system could actually hit a ballistic missile.",
+   "specs": "Prototype | rocket motor",
+   "hp": 560,
+   "armor": 7,
+   "range": 850,
+   "damage": 230,
+   "cooldown": 1.7,
+   "cost": 1150,
+   "sprite": "wehrmacht_abm_battery"
+  },
+  "barricade": {
+   "name": "Tschechenigel Hedgehog",
+   "class": "Anti-tank obstacle",
+   "desc": "Welded steel beams that stop tanks; used on beaches and in streets.",
+   "specs": "Steel | 3 beams",
+   "hp": 900,
+   "armor": 14,
+   "cost": 80,
+   "sprite": "wehrmacht_barricade"
+  },
+  "repair_depot": {
+   "name": "Feldwerkstatt",
+   "class": "Field workshop",
+   "desc": "Mobile Kfz workshop that repairs vehicles and weapons close behind the front.",
+   "specs": "Mobile workshop",
+   "hp": 400,
+   "armor": 4,
+   "heal": {
+    "rate": 20,
+    "radius": 150,
+    "cls": [
+     "vehicle",
+     "armor",
+     "structure"
+    ]
+   },
+   "needs_power": false,
+   "cost": 340,
+   "sprite": "wehrmacht_repair_depot"
+  },
+  "coastal_battery": {
+   "name": "15 cm Kuestenbatterie",
+   "class": "Coastal battery",
+   "desc": "15 cm TbK C/36 guns in open casemates for the Atlantic Wall; 22 km range vs ships.",
+   "specs": "15 cm | 22 km | casemate",
+   "hp": 760,
+   "armor": 12,
+   "range": 475,
+   "damage": 95,
+   "cooldown": 2.4,
+   "splash": 45,
+   "vs": {
+    "ship": 1.6
+   },
+   "cost": 460,
+   "sprite": "wehrmacht_coastal_battery"
+  },
+  "tactical_missile": {
+   "name": "Rheinbote",
+   "class": "Short-range rocket",
+   "desc": "Four-stage solid rocket with a 40 kg warhead; 160 km range but poor accuracy. Used against Antwerp in 1944-45.",
+   "specs": "11 t | 160 km | 40 kg",
+   "damage": 110,
+   "splash": 70,
+   "cost": 130,
+   "sprite": "wehrmacht_tactical_missile"
+  },
+  "cruise_missile": {
+   "name": "Fi 103 (V-1)",
+   "class": "Flying bomb",
+   "desc": "Pulse-jet cruise missile with a 850 kg warhead; 250 km range, shot down by fighters and flak.",
+   "specs": "2.2 t | 640 km/h | 250 km",
+   "damage": 240,
+   "splash": 105,
+   "cost": 280,
+   "sprite": "wehrmacht_cruise_missile"
+  },
+  "cluster_missile": {
+   "name": "15 cm Nebelwerfer Salvo",
+   "class": "Rocket barrage",
+   "desc": "Barrage of six-barrel Nebelwerfers; saturates a zone with HE.",
+   "specs": "15 cm | 6.9 km | 6 rockets",
+   "damage": 165,
+   "splash": 200,
+   "cost": 510,
+   "sprite": "wehrmacht_cluster_missile"
+  },
+  "bunker_buster": {
+   "name": "PC 1400 X (Fritz X)",
+   "class": "Guided bomb",
+   "desc": "Radio-controlled armor-piercing bomb that sank the battleship Roma in 1943; the first precision guided munition used in combat.",
+   "specs": "1,570 kg | radio guided",
+   "damage": 700,
+   "splash": 70,
+   "cost": 650,
+   "sprite": "wehrmacht_bunker_buster"
+  },
+  "ballistic_missile": {
+   "name": "A4 (V-2)",
+   "class": "Ballistic missile",
+   "desc": "First long-range ballistic missile; 1 t of amatol and 320 km range. Nothing could stop it.",
+   "specs": "12.5 t | 320 km | 1 t",
+   "damage": 700,
+   "splash": 175,
+   "cost": 800,
+   "sprite": "wehrmacht_ballistic_missile"
+  },
+  "hypersonic": {
+   "name": "A9/A10 Amerika-Rakete",
+   "class": "Transatlantic rocket",
+   "desc": "Paper project for a two-stage rocket to reach New York; never built.",
+   "specs": "Design study | 5,000 km",
+   "damage": 1000,
+   "splash": 145,
+   "cost": 1250,
+   "sprite": "wehrmacht_hypersonic"
+  },
+  "tactical_nuke": {
+   "name": "Uranbombe (what-if)",
+   "class": "Tactical atomic bomb",
+   "desc": "Never built; what-if weapon. The wartime Uranverein never got beyond experimental reactors.",
+   "specs": "What-if | 20 kt class",
+   "damage": 1900,
+   "splash": 225,
+   "cost": 1700,
+   "sprite": "wehrmacht_tactical_nuke"
+  },
+  "nuke": {
+   "name": "A10 Uran-Rakete (what-if)",
+   "class": "Atomic missile",
+   "desc": "Never built; what-if weapon. Modelled as a V-2 follow-on carrying an atomic payload.",
+   "specs": "What-if | 20 kt class",
+   "damage": 3400,
+   "splash": 325,
+   "cost": 2850,
+   "sprite": "wehrmacht_nuke"
+  },
+  "mega_nuke": {
+   "name": "Wunderwaffe Zero (what-if)",
+   "class": "Superweapon",
+   "desc": "Never built; what-if weapon. Pure fiction; included to keep the match balanced.",
+   "specs": "What-if | superweapon",
+   "damage": 6500,
+   "splash": 540,
+   "cost": 5950,
+   "sprite": "wehrmacht_mega_nuke"
+  },
+  "shotgunner": {
+   "name": "Grabenkaempfer Trench Fighter"
+  },
+  "marksman": {
+   "name": "G43 Scharfschuetze"
+  },
+  "mortar_team": {
+   "name": "8 cm GrW 34 Mortar Team"
+  },
+  "javelin": {
+   "name": "Panzerschreck Team"
+  },
+  "riot_trooper": {
+   "name": "Sturmpionier Assault Trooper"
+  },
+  "sapper": {
+   "name": "Pionier Mine Layer"
+  },
+  "officer": {
+   "name": "Zugfuehrer Platoon Leader"
+  },
+  "k9": {
+   "name": "Minenhund Mine Dog"
+  },
+  "mine_flail": {
+   "name": "Raeumpanzer Mine Clearer"
+  },
+  "torpedo_boat": {
+   "name": "S-100 Schnellboot"
+  },
+  "frigate": {
+   "name": "Flottenbegleiter Escort"
+  },
+  "minelayer": {
+   "name": "Kriegsmarine Minenleger"
+  },
+  "midget_sub": {
+   "name": "Seehund Midget Submarine"
+  },
+  "cruise_sub": {
+   "name": "Type XXI V-Weapon U-boat (what-if)"
+  },
+  "sandbag_nest": {
+   "name": "MG 34 Sandbag Nest"
+  },
+  "watchtower": {
+   "name": "Beobachtungsturm"
+  },
+  "sniper_nest": {
+   "name": "Scharfschuetzen Nest"
+  },
+  "flame_bunker": {
+   "name": "Flammenwerfer-Bunker"
+  },
+  "torpedo_battery": {
+   "name": "Kuesten Torpedo Battery"
+  },
+  "observation_post": {
+   "name": "Artillerie-Beobachter Post"
+  }
+ }
+}

@@ -27,7 +27,7 @@ const INFO := {
 	"withdraw": {"name": "Fall Back & Repair", "active": false, "desc": "When badly damaged it retreats to a repair point, gets fixed, then returns."},
 	"smoke": {"name": "Smoke Screen", "active": true, "cd": 28.0, "desc": "Drops smoke: ground units inside cannot be targeted from range (Z)."},
 	"fortify": {"name": "Fortify", "active": true, "cd": 45.0, "desc": "Builds a sandbag MG nest in front of the unit for free (Z)."},
-	"unload": {"name": "Dismount Troops", "active": true, "cd": 5.0, "desc": "Unloads the carried infantry immediately (Z)."},
+	"unload": {"name": "Dismount Troops", "active": true, "cd": 5.0, "desc": "Unloads the carried infantry immediately (U or Z)."},
 }
 
 
@@ -90,7 +90,7 @@ static func for_def(kind: String, d: Dictionary) -> Array:
 				out.append("radar")
 			else:
 				out.append("smoke")
-			if d.has("cargo"):
+			if d.has("cargo") or d.has("seats"):
 				out.append("unload")
 			if ["jeep", "armored_car"].has(id):
 				out.append("designate")
@@ -104,6 +104,8 @@ static func for_def(kind: String, d: Dictionary) -> Array:
 				out.append("sonar")
 			if role == "anti_air" or id == "interceptor_jet":
 				out.append("radar")
+			if d.has("seats"):
+				out.append("unload")
 			out.append("withdraw")
 		"navy":
 			if dom == "sub":

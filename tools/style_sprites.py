@@ -51,7 +51,9 @@ OUTLINE = np.array([0.025, 0.03, 0.025])
 
 
 def categories():
-    d = json.load(open(os.path.join(ROOT, "data", "units.json")))
+    sys.path.insert(0, os.path.join(ROOT, "tools"))
+    import datafiles as _df
+    d = _df.load_all()
     cat = {}
     for key, v in d["units"].items():
         shape = v.get("shape", "box")

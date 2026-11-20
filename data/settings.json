@@ -1,0 +1,131 @@
+{
+ "settings": {
+  "start_money": 1500,
+  "income_per_sec": 4,
+  "base_hp": 5000,
+  "sprite_scale": 1.0,
+  "default_zoom": 1.25,
+  "zoom_max": 3.0,
+  "team_tint": 0.28,
+  "bounty_ratio": 0.2,
+  "unit_cap": 170,
+  "structure_cap": 60,
+  "national_cap": 70,
+  "player_zone_x": 1500,
+  "enemy_zone_x": 4900,
+  "difficulty": {
+   "easy": {
+    "ai_income_mult": 0.8,
+    "ai_start_money": 1080,
+    "ai_think": 3.2,
+    "ai_nukes": false,
+    "ai_strategic_after": 150,
+    "ai_skill": 0.35,
+    "ai_wave_secs": 40
+   },
+   "normal": {
+    "ai_income_mult": 1.15,
+    "ai_start_money": 1800,
+    "ai_think": 2.0,
+    "ai_nukes": true,
+    "ai_strategic_after": 90,
+    "ai_skill": 0.7,
+    "ai_wave_secs": 32
+   },
+   "hard": {
+    "ai_income_mult": 1.6,
+    "ai_start_money": 2880,
+    "ai_think": 1.2,
+    "ai_nukes": true,
+    "ai_strategic_after": 50,
+    "ai_skill": 1.0,
+    "ai_wave_secs": 26
+   }
+  },
+  "trap_cap": 90,
+  "forward_reach": 1500,
+  "move_speed_mult": 1.5,
+  "auto_stance": "assault",
+  "economy_mult": 1.7,
+  "missile_speed_mult": 1.8,
+  "prep_phase": true,
+  "prep_seconds": 150,
+  "fog_of_war": true,
+  "vision_mult": 1.0,
+  "model": "v7",
+  "sector_income_mult": 1.0,
+  "map": "dnieper"
+ },
+ "tabs": [
+  {
+   "id": "infantry",
+   "name": "Infantry"
+  },
+  {
+   "id": "vehicles",
+   "name": "Vehicles"
+  },
+  {
+   "id": "air",
+   "name": "Air Force"
+  },
+  {
+   "id": "navy",
+   "name": "Navy"
+  },
+  {
+   "id": "defenses",
+   "name": "Defenses"
+  },
+  {
+   "id": "infrastructure",
+   "name": "Infrastructure"
+  },
+  {
+   "id": "traps",
+   "name": "Traps & Mines"
+  },
+  {
+   "id": "strategic",
+   "name": "Missiles & Nukes"
+  }
+ ],
+ "capabilities": {
+  "barracks": "Barracks",
+  "factory": "War Factory",
+  "airbase": "Airbase",
+  "silo": "Missile Silo",
+  "power": "Power Plant",
+  "radar": "Radar Station",
+  "tech": "Tech Center",
+  "port": "Naval Port"
+ },
+ "base": {
+  "name": "Capital",
+  "sprite": "hq",
+  "shape": "structure",
+  "size": 185,
+  "layer": "ground",
+  "hp": 5000,
+  "armor": 12,
+  "rotate": false,
+  "income": 2,
+  "provides": [
+   "hq"
+  ],
+  "range": 280,
+  "damage": 12,
+  "cooldown": 0.45,
+  "proj": "bullet",
+  "targets": [
+   "ground",
+   "air"
+  ],
+  "desc": "Destroy the enemy capital to win. Protect yours!",
+  "supply": {
+   "radius": 340,
+   "rate": 0.09,
+   "rearm": true
+  }
+ }
+}

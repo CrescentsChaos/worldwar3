@@ -1,0 +1,1363 @@
+{
+ "name": "Red Army",
+ "era": "WW2 (1941-45, post-war prototypes)",
+ "tagline": "Quantity has a quality all its own.",
+ "desc": "Soviet mass mobilisation: simple, rugged and plentiful. Cheap infantry, rocket artillery and sloped-armor tanks. Aircraft are rugged ground-attackers, there is no carrier and the tech slots hold early post-war jets and the first Soviet bombs.",
+ "mods": [
+  {
+   "match": "tab:infantry",
+   "cost": 0.8
+  },
+  {
+   "match": "tab:vehicles",
+   "cost": 0.92
+  },
+  {
+   "match": "tab:air",
+   "cost": 1.1
+  }
+ ],
+ "income": 1.0,
+ "money": 1.0,
+ "ban": [
+  "aircraft_carrier"
+ ],
+ "names": {
+  "rifleman": "Mosin M91/30 Rifleman",
+  "assault": "PPSh-41 SMG Trooper",
+  "bazooka": "PTRD-41 AT Rifleman",
+  "manpads": "DShK AA Gunner",
+  "mg_gunner": "DP-27 Machine Gunner",
+  "grenadier": "RGD-33 Grenadier",
+  "sniper": "Mosin PU Sniper",
+  "flamer": "ROKS-3 Flamethrower",
+  "medic": "Sanitar Medic",
+  "engineer": "Sapper Engineer",
+  "commando": "Razvedchik Scout",
+  "jeep": "GAZ-67B Scout Car",
+  "armored_car": "BA-64B Armored Car",
+  "apc": "M3 Half-Track (Lend-Lease)",
+  "light_tank": "T-70 Light Tank",
+  "tank": "T-34-85",
+  "heavy_tank": "IS-2 Heavy Tank",
+  "mammoth": "IS-7 Heavy Tank",
+  "tank_destroyer": "SU-100 Tank Destroyer",
+  "flame_tank": "OT-34 Flame Tank",
+  "artillery": "SU-122",
+  "howitzer": "ISU-152 Zveroboy",
+  "mlrs": "BM-13 Katyusha",
+  "aa_truck": "SU-37 Mobile AA",
+  "sam_truck": "M17 MGMC AA Truck",
+  "repair_vehicle": "T-34T Recovery Tank",
+  "drone": "TB-3 Radio Drone",
+  "fighter": "Yak-9 Fighter",
+  "interceptor_jet": "La-7 Interceptor",
+  "stealth_fighter": "Yak-15",
+  "strike_jet": "Il-2m3 Sturmovik",
+  "helicopter": "Mi-1 Helicopter",
+  "gunship": "Il-10 Sturmovik",
+  "light_bomber": "Pe-2 Dive Bomber",
+  "bomber": "Tu-2 Bomber",
+  "heavy_bomber": "Pe-8 Heavy Bomber",
+  "stealth_bomber": "Tu-4 Bull",
+  "diver": "Black Sea Frogman",
+  "patrol_boat": "G-5 Torpedo Boat",
+  "gunboat": "BK-1124 Armored Boat",
+  "missile_boat": "Komsomolets Torpedo Boat",
+  "destroyer": "Gnevny Destroyer",
+  "cruiser": "Kirov-class Cruiser",
+  "battleship": "Sovetsky Soyuz (Project 23)",
+  "submarine": "Shchuka (Shch) Submarine",
+  "mg_turret": "Maxim M1910 Nest",
+  "pillbox": "DOT Pillbox",
+  "at_gun": "ZiS-3 76 mm Gun",
+  "cannon_turret": "T-34 Turret Bunker",
+  "mortar_pit": "82 mm PM-37 Mortar",
+  "flak_battery": "61-K 37 mm AA Gun",
+  "sam_site": "52-K 85 mm AA Gun",
+  "heavy_battery": "ML-20 152 mm Battery",
+  "railgun": "TM-3-12 305 mm Railway Gun",
+  "ciws": "Maxim Quad AA",
+  "interceptor_battery": "KS-18 85 mm Barrage",
+  "abm_battery": "KS-30 130 mm Heavy AA",
+  "barricade": "Dragon's Teeth",
+  "repair_depot": "Frontline Repair Base",
+  "coastal_battery": "B-13 130 mm Coastal Battery",
+  "tactical_missile": "M-13 Rocket Barrage",
+  "cruise_missile": "10Kh Flying Bomb",
+  "cluster_missile": "M-30 Rocket Salvo",
+  "bunker_buster": "FAB-5000 Bomb",
+  "ballistic_missile": "R-1 Rocket",
+  "hypersonic": "R-2 Rocket",
+  "tactical_nuke": "RDS-1 'Joe-1'",
+  "nuke": "RDS-37 Thermonuclear",
+  "mega_nuke": "RDS-220 Tsar Bomba"
+ },
+ "strategies": {
+  "deep_battle": {
+   "name": "Deep Battle",
+   "desc": "Massed artillery and Katyushas soften the line. Starts with a rocket park.",
+   "style": "balanced",
+   "mods": [
+    {
+     "match": "role:artillery",
+     "cost": 0.8,
+     "damage": 1.1
+    },
+    {
+     "match": "id:mlrs",
+     "cost": 0.75
+    }
+   ],
+   "setup": [
+    [
+     "unit",
+     "mlrs",
+     880,
+     470,
+     2
+    ],
+    [
+     "unit",
+     "artillery",
+     860,
+     545,
+     1
+    ],
+    [
+     "unit",
+     "tank",
+     920,
+     504,
+     2
+    ]
+   ],
+   "income": 1.0,
+   "money": 1.0
+  },
+  "human_wave": {
+   "name": "Human Wave",
+   "desc": "Endless cheap riflemen. Starts with a huge infantry horde.",
+   "style": "infantry",
+   "mods": [
+    {
+     "match": "tab:infantry",
+     "cost": 0.6,
+     "hp": 1.1,
+     "speed": 1.1
+    }
+   ],
+   "setup": [
+    [
+     "unit",
+     "rifleman",
+     930,
+     504,
+     14
+    ],
+    [
+     "unit",
+     "assault",
+     950,
+     470,
+     4
+    ],
+    [
+     "unit",
+     "bazooka",
+     945,
+     540,
+     2
+    ]
+   ],
+   "income": 1.0,
+   "money": 1.0
+  },
+  "kursk": {
+   "name": "Kursk Salient",
+   "desc": "Layered anti-tank belts. Starts with AT guns, pillboxes and mortars.",
+   "style": "defense",
+   "mods": [
+    {
+     "match": "kind:structure",
+     "cost": 0.8,
+     "hp": 1.25
+    },
+    {
+     "match": "id:at_gun",
+     "cost": 0.7
+    },
+    {
+     "match": "id:mortar_pit",
+     "cost": 0.7
+    }
+   ],
+   "setup": [
+    [
+     "structure",
+     "at_gun",
+     970,
+     369.0,
+     1
+    ],
+    [
+     "structure",
+     "at_gun",
+     946,
+     459.0,
+     1
+    ],
+    [
+     "structure",
+     "at_gun",
+     970,
+     549.0,
+     1
+    ],
+    [
+     "structure",
+     "at_gun",
+     946,
+     639.0,
+     1
+    ],
+    [
+     "structure",
+     "pillbox",
+     940,
+     404.0,
+     1
+    ],
+    [
+     "structure",
+     "pillbox",
+     916,
+     504.0,
+     1
+    ],
+    [
+     "structure",
+     "pillbox",
+     940,
+     604.0,
+     1
+    ],
+    [
+     "structure",
+     "mortar_pit",
+     905,
+     450,
+     1
+    ],
+    [
+     "structure",
+     "mortar_pit",
+     905,
+     560,
+     1
+    ],
+    [
+     "structure",
+     "repair_depot",
+     860,
+     504,
+     1
+    ]
+   ],
+   "income": 1.0,
+   "money": 1.0
+  }
+ },
+ "roster": {
+  "rifleman": {
+   "name": "Mosin M91/30 Rifleman",
+   "class": "Bolt-action rifleman",
+   "desc": "Simple, very rugged Russian rifle with a bayonet; made in the tens of millions.",
+   "specs": "7.62x54R | 4.0 kg | 5-rd clip",
+   "hp": 70,
+   "speed": 50,
+   "range": 140,
+   "damage": 10,
+   "cooldown": 1.2,
+   "cost": 45,
+   "sprite": "red_army_rifleman"
+  },
+  "assault": {
+   "name": "PPSh-41 SMG Trooper",
+   "class": "Submachine gun",
+   "desc": "71-round drum and 900 rpm made it a favourite of storm groups; short range but cheap to mass produce.",
+   "specs": "7.62x25 mm | 3.6 kg | 900 rpm",
+   "hp": 80,
+   "speed": 66,
+   "range": 85,
+   "damage": 5,
+   "cooldown": 0.14,
+   "cost": 75,
+   "sprite": "red_army_assault"
+  },
+  "bazooka": {
+   "name": "PTRD-41 AT Rifleman",
+   "class": "Anti-tank rifle",
+   "desc": "Single-shot 14.5 mm rifle; could penetrate light tanks but was ineffective against 1944-class armor.",
+   "specs": "14.5x114 mm | 17.3 kg",
+   "hp": 80,
+   "speed": 42,
+   "range": 165,
+   "damage": 38,
+   "cooldown": 1.9,
+   "proj": "bullet",
+   "pierce": 8,
+   "vs": {
+    "armor": 1.0,
+    "vehicle": 1.3
+   },
+   "prefer": [
+    "armor",
+    "vehicle"
+   ],
+   "cost": 110,
+   "sprite": "red_army_bazooka"
+  },
+  "manpads": {
+   "name": "DShK AA Gunner",
+   "class": "Heavy AA machine gun",
+   "desc": "12.7 mm DShK on a wheeled AA mount; ok against low-flying aircraft.",
+   "specs": "12.7x108 mm | 35 kg | 600 rpm",
+   "hp": 75,
+   "speed": 40,
+   "range": 240,
+   "damage": 14,
+   "cooldown": 0.14,
+   "proj": "bullet",
+   "cost": 130,
+   "sprite": "red_army_manpads"
+  },
+  "mg_gunner": {
+   "name": "DP-27 Machine Gunner",
+   "class": "Light machine gun",
+   "desc": "47-round pan magazine fed from above, simple and reliable; lower rate than the MG 42.",
+   "specs": "7.62 mm | 9.1 kg | 550 rpm",
+   "hp": 90,
+   "armor": 1,
+   "speed": 40,
+   "range": 175,
+   "damage": 6.5,
+   "cooldown": 0.14,
+   "cost": 100,
+   "sprite": "red_army_mg_gunner"
+  },
+  "grenadier": {
+   "name": "RGD-33 Grenadier",
+   "class": "Grenadier",
+   "desc": "Hand-thrown fragmentation grenades supplemented by rifle-grenade launchers.",
+   "specs": "RGD-33 | 0.5 kg | 25 m",
+   "hp": 82,
+   "range": 105,
+   "damage": 28,
+   "cooldown": 2.0,
+   "splash": 34,
+   "vs": {
+    "infantry": 1.25
+   },
+   "cost": 85,
+   "sprite": "red_army_grenadier"
+  },
+  "sniper": {
+   "name": "Mosin PU Sniper",
+   "class": "Sniper",
+   "desc": "Top-scoring snipers of the war, including those at Stalingrad; rifle with 3.5x PU scope.",
+   "specs": "7.62 mm | PU 3.5x | 800 m",
+   "hp": 55,
+   "range": 320,
+   "damage": 50,
+   "cooldown": 2.7,
+   "vs": {
+    "infantry": 3.0,
+    "vehicle": 0.3,
+    "armor": 0.08,
+    "structure": 0.1
+   },
+   "cost": 140,
+   "sprite": "red_army_sniper"
+  },
+  "flamer": {
+   "name": "ROKS-3 Flamethrower",
+   "class": "Flamethrower",
+   "desc": "23 kg backpack flamethrower; used by dedicated assault teams to clear bunkers.",
+   "specs": "23 kg | 35 m | ~8 shots",
+   "hp": 100,
+   "armor": 1,
+   "speed": 40,
+   "range": 55,
+   "damage": 9,
+   "cooldown": 0.12,
+   "splash": 26,
+   "pierce": 4,
+   "vs": {
+    "infantry": 1.8,
+    "structure": 1.3
+   },
+   "prefer": [
+    "infantry"
+   ],
+   "cost": 120,
+   "sprite": "red_army_flamer"
+  },
+  "medic": {
+   "name": "Sanitar Medic",
+   "class": "Combat medic",
+   "desc": "Female medics (sanitarkas) carried wounded off the battlefield in large numbers.",
+   "specs": "Medical bag | stretcher",
+   "hp": 70,
+   "speed": 54,
+   "heal": {
+    "rate": 14,
+    "radius": 120,
+    "cls": [
+     "infantry"
+    ]
+   },
+   "cost": 85,
+   "sprite": "red_army_medic"
+  },
+  "engineer": {
+   "name": "Sapper Engineer",
+   "class": "Combat engineer",
+   "desc": "Assault engineer-sapper battalions cleared mines and obstacles ahead of the infantry.",
+   "specs": "ShISBr | mine detectors",
+   "hp": 95,
+   "heal": {
+    "rate": 24,
+    "radius": 110,
+    "cls": [
+     "vehicle",
+     "armor",
+     "structure"
+    ]
+   },
+   "cost": 120,
+   "sprite": "red_army_engineer"
+  },
+  "commando": {
+   "name": "Razvedchik Scout",
+   "class": "Reconnaissance scout",
+   "desc": "Divisional recon soldiers with SMGs and grenades who raid and capture prisoners behind the lines.",
+   "specs": "PPS-43 | camouflage | knives",
+   "hp": 140,
+   "armor": 1,
+   "speed": 62,
+   "range": 150,
+   "damage": 14,
+   "cooldown": 0.2,
+   "pierce": 2,
+   "cost": 230,
+   "sprite": "red_army_commando"
+  },
+  "jeep": {
+   "name": "GAZ-67B Scout Car",
+   "class": "Light utility vehicle",
+   "desc": "Soviet equivalent of the Jeep; open body, 54 hp engine, lightly armed.",
+   "specs": "1.3 t | 54 hp | 90 km/h",
+   "hp": 140,
+   "speed": 115,
+   "range": 140,
+   "damage": 8,
+   "cooldown": 0.3,
+   "cost": 100,
+   "sprite": "red_army_jeep"
+  },
+  "armored_car": {
+   "name": "BA-64B Armored Car",
+   "class": "Light armored car",
+   "desc": "Small four-wheel armored car with a DT machine gun; 3,500 built, used as scouts and staff cars.",
+   "specs": "2.4 t | DT 7.62 mm | 100 km/h",
+   "hp": 210,
+   "armor": 3,
+   "speed": 105,
+   "range": 150,
+   "damage": 10,
+   "cooldown": 0.2,
+   "cost": 140,
+   "sprite": "red_army_armored_car"
+  },
+  "apc": {
+   "name": "M3 Half-Track (Lend-Lease)",
+   "class": "Armored half-track",
+   "desc": "US-supplied M3 carrying 13 men with .50 cal; thousands arrived through the Persian corridor.",
+   "specs": "9 t | 13 troops | .50 cal",
+   "hp": 380,
+   "armor": 4,
+   "speed": 80,
+   "range": 170,
+   "damage": 10,
+   "cooldown": 0.18,
+   "cargo": [
+    "rifleman",
+    "rifleman",
+    "mg_gunner"
+   ],
+   "cost": 210,
+   "sprite": "red_army_apc"
+  },
+  "light_tank": {
+   "name": "T-70 Light Tank",
+   "class": "Light tank",
+   "desc": "Light tank with 45 mm gun, 60 mm front armor and low silhouette; withdrawn by 1944.",
+   "specs": "9.2 t | 2 crew | 45 mm 20K",
+   "hp": 280,
+   "armor": 4,
+   "speed": 90,
+   "range": 195,
+   "damage": 26,
+   "cooldown": 1.4,
+   "splash": 18,
+   "cost": 170,
+   "sprite": "red_army_light_tank"
+  },
+  "tank": {
+   "name": "T-34-85",
+   "class": "Medium tank",
+   "desc": "Sloped-armor, wide-track medium tank with an 85 mm gun; the most-built tank of the war.",
+   "specs": "32 t | 5 crew | 85 mm ZiS-S-53",
+   "hp": 540,
+   "armor": 8,
+   "speed": 64,
+   "range": 235,
+   "damage": 44,
+   "cooldown": 1.7,
+   "splash": 26,
+   "cost": 270,
+   "sprite": "red_army_tank"
+  },
+  "heavy_tank": {
+   "name": "IS-2 Heavy Tank",
+   "class": "Heavy tank",
+   "desc": "122 mm D-25T gun with high-explosive punch; thick sloped armor but slow reload (about 2 rpm).",
+   "specs": "46 t | 4 crew | 122 mm D-25T",
+   "hp": 1250,
+   "armor": 18,
+   "speed": 36,
+   "range": 270,
+   "damage": 96,
+   "cooldown": 3.0,
+   "splash": 48,
+   "cost": 460,
+   "sprite": "red_army_heavy_tank"
+  },
+  "mammoth": {
+   "name": "IS-7 Heavy Tank",
+   "class": "Prototype heavy tank",
+   "desc": "1948 prototype: 68 t, 130 mm gun, 150 mm sloped armor and 60 km/h. Six were built; the project was cancelled.",
+   "specs": "68 t | 5 crew | 130 mm S-70",
+   "hp": 2600,
+   "armor": 27,
+   "speed": 30,
+   "range": 295,
+   "damage": 112,
+   "cooldown": 2.0,
+   "splash": 52,
+   "pierce": 8,
+   "size": 62,
+   "cost": 890,
+   "sprite": "red_army_mammoth"
+  },
+  "tank_destroyer": {
+   "name": "SU-100 Tank Destroyer",
+   "class": "Tank destroyer",
+   "desc": "T-34 chassis with a casemate and 100 mm D-10S gun; simple, deadly and cheap.",
+   "specs": "31 t | 4 crew | 100 mm D-10S",
+   "hp": 480,
+   "armor": 11,
+   "speed": 54,
+   "range": 340,
+   "damage": 135,
+   "cooldown": 3.0,
+   "pierce": 18,
+   "vs": {
+    "armor": 1.5,
+    "infantry": 0.6
+   },
+   "cost": 400,
+   "sprite": "red_army_tank_destroyer"
+  },
+  "flame_tank": {
+   "name": "OT-34 Flame Tank",
+   "class": "Flame tank",
+   "desc": "T-34 with an ATO-41 flamethrower in place of the bow MG; 100 m range.",
+   "specs": "31 t | 4 crew | ATO-41 | 100 m",
+   "hp": 520,
+   "armor": 7,
+   "speed": 62,
+   "range": 90,
+   "damage": 11,
+   "cooldown": 0.12,
+   "splash": 34,
+   "pierce": 6,
+   "cost": 280,
+   "sprite": "red_army_flame_tank"
+  },
+  "artillery": {
+   "name": "SU-122",
+   "class": "Assault gun",
+   "desc": "T-34 hull with a 122 mm M-30 howitzer; a self-propelled infantry support and indirect-fire weapon.",
+   "specs": "30 t | 4 crew | 122 mm M-30S",
+   "hp": 200,
+   "armor": 5,
+   "speed": 40,
+   "range": 480,
+   "damage": 68,
+   "cooldown": 3.2,
+   "min_range": 110,
+   "splash": 80,
+   "cost": 490,
+   "sprite": "red_army_artillery"
+  },
+  "howitzer": {
+   "name": "ISU-152 Zveroboy",
+   "class": "Heavy assault gun",
+   "desc": "IS chassis with a 152 mm ML-20S gun-howitzer; nicknamed 'Beast Killer' as it could knock turrets off Tigers.",
+   "specs": "46 t | 5 crew | 152 mm ML-20S",
+   "hp": 640,
+   "armor": 12,
+   "speed": 30,
+   "range": 520,
+   "damage": 140,
+   "cooldown": 5.0,
+   "min_range": 150,
+   "splash": 100,
+   "vs": {
+    "structure": 1.5
+   },
+   "cost": 900,
+   "sprite": "red_army_howitzer"
+  },
+  "mlrs": {
+   "name": "BM-13 Katyusha",
+   "class": "Rocket artillery",
+   "desc": "Sixteen 132 mm rockets on a truck, fired in seven seconds. Stalin's Organ; inaccurate but psychologically devastating.",
+   "specs": "16 x 132 mm | 8.5 km",
+   "hp": 200,
+   "speed": 44,
+   "range": 400,
+   "damage": 32,
+   "cooldown": 0.8,
+   "min_range": 130,
+   "splash": 68,
+   "cost": 590,
+   "sprite": "red_army_mlrs"
+  },
+  "aa_truck": {
+   "name": "SU-37 Mobile AA",
+   "class": "Self-propelled AA gun",
+   "desc": "SU-76 chassis with a 37 mm 61-K; protects columns from aircraft.",
+   "specs": "11 t | 37 mm 61-K | 160 rpm",
+   "hp": 260,
+   "armor": 3,
+   "speed": 55,
+   "range": 280,
+   "damage": 20,
+   "cooldown": 0.3,
+   "targets": [
+    "air",
+    "ground"
+   ],
+   "cost": 230,
+   "sprite": "red_army_aa_truck"
+  },
+  "sam_truck": {
+   "name": "M17 MGMC AA Truck",
+   "class": "AA half-track",
+   "desc": "US-built half-track with quad .50 cal turret, supplied under Lend-Lease.",
+   "specs": "9 t | 4 x .50 | 2,300 rpm",
+   "hp": 300,
+   "armor": 3,
+   "speed": 70,
+   "range": 250,
+   "damage": 12,
+   "cooldown": 0.09,
+   "cost": 400,
+   "sprite": "red_army_sam_truck"
+  },
+  "repair_vehicle": {
+   "name": "T-34T Recovery Tank",
+   "class": "Tank recovery vehicle",
+   "desc": "T-34 chassis with a winch and a lifting boom.",
+   "specs": "30 t | winch | 3 crew",
+   "hp": 420,
+   "armor": 5,
+   "speed": 60,
+   "heal": {
+    "rate": 26,
+    "radius": 120,
+    "cls": [
+     "vehicle",
+     "armor"
+    ]
+   },
+   "cost": 220,
+   "sprite": "red_army_repair_vehicle"
+  },
+  "drone": {
+   "name": "TB-3 Radio Drone",
+   "class": "Experimental drone",
+   "desc": "Obsolete TB-3 bomber converted to carry 3 tons of explosives and guided by radio from a mother plane; limited trials.",
+   "specs": "TB-3 | 3 t explosives | radio",
+   "hp": 170,
+   "speed": 160,
+   "damage": 190,
+   "splash": 75,
+   "size": 19,
+   "cost": 150,
+   "sprite": "red_army_drone"
+  },
+  "fighter": {
+   "name": "Yak-9 Fighter",
+   "class": "Single-engine fighter",
+   "desc": "Light, agile fighter armed with 20 mm and 12.7 mm guns. Main Soviet fighter of 1944.",
+   "specs": "VK-105 | 2.1 t | 600 km/h",
+   "hp": 190,
+   "speed": 220,
+   "range": 220,
+   "damage": 16,
+   "cooldown": 0.28,
+   "cost": 400,
+   "sprite": "red_army_fighter"
+  },
+  "interceptor_jet": {
+   "name": "La-7 Interceptor",
+   "class": "Fighter",
+   "desc": "Fast radial-engine fighter with three 20 mm cannons. Used by top aces like Kozhedub.",
+   "specs": "M-82FN | 3 x 20 mm | 680 km/h",
+   "hp": 215,
+   "speed": 230,
+   "range": 245,
+   "damage": 24,
+   "cooldown": 0.22,
+   "vs": {
+    "air": 1.35
+   },
+   "cost": 540,
+   "sprite": "red_army_interceptor_jet"
+  },
+  "stealth_fighter": {
+   "name": "Yak-15",
+   "class": "Early jet fighter",
+   "desc": "First Soviet jet-powered fighter (1946), a Yak-3 fuselage with a captured German turbojet.",
+   "specs": "RD-10 | 2 x 23 mm | 700 km/h",
+   "hp": 220,
+   "speed": 285,
+   "range": 225,
+   "damage": 28,
+   "cooldown": 0.3,
+   "stealth": 0,
+   "cost": 720,
+   "sprite": "red_army_stealth_fighter"
+  },
+  "strike_jet": {
+   "name": "Il-2m3 Sturmovik",
+   "class": "Armored ground-attack",
+   "desc": "Flying tank with 700 kg of armor, 23 mm cannon, rockets and bombs; 36,000 built, Stalin's favourite plane.",
+   "specs": "Armored hull | 2 x 23 mm | RS-82",
+   "hp": 380,
+   "armor": 6,
+   "speed": 150,
+   "range": 200,
+   "damage": 36,
+   "cooldown": 0.4,
+   "pierce": 12,
+   "vs": {
+    "armor": 1.5
+   },
+   "cost": 530,
+   "sprite": "red_army_strike_jet"
+  },
+  "helicopter": {
+   "name": "Mi-1 Helicopter",
+   "class": "Light helicopter",
+   "desc": "Early Soviet helicopter (1948) used for observation and casualty evacuation; only experimentally armed.",
+   "specs": "2.4 t | 3 seats | 185 km/h",
+   "hp": 230,
+   "speed": 100,
+   "range": 170,
+   "damage": 8,
+   "cooldown": 0.2,
+   "targets": [
+    "ground",
+    "sub"
+   ],
+   "sub_damage": 40,
+   "sub_splash": 30,
+   "cost": 400,
+   "sprite": "red_army_helicopter"
+  },
+  "gunship": {
+   "name": "Il-10 Sturmovik",
+   "class": "Armored ground-attack",
+   "desc": "Improved Il-2 with better armor and speed; 2 x 23 mm cannon and 600 kg of bombs.",
+   "specs": "Armored | 2 x 23 mm | 550 km/h",
+   "hp": 520,
+   "armor": 6,
+   "speed": 140,
+   "range": 230,
+   "damage": 55,
+   "cooldown": 0.5,
+   "targets": [
+    "ground"
+   ],
+   "cost": 720,
+   "sprite": "red_army_gunship"
+  },
+  "light_bomber": {
+   "name": "Pe-2 Dive Bomber",
+   "class": "Dive bomber",
+   "desc": "Fast twin-engine dive bomber (1,000 kg load) that doubled as a reconnaissance plane.",
+   "specs": "Dive bomber | 1 t | 540 km/h",
+   "hp": 260,
+   "speed": 195,
+   "damage": 78,
+   "splash": 66,
+   "cost": 370,
+   "sprite": "red_army_light_bomber"
+  },
+  "bomber": {
+   "name": "Tu-2 Bomber",
+   "class": "Medium bomber",
+   "desc": "Twin-engine bomber with 3 t load and good defensive armament; excellent but built in smaller numbers.",
+   "specs": "3 t bombs | 4 crew | 550 km/h",
+   "hp": 440,
+   "speed": 165,
+   "damage": 120,
+   "splash": 90,
+   "cost": 650,
+   "sprite": "red_army_bomber"
+  },
+  "heavy_bomber": {
+   "name": "Pe-8 Heavy Bomber",
+   "class": "Heavy bomber",
+   "desc": "Rare four-engine bomber; a few carried a 5-t FAB-5000 on raids against Berlin and Helsinki.",
+   "specs": "Heavy | 4 t | 5 t max",
+   "hp": 700,
+   "armor": 3,
+   "speed": 125,
+   "damage": 165,
+   "cooldown": 0.55,
+   "splash": 120,
+   "vs": {
+    "structure": 1.5
+   },
+   "cost": 1000,
+   "sprite": "red_army_heavy_bomber"
+  },
+  "stealth_bomber": {
+   "name": "Tu-4 Bull",
+   "class": "Strategic bomber",
+   "desc": "Reverse-engineered B-29 (1947) built from three interned US aircraft; Soviet nuclear delivery platform.",
+   "specs": "B-29 copy | 11 crew | 9 t payload",
+   "hp": 900,
+   "armor": 3,
+   "speed": 150,
+   "damage": 215,
+   "cooldown": 0.9,
+   "splash": 125,
+   "stealth": 0,
+   "vs": {
+    "structure": 1.4
+   },
+   "cost": 1850,
+   "sprite": "red_army_stealth_bomber"
+  },
+  "diver": {
+   "name": "Black Sea Frogman",
+   "class": "Combat swimmer",
+   "desc": "Naval Spetsnaz divers began operating in 1944; mines and sabotage of ships in port.",
+   "specs": "Rebreather | limpet mines",
+   "hp": 70,
+   "range": 55,
+   "damage": 90,
+   "cooldown": 3.5,
+   "cost": 130,
+   "sprite": "red_army_diver"
+  },
+  "patrol_boat": {
+   "name": "G-5 Torpedo Boat",
+   "class": "Planing torpedo boat",
+   "desc": "Small, fast planing boat of 17 t with two 533 mm torpedoes; 50 knots.",
+   "specs": "17 t | 50 kn | 2 torpedoes",
+   "hp": 160,
+   "speed": 130,
+   "range": 185,
+   "damage": 7,
+   "cooldown": 0.2,
+   "cost": 130,
+   "sprite": "red_army_patrol_boat"
+  },
+  "gunboat": {
+   "name": "BK-1124 Armored Boat",
+   "class": "River gunboat",
+   "desc": "Armored river boat with T-34 turret and 76 mm gun; many served on the Danube and Dnieper.",
+   "specs": "45 t | 28 kn | 76 mm",
+   "hp": 430,
+   "armor": 5,
+   "speed": 70,
+   "range": 270,
+   "damage": 34,
+   "cooldown": 1.3,
+   "splash": 24,
+   "cost": 290,
+   "sprite": "red_army_gunboat"
+  },
+  "missile_boat": {
+   "name": "Komsomolets Torpedo Boat",
+   "class": "Torpedo boat",
+   "desc": "Fast patrol craft with two torpedoes and 12.7 mm guns; small but numerous.",
+   "specs": "20 t | 52 kn | 2 torpedoes",
+   "hp": 330,
+   "armor": 2,
+   "speed": 95,
+   "range": 320,
+   "damage": 52,
+   "cooldown": 1.5,
+   "splash": 18,
+   "cost": 390,
+   "sprite": "red_army_missile_boat"
+  },
+  "destroyer": {
+   "name": "Gnevny Destroyer",
+   "class": "Destroyer",
+   "desc": "Project 7 destroyer with four 130 mm guns and 38 knots; 29 built before the war.",
+   "specs": "1,600 t | 38 kn | 4 x 130 mm",
+   "hp": 900,
+   "armor": 8,
+   "speed": 75,
+   "range": 285,
+   "damage": 40,
+   "cooldown": 1.1,
+   "splash": 34,
+   "sub_damage": 115,
+   "cost": 620,
+   "sprite": "red_army_destroyer"
+  },
+  "cruiser": {
+   "name": "Kirov-class Cruiser",
+   "class": "Light cruiser",
+   "desc": "Soviet 9,000 t cruiser with nine 180 mm guns in three triple turrets; Italian-designed.",
+   "specs": "9,000 t | 36 kn | 9 x 180 mm",
+   "hp": 1650,
+   "armor": 14,
+   "speed": 58,
+   "range": 430,
+   "damage": 82,
+   "cooldown": 2.0,
+   "splash": 54,
+   "cost": 1100,
+   "sprite": "red_army_cruiser"
+  },
+  "battleship": {
+   "name": "Sovetsky Soyuz (Project 23)",
+   "class": "Battleship",
+   "desc": "Planned 59,000 t battleship with nine 406 mm guns; hulls were laid down 1938-40 but never completed.",
+   "specs": "59,150 t | 9 x 406 mm | unbuilt",
+   "hp": 3600,
+   "armor": 27,
+   "speed": 38,
+   "range": 580,
+   "damage": 160,
+   "cooldown": 3.2,
+   "splash": 82,
+   "vs": {
+    "structure": 1.5
+   },
+   "cost": 2150,
+   "sprite": "red_army_battleship"
+  },
+  "submarine": {
+   "name": "Shchuka (Shch) Submarine",
+   "class": "Medium submarine",
+   "desc": "Shch-class Pike-class boat with six bow tubes; slow submerged but cheap.",
+   "specs": "590 t | 6 tubes | 10 kn sub",
+   "hp": 330,
+   "armor": 4,
+   "speed": 50,
+   "range": 250,
+   "damage": 240,
+   "cooldown": 4.2,
+   "cost": 530,
+   "sprite": "red_army_submarine"
+  },
+  "mg_turret": {
+   "name": "Maxim M1910 Nest",
+   "class": "Machine-gun nest",
+   "desc": "Water-cooled Maxim on Sokolov wheeled mount; heavy but exceptionally reliable.",
+   "specs": "7.62 mm | 64 kg | 600 rpm",
+   "hp": 380,
+   "armor": 4,
+   "range": 215,
+   "damage": 8,
+   "cooldown": 0.14,
+   "cost": 170,
+   "sprite": "red_army_mg_turret"
+  },
+  "pillbox": {
+   "name": "DOT Pillbox",
+   "class": "Concrete fortification",
+   "desc": "Long-term fire point of the Stalin Line: reinforced concrete with interlocking machine guns.",
+   "specs": "Concrete | MG/ 45 mm",
+   "hp": 760,
+   "armor": 11,
+   "range": 190,
+   "damage": 12,
+   "cooldown": 0.15,
+   "cost": 230,
+   "sprite": "red_army_pillbox"
+  },
+  "at_gun": {
+   "name": "ZiS-3 76 mm Gun",
+   "class": "Divisional gun",
+   "desc": "Cheap, effective 76.2 mm field and anti-tank gun; over 100,000 made.",
+   "specs": "76.2 mm | 1.1 t | 13 km",
+   "hp": 390,
+   "armor": 6,
+   "range": 320,
+   "damage": 95,
+   "cooldown": 1.8,
+   "proj": "shell",
+   "pierce": 12,
+   "vs": {
+    "armor": 1.4
+   },
+   "cost": 300,
+   "sprite": "red_army_at_gun"
+  },
+  "cannon_turret": {
+   "name": "T-34 Turret Bunker",
+   "class": "Dug-in tank turret",
+   "desc": "T-34 turret with 85 mm D-5T dug in on a concrete base; common in the Kursk defenses.",
+   "specs": "85 mm D-5T | turret ring",
+   "hp": 820,
+   "armor": 14,
+   "range": 310,
+   "damage": 62,
+   "cooldown": 2.0,
+   "splash": 35,
+   "cost": 330,
+   "sprite": "red_army_cannon_turret"
+  },
+  "mortar_pit": {
+   "name": "82 mm PM-37 Mortar",
+   "class": "Mortar pit",
+   "desc": "Company-level mortar with ranges up to 3 km; very widely used.",
+   "specs": "82 mm | 56 kg | 3 km",
+   "hp": 250,
+   "armor": 2,
+   "range": 410,
+   "damage": 52,
+   "cooldown": 1.8,
+   "min_range": 90,
+   "splash": 52,
+   "vs": {
+    "infantry": 1.3
+   },
+   "cost": 270,
+   "sprite": "red_army_mortar_pit"
+  },
+  "flak_battery": {
+   "name": "61-K 37 mm AA Gun",
+   "class": "Light AA gun",
+   "desc": "Soviet 37 mm automatic AA gun, a copy of the Bofors; quick-firing.",
+   "specs": "37 mm | 160 rpm | 4 km",
+   "hp": 400,
+   "armor": 4,
+   "range": 320,
+   "damage": 20,
+   "cooldown": 0.5,
+   "splash": 45,
+   "needs_power": false,
+   "cost": 280,
+   "sprite": "red_army_flak_battery"
+  },
+  "sam_site": {
+   "name": "52-K 85 mm AA Gun",
+   "class": "Heavy AA gun",
+   "desc": "85 mm medium AA gun for protecting cities; reaches 10 km.",
+   "specs": "85 mm | 20 rpm | 10 km",
+   "hp": 330,
+   "armor": 3,
+   "range": 410,
+   "damage": 60,
+   "cooldown": 1.4,
+   "proj": "flak",
+   "splash": 50,
+   "splash_air_only": true,
+   "needs_power": false,
+   "cost": 320,
+   "sprite": "red_army_sam_site"
+  },
+  "heavy_battery": {
+   "name": "ML-20 152 mm Battery",
+   "class": "Heavy howitzer",
+   "desc": "Gun-howitzer that doubled as the ISU-152 weapon; strikes up to 17 km.",
+   "specs": "152 mm | 7.2 t | 17 km",
+   "hp": 360,
+   "armor": 4,
+   "range": 670,
+   "damage": 98,
+   "cooldown": 4.0,
+   "min_range": 150,
+   "splash": 95,
+   "cost": 540,
+   "sprite": "red_army_heavy_battery"
+  },
+  "railgun": {
+   "name": "TM-3-12 305 mm Railway Gun",
+   "class": "Railway gun",
+   "desc": "Soviet railway artillery, 305 mm guns on rail carriages, used in the defense of Leningrad.",
+   "specs": "305 mm | 100+ t | 30 km",
+   "hp": 620,
+   "armor": 16,
+   "range": 640,
+   "damage": 300,
+   "cooldown": 4.5,
+   "pierce": 40,
+   "needs_power": false,
+   "cost": 1100,
+   "sprite": "red_army_railgun"
+  },
+  "ciws": {
+   "name": "Maxim Quad AA",
+   "class": "Quad AA mount",
+   "desc": "Four Maxim machine guns on a mount for anti-aircraft work.",
+   "specs": "4 x 7.62 mm | 2,000 rpm",
+   "hp": 380,
+   "armor": 6,
+   "range": 270,
+   "damage": 9,
+   "cooldown": 0.07,
+   "needs_power": false,
+   "cost": 490,
+   "sprite": "red_army_ciws"
+  },
+  "interceptor_battery": {
+   "name": "KS-18 85 mm Barrage",
+   "class": "AA barrage",
+   "desc": "Radar-directed 85 mm guns create a barrage; the best the era had against V-weapons.",
+   "specs": "85 mm | SON-4 radar",
+   "hp": 380,
+   "armor": 4,
+   "range": 600,
+   "damage": 120,
+   "cooldown": 1.7,
+   "cost": 640,
+   "sprite": "red_army_interceptor_battery"
+  },
+  "abm_battery": {
+   "name": "KS-30 130 mm Heavy AA",
+   "class": "Heavy AA",
+   "desc": "Late-war 130 mm AA gun reaching 20 km; effective only in massed barrage use.",
+   "specs": "130 mm | 20 km ceiling",
+   "hp": 560,
+   "armor": 7,
+   "range": 850,
+   "damage": 225,
+   "cooldown": 1.6,
+   "cost": 1150,
+   "sprite": "red_army_abm_battery"
+  },
+  "barricade": {
+   "name": "Dragon's Teeth",
+   "class": "Anti-tank obstacle",
+   "desc": "Concrete pyramids that stop tanks; widely used on the Mannerheim and Stalin lines.",
+   "specs": "Reinforced concrete | 1 m high",
+   "hp": 950,
+   "armor": 14,
+   "cost": 80,
+   "sprite": "red_army_barricade"
+  },
+  "repair_depot": {
+   "name": "Frontline Repair Base",
+   "class": "Repair base",
+   "desc": "Mobile base repairing damaged tanks close to the front.",
+   "specs": "Mobile | winch | forge",
+   "hp": 400,
+   "armor": 4,
+   "heal": {
+    "rate": 20,
+    "radius": 150,
+    "cls": [
+     "vehicle",
+     "armor",
+     "structure"
+    ]
+   },
+   "needs_power": false,
+   "cost": 340,
+   "sprite": "red_army_repair_depot"
+  },
+  "coastal_battery": {
+   "name": "B-13 130 mm Coastal Battery",
+   "class": "Coastal battery",
+   "desc": "Naval 130 mm guns in fixed coastal batteries guarding the Black Sea and Baltic.",
+   "specs": "130 mm B-13 | 25 km",
+   "hp": 760,
+   "armor": 12,
+   "range": 475,
+   "damage": 95,
+   "cooldown": 2.4,
+   "splash": 45,
+   "vs": {
+    "ship": 1.6
+   },
+   "cost": 460,
+   "sprite": "red_army_coastal_battery"
+  },
+  "tactical_missile": {
+   "name": "M-13 Rocket Barrage",
+   "class": "Rocket barrage",
+   "desc": "Massed Katyusha batteries fired at once saturate a target zone.",
+   "specs": "132 mm | volley",
+   "damage": 110,
+   "splash": 70,
+   "cost": 130,
+   "sprite": "red_army_tactical_missile"
+  },
+  "cruise_missile": {
+   "name": "10Kh Flying Bomb",
+   "class": "Cruise missile",
+   "desc": "Soviet copy of the German V-1 tested 1944-45; 900 kg warhead.",
+   "specs": "V-1 copy | pulsejet",
+   "damage": 240,
+   "splash": 105,
+   "cost": 280,
+   "sprite": "red_army_cruise_missile"
+  },
+  "cluster_missile": {
+   "name": "M-30 Rocket Salvo",
+   "class": "Heavy rocket salvo",
+   "desc": "300 mm rockets with 29 kg HE warhead for destroying fortifications.",
+   "specs": "300 mm | 2.8 km | 72 kg",
+   "damage": 165,
+   "splash": 200,
+   "cost": 510,
+   "sprite": "red_army_cluster_missile"
+  },
+  "bunker_buster": {
+   "name": "FAB-5000 Bomb",
+   "class": "Heavy bomb",
+   "desc": "5 t high-explosive bomb dropped by Pe-8 against Helsinki and Berlin.",
+   "specs": "5 t | high-explosive",
+   "damage": 700,
+   "splash": 70,
+   "cost": 650,
+   "sprite": "red_army_bunker_buster"
+  },
+  "ballistic_missile": {
+   "name": "R-1 Rocket",
+   "class": "Ballistic missile",
+   "desc": "Soviet copy of the V-2 (1948) built by Korolev's team; 270 km range.",
+   "specs": "14 t | 270 km | 1 t",
+   "damage": 700,
+   "splash": 175,
+   "cost": 800,
+   "sprite": "red_army_ballistic_missile"
+  },
+  "hypersonic": {
+   "name": "R-2 Rocket",
+   "class": "Improved ballistic",
+   "desc": "R-2 extended the V-2 design to 600 km with a detachable warhead.",
+   "specs": "20 t | 600 km | 1.5 t",
+   "damage": 1000,
+   "splash": 145,
+   "cost": 1250,
+   "sprite": "red_army_hypersonic"
+  },
+  "tactical_nuke": {
+   "name": "RDS-1 'Joe-1'",
+   "class": "First Soviet atomic bomb",
+   "desc": "Copy of the Fat Man implosion design tested 29 Aug 1949; 22 kt yield.",
+   "specs": "22 kt | 4.6 t | Tu-4 drop",
+   "damage": 1900,
+   "splash": 225,
+   "cost": 1700,
+   "sprite": "red_army_tactical_nuke"
+  },
+  "nuke": {
+   "name": "RDS-37 Thermonuclear",
+   "class": "Hydrogen bomb",
+   "desc": "First true Soviet two-stage thermonuclear weapon, tested 1955; 1.6 Mt.",
+   "specs": "1.6 Mt | air dropped",
+   "damage": 3400,
+   "splash": 325,
+   "cost": 2850,
+   "sprite": "red_army_nuke"
+  },
+  "mega_nuke": {
+   "name": "RDS-220 Tsar Bomba",
+   "class": "Superweapon",
+   "desc": "The largest nuclear device ever tested: 50 Mt in 1961 (it was a halved 100 Mt design).",
+   "specs": "50 Mt | 27 t | Tu-95V",
+   "damage": 6800,
+   "splash": 550,
+   "cost": 6250,
+   "sprite": "red_army_mega_nuke"
+  },
+  "shotgunner": {
+   "name": "Shturmovik Trench Raider"
+  },
+  "marksman": {
+   "name": "SVT-40 Marksman"
+  },
+  "mortar_team": {
+   "name": "82-BM-37 Mortar Crew"
+  },
+  "javelin": {
+   "name": "PTRD Anti-Tank Rifle Team"
+  },
+  "riot_trooper": {
+   "name": "SN-42 Steel-Breastplate Trooper"
+  },
+  "sapper": {
+   "name": "Saper Sapper Squad"
+  },
+  "officer": {
+   "name": "Platoon Commander (Politruk)"
+  },
+  "k9": {
+   "name": "Anti-Tank Dog"
+  },
+  "mine_flail": {
+   "name": "PT-3 Mine-Roller Tank"
+  },
+  "torpedo_boat": {
+   "name": "G-5 Torpedo Cutter"
+  },
+  "frigate": {
+   "name": "Kronshtadt SKR Escort"
+  },
+  "minelayer": {
+   "name": "Marti-class Minelayer"
+  },
+  "midget_sub": {
+   "name": "Malyutka-class Midget Sub"
+  },
+  "cruise_sub": {
+   "name": "Project 651 Cruise-Missile Sub"
+  },
+  "sandbag_nest": {
+   "name": "Maxim Sandbag Nest"
+  },
+  "watchtower": {
+   "name": "Soviet Watchtower"
+  },
+  "sniper_nest": {
+   "name": "Sniper Nest (Mosin)"
+  },
+  "flame_bunker": {
+   "name": "ATO Flame Bunker"
+  },
+  "torpedo_battery": {
+   "name": "Coastal Torpedo Battery"
+  },
+  "observation_post": {
+   "name": "Forward Observer Post"
+  }
+ }
+}

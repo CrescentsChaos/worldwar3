@@ -159,7 +159,7 @@ func set_def(d: Dictionary, kind: String, missing: String = "") -> void:
 		if t != "":
 			spec_parts.append(t)
 	_specs.visible = not spec_parts.is_empty()
-	_specs.text = "[color=#ff9e1a]REAL-WORLD DATA[/color]   " + "   [color=#4b524f]|[/color]   ".join(spec_parts) if _specs.visible else ""
+	_specs.text = "[color=#45c7e0]REAL-WORLD DATA[/color]   " + "   [color=#4b524f]|[/color]   ".join(spec_parts) if _specs.visible else ""
 	reset_size()
 
 

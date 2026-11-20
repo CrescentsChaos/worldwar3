@@ -14,7 +14,7 @@ func _init() -> void:
 func _process(delta: float) -> void:
 	_t -= delta
 	if _t <= 0.0:
-		_t = 0.08
+		_t = 0.15
 		queue_redraw()
 
 
@@ -37,7 +37,7 @@ func _draw() -> void:
 		else:
 			rows[int(seen[key])][2] = int(rows[int(seen[key])][2]) + 1
 	var y := size.y
-	var w := 340.0
+	var w := size.x
 	for i in range(rows.size() - 1, -1, -1):
 		var row: Array = rows[i]
 		var pr = row[0]
@@ -46,45 +46,18 @@ func _draw() -> void:
 		var frac := 1.0 - clampf(float(it["left"]) / maxf(float(it["total"]), 0.1), 0.0, 1.0)
 		var powered: bool = pr.online()
 		y -= 25.0
-		draw_rect(Rect2(0, y, w, 22), Color(0.03, 0.035, 0.037, 0.8))
-		draw_rect(Rect2(0, y, 3, 22), MilTheme.AMBER if powered else MilTheme.BAD)
-		draw_rect(Rect2(3, y + 18, (w - 3.0) * frac, 4), Color(MilTheme.AMBER, 0.9))
+		draw_style_box(MilTheme.glass(MilTheme.BG, Color(MilTheme.LINE, 0.5), 8), Rect2(0, y, w, 22))
+		if frac > 0.01:
+			draw_style_box(MilTheme.box(Color(MilTheme.AMBER if powered else MilTheme.BAD, 0.85), Color(0, 0, 0, 0), 0, 0, 0, 2), Rect2(6, y + 18, (w - 12.0) * frac, 3))
 		var tex := SpriteLib.get_texture(str(ud.get("sprite", it["id"])), str(ud.get("shape", "box")))
-		draw_texture_rect(tex, Rect2(8, y + 2, 26, 15), false, SpriteLib.team_tint(0))
+		draw_texture_rect(tex, Rect2(9, y + 3, 26, 15), false, SpriteLib.team_tint(0))
 		var label := str(ud.get("name", it["id"]))
 		if int(row[2]) > 1:
 			label += "  +%d" % (int(row[2]) - 1)
-		draw_string(font, Vector2(40, y + 14), label, HORIZONTAL_ALIGNMENT_LEFT, 190, 12, MilTheme.TEXT)
+		draw_string(font, Vector2(42, y + 14), label, HORIZONTAL_ALIGNMENT_LEFT, w * 0.5, 12, MilTheme.TEXT)
 		var where := str(pr.def.get("name", "")).to_upper() if powered else "NO POWER"
-		draw_string(font, Vector2(150, y + 14), where, HORIZONTAL_ALIGNMENT_RIGHT, 150, 10, MilTheme.DIM if powered else MilTheme.BAD)
-		draw_string(mono, Vector2(w - 36, y + 14), "%d%%" % int(frac * 100.0), HORIZONTAL_ALIGNMENT_RIGHT, 32, 11, MilTheme.AMBER)
+		draw_string(font, Vector2(w * 0.5 - 20.0, y + 14), where, HORIZONTAL_ALIGNMENT_RIGHT, w * 0.5 - 50.0, 10, MilTheme.DIM if powered else MilTheme.BAD)
+		draw_string(mono, Vector2(w - 42, y + 14), "%d%%" % int(frac * 100.0), HORIZONTAL_ALIGNMENT_RIGHT, 34, 11, MilTheme.AMBER)
 	if not rows.is_empty():
 		y -= 16.0
-		draw_string(font, Vector2(2, y + 11), "PRODUCTION", HORIZONTAL_ALIGNMENT_LEFT, -1, 10, MilTheme.AMBER_DIM)
-	# --- selection summary above the production rows
-	var sel: Array = battle.selected
-	if not sel.is_empty():
-		var counts := {}
-		for c in sel:
-			if is_instance_valid(c):
-				var nm := str(c.def.get("name", c.id))
-				counts[nm] = int(counts.get(nm, 0)) + 1
-		var parts: PackedStringArray = []
-		for nm in counts:
-			parts.append("%dx %s" % [int(counts[nm]), str(nm)])
-		var txt := ", ".join(parts)
-		y -= 46.0
-		draw_rect(Rect2(0, y, w, 42), Color(0.03, 0.035, 0.037, 0.82))
-		draw_rect(Rect2(0, y, 3, 42), MilTheme.GOOD)
-		draw_string(font, Vector2(10, y + 14), "SELECTED  %d" % sel.size(), HORIZONTAL_ALIGNMENT_LEFT, -1, 12, MilTheme.GOOD)
-		draw_string(font, Vector2(10, y + 27), txt, HORIZONTAL_ALIGNMENT_LEFT, w - 16.0, 11, MilTheme.TEXT)
-		var ab_counts := {}
-		for c in sel:
-			if is_instance_valid(c):
-				var pa: String = c.primary_active()
-				if pa != "" and c.can_use(pa):
-					ab_counts[pa] = int(ab_counts.get(pa, 0)) + 1
-		var hint := "RMB move  T attack-move  X hold"
-		for pa in ab_counts:
-			hint += "   Z %s x%d" % [Abilities.ability_name(str(pa)), int(ab_counts[pa])]
-		draw_string(font, Vector2(10, y + 39), hint, HORIZONTAL_ALIGNMENT_LEFT, w - 16.0, 9, MilTheme.DIM if ab_counts.is_empty() else MilTheme.AMBER)
+		draw_string(font, Vector2(4, y + 11), "PRODUCTION", HORIZONTAL_ALIGNMENT_LEFT, -1, 10, MilTheme.DIM)

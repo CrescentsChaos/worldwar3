@@ -1,0 +1,1385 @@
+{
+ "name": "Imperial Japanese Army",
+ "era": "WW2 (1937-45, late-war prototypes)",
+ "tagline": "Spirit over steel.",
+ "desc": "Imperial Army and Navy of the Pacific War: fanatical, well-trained infantry, cave and island fortresses and suicide weapons, but light tanks and few resources. The Combined Fleet lends its ships; the nuclear slots are what-ifs from the Ni-Go and F-Go projects.",
+ "mods": [
+  {
+   "match": "tab:infantry",
+   "damage": 1.15,
+   "cost": 0.85
+  },
+  {
+   "match": "tab:vehicles",
+   "hp": 0.9
+  },
+  {
+   "match": "tab:air",
+   "cost": 1.1
+  }
+ ],
+ "income": 1.0,
+ "money": 1.0,
+ "ban": [],
+ "names": {
+  "rifleman": "Type 99 Rifleman",
+  "assault": "Type 100 SMG Trooper",
+  "bazooka": "Type 4 70 mm AT Rocket",
+  "manpads": "Type 92 AA Gunner",
+  "mg_gunner": "Type 96 LMG Gunner",
+  "grenadier": "Type 89 Knee Mortar",
+  "sniper": "Type 97 Sniper",
+  "flamer": "Type 93 Flamethrower",
+  "medic": "Army Medic",
+  "engineer": "Army Engineer",
+  "commando": "Giretsu Raider",
+  "jeep": "Type 95 Kurogane",
+  "armored_car": "Sumida Type 2593",
+  "apc": "Ho-Ha Half-Track",
+  "light_tank": "Type 95 Ha-Go",
+  "tank": "Type 97 Chi-Ha",
+  "heavy_tank": "Type 4 Chi-To",
+  "mammoth": "O-I Super Heavy Tank",
+  "tank_destroyer": "Type 3 Ho-Ni III",
+  "flame_tank": "Chi-Ha Flamethrower Tank",
+  "artillery": "Type 4 Ho-Ro SPG",
+  "howitzer": "Type 45 24 cm Howitzer",
+  "mlrs": "Type 4 20 cm Rocket Launcher",
+  "aa_truck": "Type 98 20 mm AA Truck",
+  "sam_truck": "Ta-Se Anti-Aircraft Tank",
+  "repair_vehicle": "Type 98 So-Ki Recovery Vehicle",
+  "drone": "MXY-7 Ohka",
+  "fighter": "Ki-43 Hayabusa",
+  "interceptor_jet": "Ki-84 Hayate",
+  "stealth_fighter": "J8M Shusui",
+  "strike_jet": "Ki-51 Sonia",
+  "helicopter": "Ka-1 Autogyro",
+  "gunship": "Ki-102b Randy",
+  "light_bomber": "Ki-48 Lily",
+  "bomber": "Ki-67 Hiryu",
+  "heavy_bomber": "Ki-91 Heavy Bomber",
+  "stealth_bomber": "Nakajima G10N Fugaku",
+  "diver": "Fukuryu Diver",
+  "patrol_boat": "Shinyo Suicide Boat",
+  "gunboat": "Hashidate Gunboat",
+  "missile_boat": "Otori Torpedo Boat",
+  "destroyer": "Fubuki Destroyer",
+  "cruiser": "Takao Heavy Cruiser",
+  "battleship": "Yamato",
+  "submarine": "I-400 Submarine",
+  "aircraft_carrier": "Shokaku Carrier",
+  "mg_turret": "Type 92 MG Nest",
+  "pillbox": "Cave Pillbox",
+  "at_gun": "Type 1 47 mm AT Gun",
+  "cannon_turret": "Hillside Casemate",
+  "mortar_pit": "Type 97 81 mm Mortar",
+  "flak_battery": "Type 96 25 mm AA",
+  "sam_site": "Type 88 75 mm AA Gun",
+  "heavy_battery": "Type 96 15 cm Howitzer",
+  "railgun": "41 cm Coastal Gun",
+  "ciws": "Type 96 Triple 25 mm",
+  "interceptor_battery": "Type 88 AA Barrage",
+  "abm_battery": "Type 3 12 cm AA Gun",
+  "barricade": "Log Barricade",
+  "repair_depot": "Field Workshop",
+  "coastal_battery": "15 cm Coastal Battery",
+  "tactical_missile": "I-Go Type 1-A",
+  "cruise_missile": "Fu-Go Balloon Bomb",
+  "cluster_missile": "Type 4 20 cm Barrage",
+  "bunker_buster": "Type 99 No. 80 AP Bomb",
+  "ballistic_missile": "V-2 Derived Rocket (what-if)",
+  "hypersonic": "Kikka Jet Strike",
+  "tactical_nuke": "Ni-Go Fission Bomb (what-if)",
+  "nuke": "F-Go Fission Bomb (what-if)",
+  "mega_nuke": "F-Go Super Bomb (what-if)"
+ },
+ "strategies": {
+  "banzai": {
+   "name": "Banzai Charge",
+   "desc": "Fast, cheap, fanatical infantry. Starts with a screaming horde.",
+   "style": "infantry",
+   "mods": [
+    {
+     "match": "tab:infantry",
+     "speed": 1.25,
+     "cost": 0.7
+    },
+    {
+     "match": "id:drone",
+     "cost": 0.6
+    },
+    {
+     "match": "id:flamer",
+     "cost": 0.8
+    }
+   ],
+   "setup": [
+    [
+     "unit",
+     "rifleman",
+     930,
+     504,
+     12
+    ],
+    [
+     "unit",
+     "assault",
+     950,
+     470,
+     4
+    ],
+    [
+     "unit",
+     "flamer",
+     945,
+     545,
+     2
+    ]
+   ],
+   "income": 1.0,
+   "money": 1.0
+  },
+  "island_fortress": {
+   "name": "Island Fortress",
+   "desc": "Tunnels and cave pillboxes. Starts with a hardened front and coastal guns.",
+   "style": "defense",
+   "mods": [
+    {
+     "match": "kind:structure",
+     "hp": 1.4,
+     "cost": 0.8
+    },
+    {
+     "match": "tab:infantry",
+     "hp": 1.1
+    }
+   ],
+   "setup": [
+    [
+     "structure",
+     "pillbox",
+     970,
+     414.0,
+     1
+    ],
+    [
+     "structure",
+     "pillbox",
+     946,
+     504.0,
+     1
+    ],
+    [
+     "structure",
+     "pillbox",
+     970,
+     594.0,
+     1
+    ],
+    [
+     "structure",
+     "mg_turret",
+     945,
+     439.0,
+     1
+    ],
+    [
+     "structure",
+     "mg_turret",
+     921,
+     569.0,
+     1
+    ],
+    [
+     "structure",
+     "mortar_pit",
+     915,
+     470,
+     1
+    ],
+    [
+     "structure",
+     "mortar_pit",
+     915,
+     540,
+     1
+    ],
+    [
+     "structure",
+     "coastal_battery",
+     700,
+     92,
+     1
+    ],
+    [
+     "structure",
+     "coastal_battery",
+     700,
+     916,
+     1
+    ]
+   ],
+   "income": 1.0,
+   "money": 1.0
+  },
+  "combined_fleet": {
+   "name": "Combined Fleet",
+   "desc": "Lean on the navy. Starts with warships in your waters.",
+   "style": "naval",
+   "mods": [
+    {
+     "match": "tab:navy",
+     "cost": 0.75,
+     "hp": 1.15
+    },
+    {
+     "match": "id:aircraft_carrier",
+     "cost": 0.8
+    }
+   ],
+   "setup": [
+    [
+     "unit",
+     "patrol_boat",
+     450,
+     100,
+     2
+    ],
+    [
+     "unit",
+     "destroyer",
+     500,
+     905,
+     1
+    ],
+    [
+     "unit",
+     "submarine",
+     450,
+     130,
+     1
+    ]
+   ],
+   "income": 1.0,
+   "money": 1.0
+  }
+ },
+ "roster": {
+  "rifleman": {
+   "name": "Type 99 Rifleman",
+   "class": "Bolt-action rifleman",
+   "desc": "Arisaka rifle in 7.7 mm: light, accurate and reliable but a slow-firing bolt action. Standard from 1939.",
+   "specs": "7.7x58 mm | 3.7 kg | 5-rd",
+   "hp": 70,
+   "speed": 52,
+   "range": 135,
+   "damage": 9,
+   "cooldown": 1.1,
+   "cost": 45,
+   "sprite": "ija_rifleman"
+  },
+  "assault": {
+   "name": "Type 100 SMG Trooper",
+   "class": "Submachine gun",
+   "desc": "Japanese SMG with a 30-round curved magazine; fewer than 10,000 built, issued to paratroopers and marines.",
+   "specs": "8x22 mm Nambu | 4.4 kg | 450 rpm",
+   "hp": 78,
+   "speed": 66,
+   "range": 85,
+   "damage": 5,
+   "cooldown": 0.16,
+   "cost": 70,
+   "sprite": "ija_assault"
+  },
+  "bazooka": {
+   "name": "Type 4 70 mm AT Rocket",
+   "class": "Rocket launcher",
+   "desc": "Copy of the US bazooka developed in 1945; a few units fielded before surrender. Used with the Lunge mine and Type 99 hand mine.",
+   "specs": "70 mm | 5.5 kg | 100 m",
+   "hp": 80,
+   "speed": 42,
+   "range": 135,
+   "damage": 58,
+   "cooldown": 3.0,
+   "pierce": 10,
+   "vs": {
+    "armor": 1.25,
+    "vehicle": 1.25
+   },
+   "cost": 100,
+   "sprite": "ija_bazooka"
+  },
+  "manpads": {
+   "name": "Type 92 AA Gunner",
+   "class": "Heavy MG on AA mount",
+   "desc": "7.7 mm Type 92 heavy machine gun on an AA tripod; good against dive bombers, little against armor.",
+   "specs": "7.7 mm | 28 kg | 450 rpm",
+   "hp": 75,
+   "speed": 40,
+   "range": 220,
+   "damage": 8,
+   "cooldown": 0.15,
+   "proj": "bullet",
+   "cost": 115,
+   "sprite": "ija_manpads"
+  },
+  "mg_gunner": {
+   "name": "Type 96 LMG Gunner",
+   "class": "Light machine gun",
+   "desc": "Magazine-fed 6.5 mm LMG with a telescopic sight; cumbersome to carry but accurate.",
+   "specs": "6.5x50 mm | 9.1 kg | 550 rpm",
+   "hp": 88,
+   "armor": 1,
+   "speed": 40,
+   "range": 170,
+   "damage": 6,
+   "cooldown": 0.13,
+   "cost": 95,
+   "sprite": "ija_mg_gunner"
+  },
+  "grenadier": {
+   "name": "Type 89 Knee Mortar",
+   "class": "Grenade discharger",
+   "desc": "50 mm light grenade launcher fired from the ground; quick-reaction support for the infantry squad.",
+   "specs": "50 mm | 4.7 kg | 650 m",
+   "hp": 80,
+   "range": 130,
+   "damage": 28,
+   "cooldown": 1.8,
+   "splash": 32,
+   "vs": {
+    "infantry": 1.3
+   },
+   "cost": 90,
+   "sprite": "ija_grenadier"
+  },
+  "sniper": {
+   "name": "Type 97 Sniper",
+   "class": "Sniper",
+   "desc": "6.5 mm Arisaka with 2.5x scope; Japanese snipers in the jungle tied down units for days.",
+   "specs": "6.5x50 mm | 2.5x scope | 500 m",
+   "hp": 55,
+   "range": 310,
+   "damage": 44,
+   "cooldown": 2.6,
+   "vs": {
+    "infantry": 3.0,
+    "vehicle": 0.3,
+    "armor": 0.08,
+    "structure": 0.1
+   },
+   "cost": 140,
+   "sprite": "ija_sniper"
+  },
+  "flamer": {
+   "name": "Type 93 Flamethrower",
+   "class": "Flamethrower",
+   "desc": "25 kg backpack flamethrower; used by engineers against enemy foxholes and pillboxes.",
+   "specs": "25 kg | 22 m | 10 s fuel",
+   "hp": 100,
+   "armor": 1,
+   "speed": 40,
+   "range": 52,
+   "damage": 9,
+   "cooldown": 0.12,
+   "splash": 26,
+   "pierce": 4,
+   "vs": {
+    "infantry": 1.8,
+    "structure": 1.3
+   },
+   "prefer": [
+    "infantry"
+   ],
+   "cost": 120,
+   "sprite": "ija_flamer"
+  },
+  "medic": {
+   "name": "Army Medic",
+   "class": "Medical orderly",
+   "desc": "Medics with limited supplies; the army had few doctors and no penicillin.",
+   "specs": "Medical kit | stretcher",
+   "hp": 65,
+   "speed": 54,
+   "heal": {
+    "rate": 11,
+    "radius": 120,
+    "cls": [
+     "infantry"
+    ]
+   },
+   "cost": 75,
+   "sprite": "ija_medic"
+  },
+  "engineer": {
+   "name": "Army Engineer",
+   "class": "Engineer",
+   "desc": "Engineers built bunkers and tunnels; Japan's cave defenses were mostly dug by hand.",
+   "specs": "Hand tools | satchel charges",
+   "hp": 90,
+   "heal": {
+    "rate": 22,
+    "radius": 110,
+    "cls": [
+     "vehicle",
+     "armor",
+     "structure"
+    ]
+   },
+   "cost": 120,
+   "sprite": "ija_engineer"
+  },
+  "commando": {
+   "name": "Giretsu Raider",
+   "class": "Special raiding unit",
+   "desc": "Airborne commandos with demolition charges sent to destroy aircraft on American-held airfields.",
+   "specs": "Type 100 SMG | satchel charges",
+   "hp": 130,
+   "armor": 1,
+   "speed": 64,
+   "range": 150,
+   "damage": 14,
+   "cooldown": 0.25,
+   "pierce": 3,
+   "cost": 200,
+   "sprite": "ija_commando"
+  },
+  "jeep": {
+   "name": "Type 95 Kurogane",
+   "class": "Light utility vehicle",
+   "desc": "Light 4x4 'Kurogane' scout car with an air-cooled V-twin engine; the Japanese 'Jeep'.",
+   "specs": "1.1 t | 33 hp | 70 km/h",
+   "hp": 120,
+   "speed": 105,
+   "range": 140,
+   "damage": 7,
+   "cooldown": 0.3,
+   "cost": 90,
+   "sprite": "ija_jeep"
+  },
+  "armored_car": {
+   "name": "Sumida Type 2593",
+   "class": "Armored car",
+   "desc": "Light 6-wheeled armored car used for patrol and escort duty; weakly armed with MGs.",
+   "specs": "6 t | 6x4 | 2 MG",
+   "hp": 190,
+   "armor": 2,
+   "speed": 85,
+   "range": 150,
+   "damage": 9,
+   "cooldown": 0.2,
+   "cost": 120,
+   "sprite": "ija_armored_car"
+  },
+  "apc": {
+   "name": "Ho-Ha Half-Track",
+   "class": "Armored personnel carrier",
+   "desc": "Armored half-track carrying 14 troops; only about 100 built.",
+   "specs": "6.5 t | 14 troops | 8 mm armor",
+   "hp": 330,
+   "armor": 3,
+   "speed": 70,
+   "range": 165,
+   "damage": 8,
+   "cooldown": 0.18,
+   "cargo": [
+    "rifleman",
+    "rifleman",
+    "mg_gunner"
+   ],
+   "cost": 170,
+   "sprite": "ija_apc"
+  },
+  "light_tank": {
+   "name": "Type 95 Ha-Go",
+   "class": "Light tank",
+   "desc": "Light tank with a 37 mm gun and 12 mm armor, outclassed by 1942.",
+   "specs": "7.4 t | 3 crew | 37 mm",
+   "hp": 220,
+   "armor": 3,
+   "speed": 90,
+   "range": 190,
+   "damage": 22,
+   "cooldown": 1.4,
+   "splash": 14,
+   "cost": 140,
+   "sprite": "ija_light_tank"
+  },
+  "tank": {
+   "name": "Type 97 Chi-Ha",
+   "class": "Medium tank",
+   "desc": "Japan's most numerous tank; 47 mm gun and 25 mm armor. Diesel-powered but thin and underpowered by 1944.",
+   "specs": "15 t | 4 crew | 47 mm Type 1",
+   "hp": 400,
+   "armor": 5,
+   "speed": 62,
+   "range": 215,
+   "damage": 32,
+   "cooldown": 1.6,
+   "splash": 18,
+   "cost": 190,
+   "sprite": "ija_tank"
+  },
+  "heavy_tank": {
+   "name": "Type 4 Chi-To",
+   "class": "Medium-heavy tank",
+   "desc": "1944 design with a 75 mm gun and 75 mm front armor; two built before surrender.",
+   "specs": "30 t | 5 crew | 75 mm Type 5",
+   "hp": 780,
+   "armor": 11,
+   "speed": 45,
+   "range": 240,
+   "damage": 48,
+   "cooldown": 1.9,
+   "splash": 28,
+   "cost": 290,
+   "sprite": "ija_heavy_tank"
+  },
+  "mammoth": {
+   "name": "O-I Super Heavy Tank",
+   "class": "Super-heavy prototype",
+   "desc": "Planned 100+ ton tank with three turrets and a 105 mm gun; only a mock-up or incomplete prototype is believed to have existed.",
+   "specs": "~120 t | 11 crew | 105 mm",
+   "hp": 2400,
+   "armor": 20,
+   "speed": 20,
+   "range": 270,
+   "damage": 85,
+   "cooldown": 2.6,
+   "splash": 40,
+   "pierce": 6,
+   "size": 64,
+   "cost": 570,
+   "sprite": "ija_mammoth"
+  },
+  "tank_destroyer": {
+   "name": "Type 3 Ho-Ni III",
+   "class": "Tank destroyer",
+   "desc": "Chi-Ha hull with a 75 mm Type 3 gun in an open-topped shield; best Japanese tank killer, 31 produced.",
+   "specs": "16 t | 4 crew | 75 mm Type 3",
+   "hp": 330,
+   "armor": 6,
+   "speed": 54,
+   "range": 300,
+   "damage": 85,
+   "cooldown": 2.4,
+   "pierce": 14,
+   "vs": {
+    "armor": 1.4,
+    "infantry": 0.6
+   },
+   "cost": 270,
+   "sprite": "ija_tank_destroyer"
+  },
+  "flame_tank": {
+   "name": "Chi-Ha Flamethrower Tank",
+   "class": "Experimental flame tank",
+   "desc": "Chi-Ha with a flame projector replacing the hull MG; only prototypes were built.",
+   "specs": "Prototype | flame | ~50 m",
+   "hp": 380,
+   "armor": 5,
+   "speed": 58,
+   "range": 80,
+   "damage": 11,
+   "cooldown": 0.12,
+   "splash": 34,
+   "pierce": 5,
+   "cost": 230,
+   "sprite": "ija_flame_tank"
+  },
+  "artillery": {
+   "name": "Type 4 Ho-Ro SPG",
+   "class": "Self-propelled gun",
+   "desc": "Chi-Ha chassis with a 15 cm Type 38 howitzer; heavy firepower on a light chassis, only 25 built.",
+   "specs": "15 cm Type 38 | 4 crew | 14 t",
+   "hp": 160,
+   "armor": 2,
+   "speed": 30,
+   "range": 400,
+   "damage": 70,
+   "cooldown": 3.5,
+   "min_range": 110,
+   "splash": 80,
+   "cost": 380,
+   "sprite": "ija_artillery"
+  },
+  "howitzer": {
+   "name": "Type 45 24 cm Howitzer",
+   "class": "Siege howitzer",
+   "desc": "Old 240 mm siege gun used at Port Arthur in 1904 and later as fixed heavy artillery; needs a railway or tractors.",
+   "specs": "240 mm | 34 t | 10 km",
+   "hp": 260,
+   "armor": 2,
+   "speed": 14,
+   "range": 560,
+   "damage": 130,
+   "cooldown": 6.0,
+   "min_range": 200,
+   "splash": 100,
+   "vs": {
+    "structure": 1.4
+   },
+   "cost": 580,
+   "sprite": "ija_howitzer"
+  },
+  "mlrs": {
+   "name": "Type 4 20 cm Rocket Launcher",
+   "class": "Rocket launcher",
+   "desc": "Single-tube spigot launcher for 20 cm rockets; used on Iwo Jima and Okinawa from caves.",
+   "specs": "200 mm | 83 kg warhead | 2.4 km",
+   "hp": 180,
+   "speed": 38,
+   "range": 330,
+   "damage": 60,
+   "cooldown": 1.8,
+   "min_range": 110,
+   "splash": 75,
+   "cost": 490,
+   "sprite": "ija_mlrs"
+  },
+  "aa_truck": {
+   "name": "Type 98 20 mm AA Truck",
+   "class": "Truck-mounted AA gun",
+   "desc": "Twin 20 mm AA cannon on a truck; common air defense for airfields.",
+   "specs": "2x 20 mm | truck chassis",
+   "hp": 240,
+   "speed": 62,
+   "range": 260,
+   "damage": 14,
+   "cooldown": 0.18,
+   "cost": 240,
+   "sprite": "ija_aa_truck"
+  },
+  "sam_truck": {
+   "name": "Ta-Se Anti-Aircraft Tank",
+   "class": "SPAAG",
+   "desc": "Chi-Ha chassis with twin 20 mm cannon; a prototype built in 1944.",
+   "specs": "Prototype | 2x 20 mm | 4 crew",
+   "hp": 330,
+   "armor": 4,
+   "speed": 55,
+   "range": 275,
+   "damage": 20,
+   "cooldown": 0.14,
+   "targets": [
+    "air",
+    "ground"
+   ],
+   "cost": 430,
+   "sprite": "ija_sam_truck"
+  },
+  "repair_vehicle": {
+   "name": "Type 98 So-Ki Recovery Vehicle",
+   "class": "Engineer vehicle",
+   "desc": "Light recovery and engineer vehicle with winch.",
+   "specs": "Prototype tractor | winch",
+   "hp": 360,
+   "armor": 3,
+   "speed": 58,
+   "heal": {
+    "rate": 24,
+    "radius": 120,
+    "cls": [
+     "vehicle",
+     "armor"
+    ]
+   },
+   "cost": 190,
+   "sprite": "ija_repair_vehicle"
+  },
+  "drone": {
+   "name": "MXY-7 Ohka",
+   "class": "Piloted rocket glider",
+   "desc": "Dropped from a Betty bomber, the Ohka dived at 800 km/h with a 1,200 kg warhead; pilots did not survive.",
+   "specs": "2.1 t | 1.2 t warhead | rocket",
+   "hp": 50,
+   "speed": 300,
+   "damage": 230,
+   "splash": 85,
+   "size": 13,
+   "cost": 110,
+   "sprite": "ija_drone"
+  },
+  "fighter": {
+   "name": "Ki-43 Hayabusa",
+   "class": "Light fighter",
+   "desc": "Agile with long range, but with only two 12.7 mm MGs and little armor. Called Oscar by the Allies.",
+   "specs": "Ha-115 | 2 x 12.7 mm | 530 km/h",
+   "hp": 150,
+   "speed": 200,
+   "range": 210,
+   "damage": 11,
+   "cooldown": 0.26,
+   "cost": 310,
+   "sprite": "ija_fighter"
+  },
+  "interceptor_jet": {
+   "name": "Ki-84 Hayate",
+   "class": "Fighter",
+   "desc": "One of the best Japanese fighters, carrying two 20 mm and two 12.7 mm guns; reliability suffered from fuel and parts quality.",
+   "specs": "Ha-45 | 2x 20 mm + 2x 12.7 | 624 km/h",
+   "hp": 210,
+   "speed": 225,
+   "range": 240,
+   "damage": 22,
+   "cooldown": 0.24,
+   "vs": {
+    "air": 1.35
+   },
+   "cost": 490,
+   "sprite": "ija_interceptor_jet"
+  },
+  "stealth_fighter": {
+   "name": "J8M Shusui",
+   "class": "Rocket interceptor",
+   "desc": "Licence-built Me 163; rocket motor gave 30-minute engine duration but exploded often. One flew in July 1945.",
+   "specs": "Rocket | 2x 30 mm | prototype",
+   "hp": 150,
+   "speed": 350,
+   "range": 200,
+   "damage": 28,
+   "cooldown": 0.3,
+   "stealth": 0,
+   "cost": 600,
+   "sprite": "ija_stealth_fighter"
+  },
+  "strike_jet": {
+   "name": "Ki-51 Sonia",
+   "class": "Ground-attack plane",
+   "desc": "Light ground-attack aircraft with 12.7 mm MGs and small bombs; used for close air support in China.",
+   "specs": "Ha-26 | 2 x 12.7 mm | 424 km/h",
+   "hp": 190,
+   "speed": 145,
+   "range": 190,
+   "damage": 24,
+   "cooldown": 0.35,
+   "pierce": 5,
+   "vs": {
+    "armor": 1.2
+   },
+   "cost": 310,
+   "sprite": "ija_strike_jet"
+  },
+  "helicopter": {
+   "name": "Ka-1 Autogyro",
+   "class": "Autogyro",
+   "desc": "Army autogyro that took off from escort carriers to hunt submarines with two 30 kg depth charges.",
+   "specs": "Autogyro | 60 kg bombs | 2 crew",
+   "hp": 200,
+   "speed": 90,
+   "range": 150,
+   "damage": 6,
+   "cooldown": 0.2,
+   "targets": [
+    "ground",
+    "sub"
+   ],
+   "sub_damage": 80,
+   "sub_splash": 40,
+   "cost": 320,
+   "sprite": "ija_helicopter"
+  },
+  "gunship": {
+   "name": "Ki-102b Randy",
+   "class": "Heavy fighter",
+   "desc": "Twin-engine assault aircraft with a 57 mm Ho-401 cannon for tank and bomber destruction; few built.",
+   "specs": "Ho-401 57 mm | 2 crew",
+   "hp": 380,
+   "armor": 2,
+   "speed": 140,
+   "range": 220,
+   "damage": 70,
+   "cooldown": 1.3,
+   "proj": "shell",
+   "pierce": 12,
+   "splash": 14,
+   "vs": {
+    "armor": 1.4
+   },
+   "targets": [
+    "ground"
+   ],
+   "cost": 430,
+   "sprite": "ija_gunship"
+  },
+  "light_bomber": {
+   "name": "Ki-48 Lily",
+   "class": "Light bomber",
+   "desc": "Fast twin-engine light bomber that proved vulnerable to fighters.",
+   "specs": "Ha-115 x2 | 3 crew | 400 kg",
+   "hp": 240,
+   "speed": 170,
+   "damage": 70,
+   "splash": 62,
+   "cost": 340,
+   "sprite": "ija_light_bomber"
+  },
+  "bomber": {
+   "name": "Ki-67 Hiryu",
+   "class": "Medium bomber",
+   "desc": "Considered the best Japanese bomber; could carry a torpedo or 800 kg of bombs.",
+   "specs": "Ha-104 x2 | 6 crew | 800 kg",
+   "hp": 420,
+   "speed": 165,
+   "damage": 105,
+   "splash": 85,
+   "cost": 590,
+   "sprite": "ija_bomber"
+  },
+  "heavy_bomber": {
+   "name": "Ki-91 Heavy Bomber",
+   "class": "Planned heavy bomber",
+   "desc": "Four-engine bomber planned to match the B-17; the prototype was not completed before surrender.",
+   "specs": "Planned | 4 engines | 5 t",
+   "hp": 800,
+   "armor": 3,
+   "speed": 150,
+   "damage": 160,
+   "cooldown": 0.55,
+   "splash": 118,
+   "vs": {
+    "structure": 1.5
+   },
+   "cost": 1050,
+   "sprite": "ija_heavy_bomber"
+  },
+  "stealth_bomber": {
+   "name": "Nakajima G10N Fugaku",
+   "class": "Planned superbomber",
+   "desc": "Six-engine bomber intended to hit US cities from Japan; never built.",
+   "specs": "Planned | 6 engines | 20 t",
+   "hp": 1000,
+   "armor": 4,
+   "speed": 170,
+   "damage": 230,
+   "cooldown": 0.9,
+   "splash": 130,
+   "stealth": 0,
+   "vs": {
+    "structure": 1.4
+   },
+   "cost": 2100,
+   "sprite": "ija_stealth_bomber"
+  },
+  "diver": {
+   "name": "Fukuryu Diver",
+   "class": "Suicide diver",
+   "desc": "Crawling Dragon suicide divers waited under water for landing craft and detonated a pole mine against them.",
+   "specs": "Diving suit | 15 kg mine pole",
+   "hp": 65,
+   "speed": 48,
+   "range": 18,
+   "damage": 110,
+   "cooldown": 0.5,
+   "kamikaze": true,
+   "splash": 40,
+   "vs": {
+    "ship": 2.5,
+    "structure": 1.3,
+    "vehicle": 1.4
+   },
+   "cost": 150,
+   "sprite": "ija_diver"
+  },
+  "patrol_boat": {
+   "name": "Shinyo Suicide Boat",
+   "class": "Explosive motorboat",
+   "desc": "Plywood motorboat carrying a 250 kg charge. Thousands were built for the home defense.",
+   "specs": "1.5 t | 250 kg charge | 28 kn",
+   "hp": 90,
+   "speed": 125,
+   "range": 16,
+   "damage": 210,
+   "cooldown": 0.5,
+   "kamikaze": true,
+   "splash": 55,
+   "size": 32,
+   "vs": {
+    "ship": 1.6
+   },
+   "cost": 120,
+   "sprite": "ija_patrol_boat"
+  },
+  "gunboat": {
+   "name": "Hashidate Gunboat",
+   "class": "River gunboat",
+   "desc": "River gunboat designed for the China coast, with light guns and MGs.",
+   "specs": "340 t | 17 kn | light guns",
+   "hp": 380,
+   "armor": 3,
+   "speed": 65,
+   "range": 260,
+   "damage": 30,
+   "cooldown": 1.4,
+   "splash": 22,
+   "cost": 240,
+   "sprite": "ija_gunboat"
+  },
+  "missile_boat": {
+   "name": "Otori Torpedo Boat",
+   "class": "Torpedo boat",
+   "desc": "1937 class with 12 cm guns and three torpedo tubes, fast but fragile.",
+   "specs": "~1,000 t | 30 kn | 3 tubes",
+   "hp": 340,
+   "armor": 2,
+   "speed": 95,
+   "range": 310,
+   "damage": 50,
+   "cooldown": 1.5,
+   "proj": "shell",
+   "splash": 20,
+   "cost": 390,
+   "sprite": "ija_missile_boat"
+  },
+  "destroyer": {
+   "name": "Fubuki Destroyer",
+   "class": "Destroyer",
+   "desc": "First 'Special Type' destroyer with six 12.7 cm guns and nine torpedo tubes; fast and powerful for its day.",
+   "specs": "2,050 t | 38 kn | 6 x 12.7 cm",
+   "hp": 900,
+   "armor": 7,
+   "speed": 78,
+   "range": 280,
+   "damage": 38,
+   "cooldown": 1.1,
+   "splash": 32,
+   "sub_damage": 110,
+   "cost": 590,
+   "sprite": "ija_destroyer"
+  },
+  "cruiser": {
+   "name": "Takao Heavy Cruiser",
+   "class": "Heavy cruiser",
+   "desc": "Ten 20 cm guns and 16 torpedo tubes in a 13,000 t hull; fast and formidable at night.",
+   "specs": "13,000 t | 35 kn | 10 x 20 cm",
+   "hp": 1700,
+   "armor": 14,
+   "speed": 60,
+   "range": 430,
+   "damage": 84,
+   "cooldown": 2.0,
+   "splash": 56,
+   "cost": 1100,
+   "sprite": "ija_cruiser"
+  },
+  "battleship": {
+   "name": "Yamato",
+   "class": "Battleship",
+   "desc": "Largest battleship ever built: nine 46 cm guns and 410 mm armor. Sunk in April 1945 after air attack.",
+   "specs": "72,800 t | 27 kn | 9 x 46 cm",
+   "hp": 3800,
+   "armor": 28,
+   "speed": 38,
+   "range": 590,
+   "damage": 160,
+   "cooldown": 3.3,
+   "splash": 85,
+   "vs": {
+    "structure": 1.5
+   },
+   "cost": 2200,
+   "sprite": "ija_battleship"
+  },
+  "submarine": {
+   "name": "I-400 Submarine",
+   "class": "Aircraft-carrying submarine",
+   "desc": "Largest pre-nuclear submarine, with three Aichi M6A seaplane bombers and eight torpedo tubes.",
+   "specs": "6,500 t | 8 kn sub | 3 aircraft",
+   "hp": 520,
+   "armor": 4,
+   "speed": 46,
+   "range": 250,
+   "damage": 240,
+   "cooldown": 4.4,
+   "cost": 630,
+   "sprite": "ija_submarine"
+  },
+  "aircraft_carrier": {
+   "name": "Shokaku Carrier",
+   "class": "Fleet carrier",
+   "desc": "Pearl Harbor veteran with up to 84 aircraft; sunk in June 1944 at the Philippine Sea.",
+   "specs": "25,675 t | 34 kn | 84 aircraft",
+   "hp": 3700,
+   "armor": 13,
+   "speed": 38,
+   "spawn_every": 24,
+   "cost": 2400,
+   "sprite": "ija_aircraft_carrier"
+  },
+  "mg_turret": {
+   "name": "Type 92 MG Nest",
+   "class": "Machine-gun nest",
+   "desc": "Heavy 7.7 mm MG in a log-and-coconut bunker.",
+   "specs": "7.7 mm | 55 kg | 450 rpm",
+   "hp": 400,
+   "armor": 4,
+   "range": 215,
+   "damage": 8,
+   "cooldown": 0.14,
+   "cost": 170,
+   "sprite": "ija_mg_turret"
+  },
+  "pillbox": {
+   "name": "Cave Pillbox",
+   "class": "Cave fortification",
+   "desc": "Reinforced cave positions with interlocking fields of fire, as at Iwo Jima.",
+   "specs": "Cave | concrete | MG/ 47 mm",
+   "hp": 820,
+   "armor": 12,
+   "range": 190,
+   "damage": 12,
+   "cooldown": 0.15,
+   "cost": 240,
+   "sprite": "ija_pillbox"
+  },
+  "at_gun": {
+   "name": "Type 1 47 mm AT Gun",
+   "class": "Anti-tank gun",
+   "desc": "Effective against Shermans at short range; Japan's best AT gun but with too few shells.",
+   "specs": "47 mm | 0.8 t | 650 m pen.",
+   "hp": 380,
+   "armor": 6,
+   "range": 300,
+   "damage": 85,
+   "cooldown": 1.8,
+   "proj": "shell",
+   "pierce": 10,
+   "vs": {
+    "armor": 1.4
+   },
+   "cost": 270,
+   "sprite": "ija_at_gun"
+  },
+  "cannon_turret": {
+   "name": "Hillside Casemate",
+   "class": "Hillside gun",
+   "desc": "75 mm gun in a hillside cave with a steel door; hard to find, hard to hit.",
+   "specs": "75 mm | cave embrasure",
+   "hp": 860,
+   "armor": 14,
+   "range": 310,
+   "damage": 58,
+   "cooldown": 2.0,
+   "splash": 35,
+   "cost": 330,
+   "sprite": "ija_cannon_turret"
+  },
+  "mortar_pit": {
+   "name": "Type 97 81 mm Mortar",
+   "class": "Mortar pit",
+   "desc": "Light mortar well hidden in caves and reverse slopes.",
+   "specs": "81 mm | 66 kg | 3 km",
+   "hp": 260,
+   "armor": 2,
+   "range": 410,
+   "damage": 52,
+   "cooldown": 1.9,
+   "min_range": 90,
+   "splash": 52,
+   "vs": {
+    "infantry": 1.3
+   },
+   "cost": 270,
+   "sprite": "ija_mortar_pit"
+  },
+  "flak_battery": {
+   "name": "Type 96 25 mm AA",
+   "class": "Light AA gun",
+   "desc": "Standard 25 mm AA gun; fed by 15-round magazines and slow-firing.",
+   "specs": "25 mm | 110 rpm | 3 km",
+   "hp": 410,
+   "armor": 4,
+   "range": 310,
+   "damage": 16,
+   "cooldown": 0.4,
+   "splash": 40,
+   "needs_power": false,
+   "cost": 270,
+   "sprite": "ija_flak_battery"
+  },
+  "sam_site": {
+   "name": "Type 88 75 mm AA Gun",
+   "class": "Medium AA gun",
+   "desc": "75 mm anti-aircraft gun reaching 9 km.",
+   "specs": "75 mm | 20 rpm | 9 km",
+   "hp": 330,
+   "armor": 3,
+   "range": 390,
+   "damage": 58,
+   "cooldown": 1.4,
+   "proj": "flak",
+   "splash": 48,
+   "splash_air_only": true,
+   "needs_power": false,
+   "cost": 310,
+   "sprite": "ija_sam_site"
+  },
+  "heavy_battery": {
+   "name": "Type 96 15 cm Howitzer",
+   "class": "Heavy howitzer",
+   "desc": "Standard Japanese medium howitzer; 15 cm shell out to 11 km.",
+   "specs": "15 cm | 4.1 t | 11 km",
+   "hp": 360,
+   "armor": 4,
+   "range": 640,
+   "damage": 92,
+   "cooldown": 4.0,
+   "min_range": 150,
+   "splash": 92,
+   "cost": 520,
+   "sprite": "ija_heavy_battery"
+  },
+  "railgun": {
+   "name": "41 cm Coastal Gun",
+   "class": "Heavy coastal gun",
+   "desc": "Large-caliber coastal artillery, with turret and ammunition lifts similar to those on a battleship.",
+   "specs": "41 cm | 100+ t | 30 km",
+   "hp": 620,
+   "armor": 16,
+   "range": 650,
+   "damage": 320,
+   "cooldown": 4.8,
+   "pierce": 38,
+   "needs_power": false,
+   "cost": 1100,
+   "sprite": "ija_railgun"
+  },
+  "ciws": {
+   "name": "Type 96 Triple 25 mm",
+   "class": "Triple AA mount",
+   "desc": "Three 25 mm guns on one mount, the main light AA weapon of the fleet and coastal forts.",
+   "specs": "3 x 25 mm | 3 km",
+   "hp": 380,
+   "armor": 6,
+   "range": 270,
+   "damage": 11,
+   "cooldown": 0.1,
+   "needs_power": false,
+   "cost": 460,
+   "sprite": "ija_ciws"
+  },
+  "interceptor_battery": {
+   "name": "Type 88 AA Barrage",
+   "class": "AA barrage",
+   "desc": "Concentrated 75 mm AA guns firing a barrage against incoming rockets and aircraft.",
+   "specs": "75 mm | barrage fire",
+   "hp": 380,
+   "armor": 4,
+   "range": 590,
+   "damage": 118,
+   "cooldown": 1.8,
+   "cost": 620,
+   "sprite": "ija_interceptor_battery"
+  },
+  "abm_battery": {
+   "name": "Type 3 12 cm AA Gun",
+   "class": "Heavy AA gun",
+   "desc": "12 cm AA gun reaching 13 km; there were few and the Japanese lacked radar directors for them.",
+   "specs": "12 cm | 13 km ceiling",
+   "hp": 560,
+   "armor": 7,
+   "range": 830,
+   "damage": 220,
+   "cooldown": 1.7,
+   "cost": 1100,
+   "sprite": "ija_abm_battery"
+  },
+  "barricade": {
+   "name": "Log Barricade",
+   "class": "Timber obstacle",
+   "desc": "Coconut-log barricades and wire used on the island beaches.",
+   "specs": "Logs | earth",
+   "hp": 850,
+   "armor": 12,
+   "cost": 75,
+   "sprite": "ija_barricade"
+  },
+  "repair_depot": {
+   "name": "Field Workshop",
+   "class": "Maintenance depot",
+   "desc": "Mobile workshop with tools and spare parts.",
+   "specs": "Mobile | forge",
+   "hp": 400,
+   "armor": 4,
+   "heal": {
+    "rate": 18,
+    "radius": 150,
+    "cls": [
+     "vehicle",
+     "armor",
+     "structure"
+    ]
+   },
+   "needs_power": false,
+   "cost": 320,
+   "sprite": "ija_repair_depot"
+  },
+  "coastal_battery": {
+   "name": "15 cm Coastal Battery",
+   "class": "Coastal gun",
+   "desc": "Coast defense guns in concrete casemates covering the beaches and harbors.",
+   "specs": "15 cm | 20 km | casemate",
+   "hp": 780,
+   "armor": 12,
+   "range": 470,
+   "damage": 92,
+   "cooldown": 2.4,
+   "splash": 45,
+   "vs": {
+    "ship": 1.6
+   },
+   "cost": 460,
+   "sprite": "ija_coastal_battery"
+  },
+  "tactical_missile": {
+   "name": "I-Go Type 1-A",
+   "class": "Radio-guided missile",
+   "desc": "Radio-guided glide bomb (Ki-148), built in small numbers and not used in combat.",
+   "specs": "Prototype | 800 kg",
+   "damage": 125,
+   "splash": 72,
+   "cost": 140,
+   "sprite": "ija_tactical_missile"
+  },
+  "cruise_missile": {
+   "name": "Fu-Go Balloon Bomb",
+   "class": "Balloon bomb",
+   "desc": "Hydrogen balloons carrying incendiary and anti-personnel bombs across the Pacific to North America.",
+   "specs": "Balloon | 15 kg bombs | 9,000 launched",
+   "damage": 230,
+   "splash": 100,
+   "cost": 270,
+   "sprite": "ija_cruise_missile"
+  },
+  "cluster_missile": {
+   "name": "Type 4 20 cm Barrage",
+   "class": "Rocket barrage",
+   "desc": "Barrage of 20 cm rockets fired from caves and reverse slopes.",
+   "specs": "200 mm | salvo",
+   "damage": 160,
+   "splash": 195,
+   "cost": 490,
+   "sprite": "ija_cluster_missile"
+  },
+  "bunker_buster": {
+   "name": "Type 99 No. 80 AP Bomb",
+   "class": "Armor-piercing bomb",
+   "desc": "800 kg bomb made from battleship shells; used at Pearl Harbor against USS Arizona.",
+   "specs": "800 kg | AP | 16-in derived",
+   "damage": 600,
+   "splash": 68,
+   "cost": 560,
+   "sprite": "ija_bunker_buster"
+  },
+  "ballistic_missile": {
+   "name": "V-2 Derived Rocket (what-if)",
+   "class": "Ballistic rocket",
+   "desc": "Never built; what-if weapon. Japan received V-2 plans by submarine but built nothing like it.",
+   "specs": "What-if | ~300 km",
+   "damage": 650,
+   "splash": 170,
+   "cost": 740,
+   "sprite": "ija_ballistic_missile"
+  },
+  "hypersonic": {
+   "name": "Kikka Jet Strike",
+   "class": "Jet attack bomber",
+   "desc": "Nakajima Kikka was Japan's first jet; one prototype flew in Aug 1945 as an experimental attack plane.",
+   "specs": "Ne-20 jet | 500 kg bomb | prototype",
+   "damage": 1000,
+   "splash": 145,
+   "cost": 1250,
+   "sprite": "ija_hypersonic"
+  },
+  "tactical_nuke": {
+   "name": "Ni-Go Fission Bomb (what-if)",
+   "class": "Atomic bomb",
+   "desc": "Never built; what-if weapon. RIKEN's Ni-Go program under Nishina never reached a working device.",
+   "specs": "What-if | 20 kt class",
+   "damage": 1800,
+   "splash": 220,
+   "cost": 1600,
+   "sprite": "ija_tactical_nuke"
+  },
+  "nuke": {
+   "name": "F-Go Fission Bomb (what-if)",
+   "class": "Atomic bomb",
+   "desc": "Never built; what-if weapon. Kyoto's F-Go research lacked uranium and funding.",
+   "specs": "What-if | 20 kt class",
+   "damage": 3200,
+   "splash": 320,
+   "cost": 2650,
+   "sprite": "ija_nuke"
+  },
+  "mega_nuke": {
+   "name": "F-Go Super Bomb (what-if)",
+   "class": "Superweapon",
+   "desc": "Never built; what-if weapon. Pure fiction for game balance.",
+   "specs": "What-if | superweapon",
+   "damage": 6200,
+   "splash": 520,
+   "cost": 5550,
+   "sprite": "ija_mega_nuke"
+  },
+  "shotgunner": {
+   "name": "Type 100 Close-Combat Trooper"
+  },
+  "marksman": {
+   "name": "Type 99 Marksman"
+  },
+  "mortar_team": {
+   "name": "Type 97 81mm Mortar Team"
+  },
+  "javelin": {
+   "name": "Type 4 70mm AT Launcher Team"
+  },
+  "riot_trooper": {
+   "name": "Armoured Assault Soldier"
+  },
+  "sapper": {
+   "name": "IJA Engineer Sapper"
+  },
+  "officer": {
+   "name": "Shoi Platoon Commander"
+  },
+  "k9": {
+   "name": "Explosive Dog"
+  },
+  "mine_flail": {
+   "name": "Type 97 Mine-Roller Tank"
+  },
+  "torpedo_boat": {
+   "name": "Type 5 Torpedo Boat"
+  },
+  "frigate": {
+   "name": "Type C Kaibokan Escort"
+  },
+  "minelayer": {
+   "name": "Okinoshima-class Minelayer"
+  },
+  "midget_sub": {
+   "name": "Type A Ko-hyoteki Midget Sub"
+  },
+  "cruise_sub": {
+   "name": "I-400 Sen-Toku Missile Sub (what-if)"
+  },
+  "sandbag_nest": {
+   "name": "Type 92 Sandbag Nest"
+  },
+  "watchtower": {
+   "name": "IJA Watchtower"
+  },
+  "sniper_nest": {
+   "name": "Sniper Nest (Type 97)"
+  },
+  "flame_bunker": {
+   "name": "Type 93 Flame Bunker"
+  },
+  "torpedo_battery": {
+   "name": "Type 93 Shore Torpedo Tubes"
+  },
+  "observation_post": {
+   "name": "Observation Post"
+  }
+ }
+}

@@ -1,10 +1,17 @@
 extends Node
-## Loads all unit / weapon / balance data from res://data/units.json.
-## Drop a modified copy at user://units.json to override the bundled one
-## without touching the project (handy for balance mods).
+## Loads all unit / weapon / balance / map data from the res://data/ folder.
+##
+## The data is split into small files (see tools/datafiles.py for the full layout):
+##   settings.json  logistics.json  projectiles.json  national.json  strategic.json  country.json
+##   units/<tab>.json   structures/<tab>.json   factions/<army>.json   maps/<map>.json
+## Every file is a dictionary; the files of a folder are merged. To mod without touching the project,
+## put a file with the same relative path under user://data/ (it replaces the bundled one) or add NEW files
+## to user://data/units/ etc. (their entries are merged in). A legacy single-file user://units.json still
+## works and replaces the whole bundled data set.
 
-const DATA_PATH := "res://data/units.json"
-const USER_OVERRIDE := "user://units.json"
+const DATA_DIR := "res://data/"
+const USER_DIR := "user://data/"
+const LEGACY_USER := "user://units.json"
 
 var settings: Dictionary = {}
 var base: Dictionary = {}
@@ -15,8 +22,12 @@ var strategic: Dictionary = {}
 var projectiles: Dictionary = {}
 var tabs: Array = []
 var capabilities: Dictionary = {}   # capability id -> display name
-var country: Array = []             # [[national_id, x_from_own_edge, y], ...]
-var factions: Dictionary = {}       # army factions (prematch build), see units.json "factions"
+var country: Array = []             # [[national_id, x_from_own_edge, y], ...] of the current map
+var factions: Dictionary = {}       # army factions (prematch build), see data/factions
+var logistics: Dictionary = {}      # mobility, ammo, transport, flight and sector tuning (data/logistics.json)
+var maps: Dictionary = {}           # map id -> map definition (data/maps)
+var default_country: Array = []
+var current_map := "dnieper"
 var team_faction: Array = ["", ""]  # chosen faction id per team ("" = generic roster)
 var team_strategy: Array = ["", ""]
 var _team_cache: Array = [{}, {}]
@@ -27,17 +38,95 @@ func _ready() -> void:
 	reload()
 
 
-func reload() -> void:
-	var parsed: Variant = null
-	if FileAccess.file_exists(USER_OVERRIDE):
-		parsed = JSON.parse_string(FileAccess.get_file_as_string(USER_OVERRIDE))
-		if typeof(parsed) != TYPE_DICTIONARY:
-			push_warning("user://units.json is not valid JSON - using bundled data")
-			parsed = null
+# ------------------------------------------------------------------ file helpers
+
+func _path_for(rel: String) -> String:
+	if FileAccess.file_exists(USER_DIR + rel):
+		return USER_DIR + rel
+	return DATA_DIR + rel
+
+
+func _read_json(path: String) -> Variant:
+	if not FileAccess.file_exists(path):
+		return null
+	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(path))
 	if parsed == null:
-		parsed = JSON.parse_string(FileAccess.get_file_as_string(DATA_PATH))
-	if typeof(parsed) != TYPE_DICTIONARY:
-		push_error("Could not parse " + DATA_PATH)
+		push_warning("Invalid JSON: " + path)
+	return parsed
+
+
+func _read_dict(rel: String) -> Dictionary:
+	var v: Variant = _read_json(_path_for(rel))
+	if typeof(v) == TYPE_DICTIONARY:
+		var d: Dictionary = v
+		return d
+	return {}
+
+
+## Names of the .json files of a data sub folder, bundled and user-added, sorted.
+func _json_names(sub: String) -> Array:
+	var seen := {}
+	for root in [DATA_DIR, USER_DIR]:
+		var da := DirAccess.open(str(root) + sub)
+		if da == null:
+			continue
+		for f in da.get_files():
+			var fname: String = f
+			if fname.ends_with(".json"):
+				seen[fname] = true
+	var names: Array = seen.keys()
+	names.sort()
+	return names
+
+
+## Merges every <sub>/*.json (each file is {id: definition}).
+func _merge_folder(sub: String) -> Dictionary:
+	var out: Dictionary = {}
+	for n in _json_names(sub):
+		var part: Dictionary = _read_dict(sub + "/" + str(n))
+		for k in part:
+			out[k] = part[k]
+	return out
+
+
+## Every <sub>/<id>.json is one entry keyed by its file name (factions, maps).
+func _keyed_folder(sub: String) -> Dictionary:
+	var out: Dictionary = {}
+	for n in _json_names(sub):
+		var fname: String = str(n)
+		out[fname.trim_suffix(".json")] = _read_dict(sub + "/" + fname)
+	return out
+
+
+func _load_split() -> Dictionary:
+	var data: Dictionary = {}
+	var st: Dictionary = _read_dict("settings.json")
+	for k in st:
+		data[k] = st[k]
+	data["logistics"] = _read_dict("logistics.json")
+	var ctry: Variant = _read_json(_path_for("country.json"))
+	data["country"] = ctry if typeof(ctry) == TYPE_ARRAY else []
+	for key in ["projectiles", "national", "strategic"]:
+		data[key] = _read_dict(str(key) + ".json")
+	data["units"] = _merge_folder("units")
+	data["structures"] = _merge_folder("structures")
+	data["factions"] = _keyed_folder("factions")
+	data["maps"] = _keyed_folder("maps")
+	return data
+
+
+func reload() -> void:
+	var parsed: Dictionary = {}
+	if FileAccess.file_exists(LEGACY_USER):
+		var legacy: Variant = JSON.parse_string(FileAccess.get_file_as_string(LEGACY_USER))
+		if typeof(legacy) == TYPE_DICTIONARY:
+			parsed = legacy
+		else:
+			push_warning("user://units.json is not valid JSON - using bundled data")
+	if parsed.is_empty():
+		parsed = _load_split()
+	if parsed.get("units", {}).is_empty():
+		push_error("Could not load game data from " + DATA_DIR)
 		return
 	settings = parsed.get("settings", {})
 	base = parsed.get("base", {})
@@ -50,13 +139,66 @@ func reload() -> void:
 	projectiles = parsed.get("projectiles", {})
 	tabs = parsed.get("tabs", [])
 	capabilities = parsed.get("capabilities", {})
-	country = parsed.get("country", [])
+	default_country = parsed.get("country", [])
 	factions = parsed.get("factions", {})
+	logistics = parsed.get("logistics", {})
+	maps = parsed.get("maps", {})
 	_team_cache = [{}, {}]
 	_stat_max = {}
 	for group in [units, structures, national, strategic]:
 		for key in group:
 			group[key]["id"] = key
+	set_map(str(settings.get("map", "dnieper")))
+
+
+# ------------------------------------------------------------------ maps
+
+## Picks the battlefield. Unknown ids fall back to the first map (or the old procedural one if there are none).
+func set_map(id: String) -> void:
+	if id == "":
+		id = str(settings.get("map", "dnieper"))
+	if not maps.has(id):
+		if maps.is_empty():
+			current_map = ""
+			country = default_country
+			return
+		id = str(maps.keys()[0])
+	current_map = id
+	var m: Dictionary = maps[id]
+	var c: Variant = m.get("country", default_country)
+	country = c if typeof(c) == TYPE_ARRAY else default_country
+
+
+func map_def() -> Dictionary:
+	if maps.has(current_map):
+		var m: Dictionary = maps[current_map]
+		return m
+	return {"procedural": true, "name": "Classic", "coast": {"half": 760.0, "bay_depth": 250.0, "bay_sigma": 420.0, "bay_x": 3200.0},
+		"roads": [], "sectors": [], "waterways": [], "bridges": [], "forests": {"count": 420, "min": 4, "max": 8}, "craters": 520}
+
+
+func map_ids() -> Array:
+	var ids: Array = maps.keys()
+	ids.sort()
+	return ids
+
+
+## logistics.json helpers -------------------------------------------------
+func logi(section: String, key: String, fallback: Variant) -> Variant:
+	var sec: Dictionary = logistics.get(section, {})
+	return sec.get(key, fallback)
+
+
+func supply_cost(cls: String) -> float:
+	var a: Dictionary = logistics.get("ammo", {})
+	var sc: Dictionary = a.get("supply_cost", {})
+	return float(sc.get(cls, 5.0))
+
+
+func mobility(drive: String) -> Dictionary:
+	var mob: Dictionary = logistics.get("mobility", {})
+	var d: Dictionary = mob.get(drive, {})
+	return d
 
 
 ## kind: "unit" | "structure" | "national" | "strategic" | "base"

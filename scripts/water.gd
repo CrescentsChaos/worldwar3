@@ -18,10 +18,10 @@ const Y_MAX := 1568            # symmetric around MID_Y with Y_MIN
 const COLS := 400              # W / CELL
 const ROWS := 133              # (Y_MAX - Y_MIN) / CELL
 const MID_Y := 504.0
-const COAST := 760.0           # half-height of the land strip (the field itself is 744)
-const RIVER_X := 3200.0
-const BAY_DEPTH := 250.0
-const BAY_SIGMA := 420.0
+static var COAST := 760.0      # half-height of the land strip (the field itself is 744); set by the map
+static var RIVER_X := 3200.0   # x of the bay / procedural river
+static var BAY_DEPTH := 250.0
+static var BAY_SIGMA := 420.0
 const RIVER_W := 72.0
 const STREAM_W := 40.0
 const BRIDGE_YS := [30.0, 267.0, 504.0, 741.0, 978.0]
@@ -33,6 +33,25 @@ static var waterways: Array = []       # [PackedVector2Array points, float width
 static var bridge_rects: Array = []    # Rect2
 static var _astars: Array = [null, null, null, null, null, null]
 static var _shores: Array = [null, null, null, null]
+static var cfg: Dictionary = {}        # the map definition (data/maps/<id>.json); empty / procedural = the classic layout
+
+
+## Loads a map's geography (coast, rivers, bridges). Call before ensure_built(); safe to call again for a new map.
+static func configure(m: Dictionary) -> void:
+	cfg = m
+	var c: Dictionary = m.get("coast", {})
+	COAST = float(c.get("half", 760.0))
+	BAY_DEPTH = float(c.get("bay_depth", 250.0))
+	BAY_SIGMA = float(c.get("bay_sigma", 420.0))
+	RIVER_X = float(c.get("bay_x", 3200.0))
+	built = false
+	kinds = PackedByteArray()
+	bridge_cells = PackedByteArray()
+	waterways = []
+	bridge_rects = []
+	_astars = [null, null, null, null, null, null]
+	_shores = [null, null, null, null]
+	ensure_built()
 
 
 static func ensure_built() -> void:
@@ -49,12 +68,28 @@ static func ensure_built() -> void:
 			var px := (float(cx) + 0.5) * float(CELL)
 			if absf(py - MID_Y) > coast_dy(px):
 				kinds[cy * COLS + cx] = 3
-	_make_waterways()
+	if bool(cfg.get("procedural", cfg.is_empty())):
+		_make_waterways()
+		for by in BRIDGE_YS:
+			bridge_rects.append(Rect2(RIVER_X - 54.0, float(by) - 22.0, 108.0, 44.0))
+	else:
+		var wl: Array = cfg.get("waterways", [])
+		for ww in wl:
+			var wd: Dictionary = ww
+			var pts := PackedVector2Array()
+			var raw: Array = wd.get("pts", [])
+			for q in raw:
+				var qa: Array = q
+				pts.append(Vector2(float(qa[0]), float(qa[1])))
+			if pts.size() >= 2:
+				waterways.append([pts, float(wd.get("w", 40.0)), int(wd.get("kind", 1))])
+		var bl: Array = cfg.get("bridges", [])
+		for b in bl:
+			var ba: Array = b
+			bridge_rects.append(Rect2(float(ba[0]), float(ba[1]), float(ba[2]), float(ba[3])))
 	for w in waterways:
 		_stamp(w[0], float(w[1]) * 0.5, int(w[2]))
-	for by in BRIDGE_YS:
-		var r := Rect2(RIVER_X - 54.0, float(by) - 22.0, 108.0, 44.0)
-		bridge_rects.append(r)
+	for r in bridge_rects:
 		_mark_bridge(r)
 
 

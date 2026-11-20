@@ -69,9 +69,24 @@ func _draw() -> void:
 	draw_rect(Rect2(ez, 0, size.x - ez, size.y), Color(MilTheme.ENEMY, 0.09))
 	draw_line(Vector2(pz, 0), Vector2(pz, size.y), Color(MilTheme.FRIEND, 0.4), 1.0)
 	draw_line(Vector2(ez, 0), Vector2(ez, size.y), Color(MilTheme.ENEMY, 0.4), 1.0)
+	# roads and capture zones
+	for rl in RoadNet.polylines:
+		var rpts: PackedVector2Array = rl[0]
+		var mp := PackedVector2Array()
+		for q in rpts:
+			mp.append(_to_mini(q))
+		draw_polyline(mp, Color(0.78, 0.74, 0.55, 0.30), 1.0 if float(rl[1]) < 20.0 else 1.6)
+	for sec in battle.sectors:
+		var sp := _to_mini(sec["pos"])
+		var so := int(sec["owner"])
+		var scol := Color(0.8, 0.82, 0.85) if so < 0 else SpriteLib.team_color(so)
+		draw_circle(sp, 4.5, Color(0, 0, 0, 0.65))
+		draw_arc(sp, 4.5, 0.0, TAU, 14, scol, 1.5)
+		if so >= 0:
+			draw_circle(sp, 2.2, scol)
 	for n in get_tree().get_nodes_in_group("combatants"):
 		var c := n as Combatant
-		if c == null or c.dead or not c.visible:
+		if c == null or c.dead or not c.visible or c.parked:
 			continue                                     # fog of war: hidden enemies are not on the map
 		var p := _to_mini(c.position)
 		var col := SpriteLib.team_color(c.team)
@@ -95,7 +110,5 @@ func _draw() -> void:
 		var tl := _to_mini(cam.position - half)
 		var br := _to_mini(cam.position + half)
 		draw_rect(Rect2(tl, br - tl), Color(1, 1, 1, 0.85), false, 1.0)
-	draw_rect(Rect2(Vector2.ZERO, size), MilTheme.LINE_HI, false, 1.0)
-	MilTheme.draw_brackets(self, Rect2(Vector2.ZERO, size).grow(-1.0), MilTheme.AMBER, 9.0, 2.0)
-	var font := MilTheme.font_ui()
-	draw_string(font, Vector2(8, 15), "TACTICAL OVERVIEW", HORIZONTAL_ALIGNMENT_LEFT, -1, 10, Color(MilTheme.AMBER, 0.85))
+	var frame := MilTheme.box(Color(0, 0, 0, 0), MilTheme.LINE_HI, 2, 0, 0, 10)
+	draw_style_box(frame, Rect2(Vector2.ZERO, size))

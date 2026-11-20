@@ -1,0 +1,1301 @@
+{
+ "name": "US Army",
+ "era": "Modern (2020s)",
+ "tagline": "Industrial might and air power.",
+ "desc": "Expeditionary force built on air power, precision fires and logistics. Premium sensors and aircraft, thin heavy armor numbers, and the deepest strategic arsenal.",
+ "mods": [
+  {
+   "match": "tab:air",
+   "cost": 0.93
+  },
+  {
+   "match": "kind:strategic",
+   "cost": 0.95
+  }
+ ],
+ "income": 1.05,
+ "money": 1.0,
+ "ban": [],
+ "names": {
+  "rifleman": "M4A1 Rifleman",
+  "assault": "Mk18 CQB Assaulter",
+  "bazooka": "FGM-148 Javelin Team",
+  "manpads": "FIM-92 Stinger Team",
+  "mg_gunner": "M240B Machine Gunner",
+  "grenadier": "M320 Grenadier",
+  "sniper": "M107 .50 Sniper",
+  "flamer": "SMAW-NE Thermobaric Gunner",
+  "medic": "68W Combat Medic",
+  "engineer": "12B Combat Engineer",
+  "commando": "CAG Operator (Delta Force)",
+  "jeep": "M1278 JLTV",
+  "armored_car": "M1117 Guardian ASV",
+  "apc": "M2A3 Bradley IFV",
+  "light_tank": "M10 Booker MPF",
+  "tank": "M1A2 SEPv3 Abrams",
+  "heavy_tank": "M1A2C Abrams (Trophy APS)",
+  "mammoth": "M1E3 Abrams (prototype)",
+  "tank_destroyer": "M1134 Stryker ATGM",
+  "flame_tank": "M1150 Assault Breacher",
+  "artillery": "M109A7 Paladin",
+  "howitzer": "M1299 ERCA",
+  "mlrs": "M142 HIMARS",
+  "aa_truck": "M-SHORAD Stryker",
+  "sam_truck": "M901 Patriot PAC-3 MSE",
+  "repair_vehicle": "M88A2 Hercules",
+  "drone": "Switchblade 600",
+  "fighter": "F-16C Block 50",
+  "interceptor_jet": "F-15C Eagle",
+  "stealth_fighter": "F-22A Raptor",
+  "strike_jet": "A-10C Thunderbolt II",
+  "helicopter": "AH-64E Apache Guardian",
+  "gunship": "AC-130J Ghostrider",
+  "light_bomber": "F-15E Strike Eagle",
+  "bomber": "B-1B Lancer",
+  "heavy_bomber": "B-52H Stratofortress",
+  "stealth_bomber": "B-2A Spirit",
+  "diver": "Navy SEAL Combat Swimmer",
+  "patrol_boat": "Mk VI Patrol Boat",
+  "gunboat": "Cyclone-class PC",
+  "missile_boat": "Independence-class LCS",
+  "destroyer": "DDG-51 Arleigh Burke Flt III",
+  "cruiser": "CG-47 Ticonderoga",
+  "battleship": "DDG-1000 Zumwalt",
+  "submarine": "Virginia-class Block V",
+  "aircraft_carrier": "USS Gerald R. Ford (CVN-78)",
+  "mg_turret": "M2HB .50 Gun Position",
+  "pillbox": "Hesco Hardpoint",
+  "at_gun": "TOW-2B Emplacement",
+  "cannon_turret": "M60 Turret Emplacement",
+  "mortar_pit": "M252 81 mm Mortar Pit",
+  "flak_battery": "M-LIDS Air Defense",
+  "sam_site": "NASAMS Fire Unit",
+  "heavy_battery": "M777A2 155 mm Battery",
+  "railgun": "ONR Electromagnetic Railgun",
+  "ciws": "Mk 15 Phalanx CIWS",
+  "interceptor_battery": "IFPC Iron Dome Battery",
+  "abm_battery": "THAAD Battery",
+  "barricade": "Concrete T-Wall",
+  "repair_depot": "Forward Repair Activity",
+  "coastal_battery": "NMESIS Coastal Battery",
+  "tactical_missile": "PrSM Increment 1",
+  "cruise_missile": "BGM-109 Tomahawk Block V",
+  "cluster_missile": "MGM-140A ATACMS (M39)",
+  "bunker_buster": "GBU-57 MOP",
+  "ballistic_missile": "Pershing II",
+  "hypersonic": "LRHW Dark Eagle",
+  "tactical_nuke": "B61-12 Guided Bomb",
+  "nuke": "LGM-30G Minuteman III",
+  "mega_nuke": "B41 (Mk-41) 25 Mt Bomb"
+ },
+ "strategies": {
+  "air_supremacy": {
+   "name": "Air Supremacy",
+   "desc": "Fast, cheap aircraft. Starts with fighters, a strike jet and a SAM.",
+   "style": "air",
+   "mods": [
+    {
+     "match": "tab:air",
+     "cost": 0.8,
+     "speed": 1.1
+    }
+   ],
+   "setup": [
+    [
+     "unit",
+     "fighter",
+     800,
+     470,
+     2
+    ],
+    [
+     "unit",
+     "strike_jet",
+     780,
+     540,
+     1
+    ],
+    [
+     "structure",
+     "sam_site",
+     650,
+     430,
+     1
+    ]
+   ],
+   "income": 1.0,
+   "money": 1.0
+  },
+  "arsenal": {
+   "name": "Arsenal of Democracy",
+   "desc": "Bigger economy and cheaper armor. Starts with an armored task force.",
+   "style": "offense",
+   "mods": [
+    {
+     "match": "tab:vehicles",
+     "cost": 0.9,
+     "hp": 1.05
+    }
+   ],
+   "setup": [
+    [
+     "unit",
+     "tank",
+     910,
+     470,
+     2
+    ],
+    [
+     "unit",
+     "apc",
+     890,
+     545,
+     1
+    ],
+    [
+     "unit",
+     "repair_vehicle",
+     860,
+     504,
+     1
+    ]
+   ],
+   "income": 1.12,
+   "money": 1.1
+  },
+  "shock_awe": {
+   "name": "Shock and Awe",
+   "desc": "Missile-heavy: cheap, fast-recharging strikes. Starts with a missile shield.",
+   "style": "missile",
+   "mods": [
+    {
+     "match": "kind:strategic",
+     "cost": 0.75,
+     "cooldown": 0.8
+    }
+   ],
+   "setup": [
+    [
+     "structure",
+     "interceptor_battery",
+     500,
+     440,
+     1
+    ],
+    [
+     "structure",
+     "sam_site",
+     360,
+     430,
+     1
+    ]
+   ],
+   "income": 1.0,
+   "money": 1.0
+  }
+ },
+ "roster": {
+  "rifleman": {
+   "name": "M4A1 Rifleman",
+   "class": "Rifleman",
+   "desc": "5.56 mm carbine with optic and laser; the squad's baseline. Accurate to about 500 m but its small round is nearly useless against armor.",
+   "specs": "5.56x45 mm | 3.4 kg | 30-rd mag",
+   "hp": 70,
+   "range": 135,
+   "damage": 7,
+   "cooldown": 0.65,
+   "cost": 50,
+   "sprite": "us_army_rifleman"
+  },
+  "assault": {
+   "name": "Mk18 CQB Assaulter",
+   "class": "Close-quarters rifleman",
+   "desc": "Short-barrel 5.56 mm carbine for room clearing and urban fighting. Very high rate of fire, but ineffective past 100 m.",
+   "specs": "5.56 mm | 10.3 in barrel | ~800 rpm",
+   "hp": 80,
+   "speed": 68,
+   "range": 90,
+   "damage": 6,
+   "cooldown": 0.2,
+   "cost": 70,
+   "sprite": "us_army_assault"
+  },
+  "bazooka": {
+   "name": "FGM-148 Javelin Team",
+   "class": "Guided anti-tank",
+   "desc": "Fire-and-forget ATGM with top-attack profile and tandem warhead; defeats any tank roof. Slow to reload and very costly per shot.",
+   "specs": "127 mm | 22 kg w/ CLU | 2.5 km",
+   "hp": 80,
+   "speed": 42,
+   "range": 265,
+   "damage": 150,
+   "cooldown": 4.4,
+   "proj": "atgm",
+   "pierce": 26,
+   "splash": 18,
+   "vs": {
+    "armor": 1.5,
+    "vehicle": 1.4,
+    "structure": 0.8
+   },
+   "prefer": [
+    "armor",
+    "vehicle"
+   ],
+   "cost": 160,
+   "sprite": "us_army_bazooka"
+  },
+  "manpads": {
+   "name": "FIM-92 Stinger Team",
+   "class": "Man-portable SAM",
+   "desc": "Shoulder-fired infrared-homing missile; effective against helicopters and low jets to about 4 km. Needs a clear line to the target.",
+   "specs": "70 mm | 15.2 kg | 4.8 km",
+   "hp": 70,
+   "range": 250,
+   "damage": 38,
+   "cooldown": 1.7,
+   "cost": 120,
+   "sprite": "us_army_manpads"
+  },
+  "mg_gunner": {
+   "name": "M240B Machine Gunner",
+   "class": "Medium machine gun",
+   "desc": "7.62 mm belt-fed gun giving the squad suppressive fire out to 800 m. Heavy to carry, so slow to reposition.",
+   "specs": "7.62x51 mm | 12.5 kg | 750 rpm",
+   "hp": 95,
+   "armor": 1,
+   "speed": 38,
+   "range": 185,
+   "damage": 8,
+   "cooldown": 0.16,
+   "cost": 100,
+   "sprite": "us_army_mg_gunner"
+  },
+  "grenadier": {
+   "name": "M320 Grenadier",
+   "class": "Grenadier",
+   "desc": "Under-barrel 40 mm launcher firing HE and airburst rounds. Devastating on infantry in the open, weak against any armor.",
+   "specs": "40x46 mm | 1.5 kg | 400 m",
+   "hp": 80,
+   "range": 155,
+   "damage": 32,
+   "cooldown": 1.8,
+   "splash": 40,
+   "vs": {
+    "infantry": 1.3
+   },
+   "cost": 100,
+   "sprite": "us_army_grenadier"
+  },
+  "sniper": {
+   "name": "M107 .50 Sniper",
+   "class": "Anti-materiel sniper",
+   "desc": "Semi-automatic .50 BMG rifle with 1.8 km reach. Kills infantry instantly and can disable light vehicles, but is wasted on tanks.",
+   "specs": "12.7x99 mm | 13.6 kg | 1.8 km",
+   "hp": 55,
+   "range": 345,
+   "damage": 62,
+   "cooldown": 2.6,
+   "vs": {
+    "infantry": 3.0,
+    "vehicle": 0.5,
+    "armor": 0.12,
+    "structure": 0.2
+   },
+   "cost": 160,
+   "sprite": "us_army_sniper"
+  },
+  "flamer": {
+   "name": "SMAW-NE Thermobaric Gunner",
+   "class": "Assault rocket",
+   "desc": "The US retired flamethrowers in the 1970s; the Marines' SMAW with a thermobaric round fills the bunker-clearing role today.",
+   "specs": "83 mm | 13.4 kg | 250 m",
+   "hp": 100,
+   "armor": 1,
+   "speed": 42,
+   "range": 115,
+   "damage": 80,
+   "cooldown": 3.0,
+   "proj": "rocket",
+   "splash": 38,
+   "pierce": 6,
+   "vs": {
+    "infantry": 1.8,
+    "structure": 1.5
+   },
+   "prefer": [
+    "infantry"
+   ],
+   "cost": 95,
+   "sprite": "us_army_flamer"
+  },
+  "medic": {
+   "name": "68W Combat Medic",
+   "class": "Combat medic",
+   "desc": "Forward medic trained to TCCC standard; keeps a squad fighting through tourniquets and quick triage.",
+   "specs": "Aid bag | CLS/TCCC trained",
+   "hp": 70,
+   "speed": 56,
+   "heal": {
+    "rate": 18,
+    "radius": 125,
+    "cls": [
+     "infantry"
+    ]
+   },
+   "cost": 95,
+   "sprite": "us_army_medic"
+  },
+  "engineer": {
+   "name": "12B Combat Engineer",
+   "class": "Combat engineer",
+   "desc": "Breaches obstacles, repairs vehicles under fire and rebuilds positions with demolition and field kit.",
+   "specs": "Demolition kit | M4A1 carbine",
+   "hp": 90,
+   "heal": {
+    "rate": 30,
+    "radius": 110,
+    "cls": [
+     "vehicle",
+     "armor",
+     "structure"
+    ]
+   },
+   "cost": 130,
+   "sprite": "us_army_engineer"
+  },
+  "commando": {
+   "name": "CAG Operator (Delta Force)",
+   "class": "Special operations",
+   "desc": "Highly trained assaulters with suppressed 5.56 mm rifles and night vision. Deadly and mobile, but expensive and few.",
+   "specs": "HK416 | NVG | 18+ yr average",
+   "hp": 165,
+   "armor": 3,
+   "speed": 64,
+   "range": 200,
+   "damage": 22,
+   "cooldown": 0.28,
+   "pierce": 5,
+   "cost": 300,
+   "sprite": "us_army_commando"
+  },
+  "jeep": {
+   "name": "M1278 JLTV",
+   "class": "Light tactical vehicle",
+   "desc": "Joint Light Tactical Vehicle replacing the Humvee: better mine protection and payload, with a .50 cal remote station.",
+   "specs": "6.4 t | 4 crew | 100 km/h",
+   "hp": 220,
+   "armor": 3,
+   "speed": 132,
+   "range": 155,
+   "damage": 14,
+   "cooldown": 0.3,
+   "vs": {
+    "infantry": 1.2
+   },
+   "cost": 170,
+   "sprite": "us_army_jeep"
+  },
+  "armored_car": {
+   "name": "M1117 Guardian ASV",
+   "class": "Armored security vehicle",
+   "desc": "4x4 armored car with a Mk19 grenade launcher and .50 cal. Found in convoy security and base defense.",
+   "specs": "13 t | 3 crew | Mk19 + M2",
+   "hp": 330,
+   "armor": 5,
+   "speed": 100,
+   "range": 170,
+   "damage": 22,
+   "cooldown": 0.4,
+   "pierce": 2,
+   "cost": 190,
+   "sprite": "us_army_armored_car"
+  },
+  "apc": {
+   "name": "M2A3 Bradley IFV",
+   "class": "Infantry fighting vehicle",
+   "desc": "25 mm Bushmaster cannon and TOW missiles with six dismounts. Tough enough to lead an assault and kill light armor.",
+   "specs": "30 t | 3+6 | 25 mm M242",
+   "hp": 560,
+   "armor": 8,
+   "speed": 88,
+   "range": 200,
+   "damage": 13,
+   "cooldown": 0.2,
+   "cargo": [
+    "rifleman",
+    "rifleman",
+    "bazooka"
+   ],
+   "cost": 290,
+   "sprite": "us_army_apc"
+  },
+  "light_tank": {
+   "name": "M10 Booker MPF",
+   "class": "Light tank",
+   "desc": "105 mm Mobile Protected Firepower for infantry brigades: more mobile than an Abrams but only lightly armored.",
+   "specs": "38 t | 4 crew | 105 mm",
+   "hp": 330,
+   "armor": 6,
+   "speed": 86,
+   "range": 220,
+   "damage": 34,
+   "cooldown": 1.5,
+   "splash": 20,
+   "cost": 210,
+   "sprite": "us_army_light_tank"
+  },
+  "tank": {
+   "name": "M1A2 SEPv3 Abrams",
+   "class": "Main battle tank",
+   "desc": "120 mm smoothbore, composite and depleted-uranium armor and a 1,500 hp turbine. Best crew protection and fire control of its generation.",
+   "specs": "63.5 t | 4 crew | 120 mm M256",
+   "hp": 650,
+   "armor": 11,
+   "speed": 60,
+   "range": 250,
+   "damage": 48,
+   "cooldown": 1.8,
+   "splash": 30,
+   "cost": 320,
+   "sprite": "us_army_tank"
+  },
+  "heavy_tank": {
+   "name": "M1A2C Abrams (Trophy APS)",
+   "class": "Upgraded MBT",
+   "desc": "SEPv3 fitted with the Trophy active protection system and extra armor packages, which shoot down incoming ATGMs and RPGs.",
+   "specs": "66 t | 4 crew | APS",
+   "hp": 1300,
+   "armor": 21,
+   "speed": 42,
+   "range": 275,
+   "damage": 82,
+   "cooldown": 2.1,
+   "splash": 44,
+   "cost": 530,
+   "sprite": "us_army_heavy_tank"
+  },
+  "mammoth": {
+   "name": "M1E3 Abrams (prototype)",
+   "class": "Next-gen MBT",
+   "desc": "Proposed lighter Abrams with an autoloader, reduced crew and hybrid drive. Prototype-stage; modelled as a fast, well-armored premium tank.",
+   "specs": "~60 t | 3 crew | 120 mm AL",
+   "hp": 2300,
+   "armor": 25,
+   "speed": 50,
+   "range": 310,
+   "damage": 100,
+   "cooldown": 1.7,
+   "splash": 50,
+   "pierce": 10,
+   "size": 60,
+   "cost": 900,
+   "sprite": "us_army_mammoth"
+  },
+  "tank_destroyer": {
+   "name": "M1134 Stryker ATGM",
+   "class": "Tank destroyer",
+   "desc": "8x8 wheeled carrier with a twin-tube TOW 2B launcher that attacks the top of armor. Quick but thin-skinned.",
+   "specs": "19 t | 4 crew | TOW 2B",
+   "hp": 390,
+   "armor": 8,
+   "speed": 86,
+   "range": 365,
+   "damage": 140,
+   "cooldown": 3.4,
+   "pierce": 22,
+   "vs": {
+    "armor": 1.5,
+    "infantry": 0.6
+   },
+   "cost": 360,
+   "sprite": "us_army_tank_destroyer"
+  },
+  "flame_tank": {
+   "name": "M1150 Assault Breacher",
+   "class": "Combat engineer vehicle",
+   "desc": "Abrams hull with a mine plow and a rocket-propelled line charge (MICLIC) that levels fortifications ahead of an assault.",
+   "specs": "64 t | 2 crew | M58 MICLIC",
+   "hp": 950,
+   "armor": 14,
+   "speed": 50,
+   "range": 130,
+   "damage": 170,
+   "cooldown": 6.0,
+   "proj": "rocket",
+   "splash": 65,
+   "pierce": 6,
+   "vs": {
+    "structure": 1.9,
+    "infantry": 1.4
+   },
+   "cost": 280,
+   "sprite": "us_army_flame_tank"
+  },
+  "artillery": {
+   "name": "M109A7 Paladin",
+   "class": "Self-propelled howitzer",
+   "desc": "155 mm tracked howitzer sharing the Bradley chassis. Accurate with GPS-guided Excalibur rounds.",
+   "specs": "36 t | 4 crew | 155 mm/39",
+   "hp": 210,
+   "armor": 2,
+   "speed": 34,
+   "range": 540,
+   "damage": 72,
+   "cooldown": 3.1,
+   "min_range": 120,
+   "splash": 85,
+   "cost": 500,
+   "sprite": "us_army_artillery"
+  },
+  "howitzer": {
+   "name": "M1299 ERCA",
+   "class": "Extended-range cannon",
+   "desc": "58-caliber 155 mm gun firing rocket-assisted shells out to 70 km. Experimental; hugely accurate but delicate.",
+   "specs": "~40 t | 155 mm/58 | 70 km",
+   "hp": 240,
+   "armor": 2,
+   "speed": 30,
+   "range": 760,
+   "damage": 125,
+   "cooldown": 4.4,
+   "min_range": 220,
+   "splash": 95,
+   "vs": {
+    "structure": 1.3
+   },
+   "cost": 730,
+   "sprite": "us_army_howitzer"
+  },
+  "mlrs": {
+   "name": "M142 HIMARS",
+   "class": "Rocket artillery",
+   "desc": "Wheeled launcher firing GPS-guided GMLRS rockets with 200 kg warheads out to 70 km, then relocates before counter-fire.",
+   "specs": "16 t | 3 crew | 6 GMLRS",
+   "hp": 240,
+   "armor": 1,
+   "speed": 36,
+   "range": 480,
+   "damage": 40,
+   "cooldown": 0.95,
+   "min_range": 140,
+   "splash": 70,
+   "cost": 690,
+   "sprite": "us_army_mlrs"
+  },
+  "aa_truck": {
+   "name": "M-SHORAD Stryker",
+   "class": "Short-range air defense",
+   "desc": "Stryker with a 30 mm cannon, Stingers and Hellfire for helicopters, drones and cruise missiles.",
+   "specs": "19 t | 30 mm XM914 | Stinger",
+   "hp": 420,
+   "armor": 5,
+   "speed": 78,
+   "range": 325,
+   "damage": 18,
+   "cooldown": 0.2,
+   "cost": 360,
+   "sprite": "us_army_aa_truck"
+  },
+  "sam_truck": {
+   "name": "M901 Patriot PAC-3 MSE",
+   "class": "Area SAM launcher",
+   "desc": "Hit-to-kill missile with a 35 km range; backbone of Western theater air and missile defense.",
+   "specs": "MIM-104 | 4 MSE | 35 km",
+   "hp": 300,
+   "armor": 3,
+   "speed": 55,
+   "range": 440,
+   "damage": 82,
+   "cooldown": 1.5,
+   "cost": 410,
+   "sprite": "us_army_sam_truck"
+  },
+  "repair_vehicle": {
+   "name": "M88A2 Hercules",
+   "class": "Armored recovery vehicle",
+   "desc": "70-ton recovery vehicle that can tow an Abrams, lift turrets and perform field repairs under fire.",
+   "specs": "63 t | 3 crew | 35-t winch",
+   "hp": 400,
+   "armor": 5,
+   "speed": 58,
+   "heal": {
+    "rate": 32,
+    "radius": 125,
+    "cls": [
+     "vehicle",
+     "armor"
+    ]
+   },
+   "cost": 230,
+   "sprite": "us_army_repair_vehicle"
+  },
+  "drone": {
+   "name": "Switchblade 600",
+   "class": "Loitering munition",
+   "desc": "Tube-launched kamikaze drone with a 40 km reach. Operators confirm the target on a live feed before the dive.",
+   "specs": "23 kg | 40 min | anti-armor",
+   "hp": 40,
+   "speed": 240,
+   "damage": 130,
+   "splash": 50,
+   "cost": 90,
+   "sprite": "us_army_drone"
+  },
+  "fighter": {
+   "name": "F-16C Block 50",
+   "class": "Multirole fighter",
+   "desc": "Single-engine light fighter with a 20 mm cannon and AIM-9/AIM-120 missiles. Cheap to fly and found everywhere.",
+   "specs": "Mach 2 | M61A1 20 mm | 1 crew",
+   "hp": 240,
+   "speed": 218,
+   "range": 235,
+   "damage": 18,
+   "cooldown": 0.3,
+   "cost": 460,
+   "sprite": "us_army_fighter"
+  },
+  "interceptor_jet": {
+   "name": "F-15C Eagle",
+   "class": "Air superiority",
+   "desc": "Twin-engine fighter with an undefeated air-combat record; excellent radar and AIM-120s. Poor against ground targets.",
+   "specs": "Mach 2.5 | APG-63 | 104-0",
+   "hp": 210,
+   "speed": 275,
+   "range": 315,
+   "damage": 25,
+   "cooldown": 0.26,
+   "vs": {
+    "air": 1.4
+   },
+   "cost": 540,
+   "sprite": "us_army_interceptor_jet"
+  },
+  "stealth_fighter": {
+   "name": "F-22A Raptor",
+   "class": "Stealth air-dominance",
+   "desc": "Stealth, supercruise and thrust vectoring let it kill before it is seen. Costly to build and maintain.",
+   "specs": "Mach 2.25 | supercruise | RCS ~0.01 m2",
+   "hp": 270,
+   "speed": 305,
+   "range": 265,
+   "damage": 31,
+   "cooldown": 0.25,
+   "stealth": 0.5,
+   "cost": 930,
+   "sprite": "us_army_stealth_fighter"
+  },
+  "strike_jet": {
+   "name": "A-10C Thunderbolt II",
+   "class": "Close air support",
+   "desc": "Built around a 30 mm GAU-8 cannon and a titanium cockpit. Slow, rugged and murderous to armor, but vulnerable to modern SAMs.",
+   "specs": "Subsonic | GAU-8 30 mm | 1 crew",
+   "hp": 420,
+   "armor": 5,
+   "speed": 150,
+   "range": 215,
+   "damage": 34,
+   "cooldown": 0.2,
+   "pierce": 14,
+   "vs": {
+    "armor": 1.7,
+    "vehicle": 1.4
+   },
+   "cost": 750,
+   "sprite": "us_army_strike_jet"
+  },
+  "helicopter": {
+   "name": "AH-64E Apache Guardian",
+   "class": "Attack helicopter",
+   "desc": "Longbow radar, Hellfire/JAGM missiles and a 30 mm chain gun. Rugged and heavily armored for its class.",
+   "specs": "10 t | 2 crew | 16 AGM-114",
+   "hp": 420,
+   "armor": 4,
+   "speed": 112,
+   "range": 240,
+   "damage": 30,
+   "cooldown": 0.9,
+   "cost": 530,
+   "sprite": "us_army_helicopter"
+  },
+  "gunship": {
+   "name": "AC-130J Ghostrider",
+   "class": "Gunship",
+   "desc": "Converted C-130 with a 105 mm howitzer, 30 mm cannon and precision munitions; loiters over the target for hours.",
+   "specs": "Turboprop | 105 mm + 30 mm | 7 crew",
+   "hp": 950,
+   "armor": 8,
+   "speed": 90,
+   "range": 270,
+   "damage": 40,
+   "cooldown": 0.5,
+   "splash": 26,
+   "cost": 840,
+   "sprite": "us_army_gunship"
+  },
+  "light_bomber": {
+   "name": "F-15E Strike Eagle",
+   "class": "Strike fighter",
+   "desc": "Two-seat Eagle carrying up to 23,000 lb of weapons. Fast enough to run through defenses and drop guided bombs.",
+   "specs": "Mach 2.5 | 2 crew | 11 hardpoints",
+   "hp": 300,
+   "speed": 210,
+   "range": 36,
+   "damage": 85,
+   "cooldown": 0.7,
+   "splash": 70,
+   "cost": 420,
+   "sprite": "us_army_light_bomber"
+  },
+  "bomber": {
+   "name": "B-1B Lancer",
+   "class": "Supersonic bomber",
+   "desc": "Variable-sweep bomber able to carry 75,000 lb at high speed and low altitude. Mach 1.2 dash.",
+   "specs": "Mach 1.2 | 4 crew | 34 t payload",
+   "hp": 500,
+   "speed": 160,
+   "range": 42,
+   "damage": 135,
+   "cooldown": 0.8,
+   "splash": 95,
+   "cost": 730,
+   "sprite": "us_army_bomber"
+  },
+  "heavy_bomber": {
+   "name": "B-52H Stratofortress",
+   "class": "Strategic bomber",
+   "desc": "Eight-engine bomber in service since 1955 and planned into the 2050s. Carries 70,000 lb of bombs or cruise missiles.",
+   "specs": "Subsonic | 5 crew | 31 t payload",
+   "hp": 950,
+   "armor": 4,
+   "speed": 130,
+   "range": 50,
+   "damage": 195,
+   "cooldown": 0.5,
+   "splash": 132,
+   "vs": {
+    "structure": 1.5
+   },
+   "cost": 1350,
+   "sprite": "us_army_heavy_bomber"
+  },
+  "stealth_bomber": {
+   "name": "B-2A Spirit",
+   "class": "Stealth bomber",
+   "desc": "Flying-wing bomber able to penetrate dense air defenses and drop 2,000 lb JDAMs or 30,000 lb MOPs. Only 21 built.",
+   "specs": "Subsonic | 2 crew | 18 t payload",
+   "hp": 520,
+   "speed": 190,
+   "range": 40,
+   "damage": 265,
+   "cooldown": 0.9,
+   "splash": 122,
+   "stealth": 0.5,
+   "vs": {
+    "structure": 1.3
+   },
+   "cost": 1550,
+   "sprite": "us_army_stealth_bomber"
+  },
+  "diver": {
+   "name": "Navy SEAL Combat Swimmer",
+   "class": "Combat swimmer",
+   "desc": "Special-warfare swimmers who place limpet charges on hulls and piers, then slip away.",
+   "specs": "Closed-circuit rebreather | Mk 18",
+   "hp": 70,
+   "range": 55,
+   "damage": 100,
+   "cooldown": 3.5,
+   "cost": 130,
+   "sprite": "us_army_diver"
+  },
+  "patrol_boat": {
+   "name": "Mk VI Patrol Boat",
+   "class": "Patrol craft",
+   "desc": "85-ft aluminum patrol boat with remote .50 cals and a 25 mm gun for coastal and riverine work.",
+   "specs": "26 t | 35 kn | 25 mm Mk38",
+   "hp": 180,
+   "speed": 120,
+   "range": 190,
+   "damage": 8,
+   "cooldown": 0.18,
+   "cost": 150,
+   "sprite": "us_army_patrol_boat"
+  },
+  "gunboat": {
+   "name": "Cyclone-class PC",
+   "class": "Coastal patrol ship",
+   "desc": "170-ft patrol ship with a 25 mm gun and Griffin missiles, used by SOF and for coastal interdiction.",
+   "specs": "331 t | 35 kn | 28 crew",
+   "hp": 440,
+   "armor": 4,
+   "speed": 84,
+   "range": 275,
+   "damage": 33,
+   "cooldown": 1.3,
+   "splash": 24,
+   "cost": 290,
+   "sprite": "us_army_gunboat"
+  },
+  "missile_boat": {
+   "name": "Independence-class LCS",
+   "class": "Littoral combat ship",
+   "desc": "Trimaran with a 57 mm gun and modular mission packages; can carry NSM anti-ship missiles. Fast but lightly built.",
+   "specs": "3,100 t | 40+ kn | 57 mm Mk110",
+   "hp": 360,
+   "armor": 3,
+   "speed": 100,
+   "range": 335,
+   "damage": 56,
+   "cooldown": 1.5,
+   "splash": 18,
+   "vs": {
+    "air": 1.25,
+    "ship": 1.2
+   },
+   "cost": 440,
+   "sprite": "us_army_missile_boat"
+  },
+  "destroyer": {
+   "name": "DDG-51 Arleigh Burke Flt III",
+   "class": "Guided-missile destroyer",
+   "desc": "SPY-6 radar and 96 VLS cells for Standard missiles and Tomahawks; also an excellent ASW ship.",
+   "specs": "9,700 t | 31 kn | 96 VLS",
+   "hp": 1000,
+   "armor": 10,
+   "speed": 70,
+   "range": 300,
+   "damage": 42,
+   "cooldown": 1.1,
+   "splash": 35,
+   "sub_damage": 135,
+   "cost": 690,
+   "sprite": "us_army_destroyer"
+  },
+  "cruiser": {
+   "name": "CG-47 Ticonderoga",
+   "class": "Guided-missile cruiser",
+   "desc": "First Aegis warship with 122 VLS cells and two 5-inch guns; the fleet's air-defense commander.",
+   "specs": "9,800 t | 30 kn | 122 VLS",
+   "hp": 1800,
+   "armor": 16,
+   "speed": 56,
+   "range": 430,
+   "damage": 88,
+   "cooldown": 2.0,
+   "splash": 56,
+   "cost": 1200,
+   "sprite": "us_army_cruiser"
+  },
+  "battleship": {
+   "name": "DDG-1000 Zumwalt",
+   "class": "Land-attack destroyer",
+   "desc": "Stealth hull with two 155 mm Advanced Gun Systems built for shore bombardment. Ammo supply problems limit its guns.",
+   "specs": "15,600 t | 2x 155 mm AGS | 80 VLS",
+   "hp": 3000,
+   "armor": 22,
+   "speed": 44,
+   "range": 560,
+   "damage": 140,
+   "cooldown": 3.0,
+   "splash": 78,
+   "vs": {
+    "structure": 1.5
+   },
+   "cost": 1850,
+   "sprite": "us_army_battleship"
+  },
+  "submarine": {
+   "name": "Virginia-class Block V",
+   "class": "Attack submarine",
+   "desc": "Nuclear attack boat with Mk 48 torpedoes and Tomahawks; very quiet. The Payload Module adds 28 more missiles.",
+   "specs": "10,200 t | 25+ kn | 40 weapons",
+   "hp": 440,
+   "armor": 6,
+   "speed": 60,
+   "range": 290,
+   "damage": 290,
+   "cooldown": 4.0,
+   "cost": 730,
+   "sprite": "us_army_submarine"
+  },
+  "aircraft_carrier": {
+   "name": "USS Gerald R. Ford (CVN-78)",
+   "class": "Nuclear supercarrier",
+   "desc": "EMALS catapults and a faster sortie rate than the Nimitz class; carries ~75 aircraft and its own escorts.",
+   "specs": "100,000 t | 2 reactors | ~75 aircraft",
+   "hp": 4700,
+   "armor": 17,
+   "speed": 31,
+   "spawn_every": 22,
+   "cost": 2750,
+   "sprite": "us_army_aircraft_carrier"
+  },
+  "mg_turret": {
+   "name": "M2HB .50 Gun Position",
+   "class": "Heavy machine gun",
+   "desc": "Sandbagged Browning M2 with interlocking fields of fire. Cheap and reliable against infantry and soft vehicles.",
+   "specs": "12.7x99 mm | 38 kg | 1.8 km",
+   "hp": 390,
+   "armor": 4,
+   "range": 220,
+   "damage": 10,
+   "cooldown": 0.2,
+   "cost": 160,
+   "sprite": "us_army_mg_turret"
+  },
+  "pillbox": {
+   "name": "Hesco Hardpoint",
+   "class": "Fortified position",
+   "desc": "Sand-filled Hesco bastion walls and concrete roof give protection from small arms and shell splinters.",
+   "specs": "Hesco bastion | overhead cover",
+   "hp": 720,
+   "armor": 10,
+   "range": 190,
+   "damage": 13,
+   "cooldown": 0.15,
+   "cost": 230,
+   "sprite": "us_army_pillbox"
+  },
+  "at_gun": {
+   "name": "TOW-2B Emplacement",
+   "class": "Anti-tank missile post",
+   "desc": "Wire-guided TOW 2B with top-attack warhead, range 4.5 km. Slower than Javelin but with a bigger warhead.",
+   "specs": "BGM-71F | 4.5 km | tandem warhead",
+   "hp": 430,
+   "armor": 8,
+   "range": 345,
+   "damage": 115,
+   "cooldown": 2.4,
+   "pierce": 13,
+   "vs": {
+    "armor": 1.5
+   },
+   "cost": 310,
+   "sprite": "us_army_at_gun"
+  },
+  "cannon_turret": {
+   "name": "M60 Turret Emplacement",
+   "class": "Dug-in tank turret",
+   "desc": "Old M60A3 turret with a 105 mm gun on a concrete foundation. Common on forward bases as a cheap bunker.",
+   "specs": "105 mm M68A1 | dug-in",
+   "hp": 820,
+   "armor": 14,
+   "range": 310,
+   "damage": 58,
+   "cooldown": 2.0,
+   "splash": 35,
+   "cost": 320,
+   "sprite": "us_army_cannon_turret"
+  },
+  "mortar_pit": {
+   "name": "M252 81 mm Mortar Pit",
+   "class": "Indirect fire",
+   "desc": "Crew-served 81 mm mortar able to drop HE rounds on targets behind cover out to 5.8 km.",
+   "specs": "81 mm | 35 kg | 5.8 km",
+   "hp": 260,
+   "armor": 2,
+   "range": 425,
+   "damage": 55,
+   "cooldown": 2.1,
+   "min_range": 90,
+   "splash": 55,
+   "vs": {
+    "infantry": 1.3
+   },
+   "cost": 270,
+   "sprite": "us_army_mortar_pit"
+  },
+  "flak_battery": {
+   "name": "M-LIDS Air Defense",
+   "class": "Counter-drone station",
+   "desc": "30 mm Bushmaster guns, radar and EO sensors for shooting down small drones and low aircraft.",
+   "specs": "30 mm | KuRFS radar | counter-UAS",
+   "hp": 430,
+   "armor": 4,
+   "range": 335,
+   "damage": 24,
+   "cooldown": 0.5,
+   "splash": 50,
+   "cost": 320,
+   "sprite": "us_army_flak_battery"
+  },
+  "sam_site": {
+   "name": "NASAMS Fire Unit",
+   "class": "Medium-range SAM",
+   "desc": "AMRAAM-ER missiles from a networked launcher; 40 km reach and good against low fliers.",
+   "specs": "AIM-120 | 40 km | AN/MPQ-64",
+   "hp": 330,
+   "armor": 2,
+   "range": 405,
+   "damage": 60,
+   "cooldown": 1.3,
+   "cost": 290,
+   "sprite": "us_army_sam_site"
+  },
+  "heavy_battery": {
+   "name": "M777A2 155 mm Battery",
+   "class": "Towed howitzer",
+   "desc": "Titanium-frame towed gun, 4 t, helicopter-liftable. Fires Excalibur guided shells out to 40 km.",
+   "specs": "155 mm/39 | 4.2 t | 40 km",
+   "hp": 350,
+   "armor": 4,
+   "range": 670,
+   "damage": 96,
+   "cooldown": 3.9,
+   "min_range": 150,
+   "splash": 95,
+   "cost": 540,
+   "sprite": "us_army_heavy_battery"
+  },
+  "railgun": {
+   "name": "ONR Electromagnetic Railgun",
+   "class": "Railgun",
+   "desc": "Navy prototype launching 10 kg projectiles at Mach 7 with no explosive charge. Cancelled in 2021, still used here as an experimental fort weapon.",
+   "specs": "32 MJ | Mach 7 | 160+ km",
+   "hp": 620,
+   "armor": 16,
+   "range": 650,
+   "damage": 325,
+   "cooldown": 4.4,
+   "pierce": 40,
+   "cost": 1150,
+   "sprite": "us_army_railgun"
+  },
+  "ciws": {
+   "name": "Mk 15 Phalanx CIWS",
+   "class": "Close-in weapon",
+   "desc": "Radar-guided 20 mm Gatling at 4,500 rpm; ground-mounted C-RAM variant shoots down mortars and rockets.",
+   "specs": "20 mm M61A1 | 4,500 rpm",
+   "hp": 390,
+   "armor": 6,
+   "range": 275,
+   "damage": 12,
+   "cooldown": 0.08,
+   "cost": 530,
+   "sprite": "us_army_ciws"
+  },
+  "interceptor_battery": {
+   "name": "IFPC Iron Dome Battery",
+   "class": "Counter-rocket battery",
+   "desc": "Tamir interceptors cued by EL/M-2084 radar; shoots down rockets, mortars and cruise missiles.",
+   "specs": "Tamir | 70 km | EL/M-2084",
+   "hp": 390,
+   "armor": 4,
+   "range": 655,
+   "damage": 135,
+   "cooldown": 1.6,
+   "cost": 720,
+   "sprite": "us_army_interceptor_battery"
+  },
+  "abm_battery": {
+   "name": "THAAD Battery",
+   "class": "Ballistic-missile defense",
+   "desc": "Hit-to-kill interceptors with a 200 km range and AN/TPY-2 radar; defends against theater ballistic missiles.",
+   "specs": "8 launchers | 200 km | kinetic",
+   "hp": 620,
+   "armor": 8,
+   "range": 950,
+   "damage": 265,
+   "cooldown": 1.4,
+   "cost": 1450,
+   "sprite": "us_army_abm_battery"
+  },
+  "barricade": {
+   "name": "Concrete T-Wall",
+   "class": "Barrier",
+   "desc": "Precast 5-ton steel-reinforced wall blocks used to channel traffic and protect against blast.",
+   "specs": "5 t | reinforced concrete",
+   "hp": 950,
+   "armor": 14,
+   "cost": 80,
+   "sprite": "us_army_barricade"
+  },
+  "repair_depot": {
+   "name": "Forward Repair Activity",
+   "class": "Maintenance depot",
+   "desc": "Mobile maintenance bay with welders, generators and spare parts to keep vehicles in the fight.",
+   "specs": "Mobile shop | generator | spares",
+   "hp": 420,
+   "armor": 4,
+   "heal": {
+    "rate": 24,
+    "radius": 150,
+    "cls": [
+     "vehicle",
+     "armor",
+     "structure"
+    ]
+   },
+   "cost": 370,
+   "sprite": "us_army_repair_depot"
+  },
+  "coastal_battery": {
+   "name": "NMESIS Coastal Battery",
+   "class": "Anti-ship missile",
+   "desc": "Marine Corps launcher on an unmanned JLTV-class chassis firing Naval Strike Missiles at ships up to 185 km away.",
+   "specs": "NSM | 185 km | unmanned truck",
+   "hp": 780,
+   "armor": 12,
+   "range": 490,
+   "damage": 100,
+   "cooldown": 2.4,
+   "splash": 45,
+   "vs": {
+    "ship": 1.6
+   },
+   "cost": 480,
+   "sprite": "us_army_coastal_battery"
+  },
+  "tactical_missile": {
+   "name": "PrSM Increment 1",
+   "class": "Tactical ballistic missile",
+   "desc": "GPS/INS missile fired from HIMARS or M270; range over 500 km, replaces ATACMS.",
+   "specs": "500+ km | 200 kg warhead",
+   "damage": 140,
+   "splash": 78,
+   "cost": 160,
+   "sprite": "us_army_tactical_missile"
+  },
+  "cruise_missile": {
+   "name": "BGM-109 Tomahawk Block V",
+   "class": "Cruise missile",
+   "desc": "Subsonic land-attack missile with 1,000 lb warhead and 1,600 km range; follows terrain below radar.",
+   "specs": "Subsonic | 1,600 km | 450 kg",
+   "damage": 265,
+   "splash": 105,
+   "cost": 310,
+   "sprite": "us_army_cruise_missile"
+  },
+  "cluster_missile": {
+   "name": "MGM-140A ATACMS (M39)",
+   "class": "Cluster ballistic missile",
+   "desc": "Carries 950 M74 bomblets over 165 km; ideal against airfields and troop concentrations.",
+   "specs": "165 km | 950 bomblets",
+   "damage": 170,
+   "splash": 205,
+   "cost": 530,
+   "sprite": "us_army_cluster_missile"
+  },
+  "bunker_buster": {
+   "name": "GBU-57 MOP",
+   "class": "Massive ordnance penetrator",
+   "desc": "30,000 lb penetrating bomb dropped from a B-2, designed to burrow deep before detonating.",
+   "specs": "13.6 t | penetrator | B-2 only",
+   "damage": 700,
+   "splash": 70,
+   "cost": 650,
+   "sprite": "us_army_bunker_buster"
+  },
+  "ballistic_missile": {
+   "name": "Pershing II",
+   "class": "Intermediate-range ballistic",
+   "desc": "Cold War IRBM with a maneuvering reentry vehicle. Retired in 1991 under the INF treaty; modelled as a reactivated stock.",
+   "specs": "1,770 km | 2 stage | CEP 30 m",
+   "damage": 720,
+   "splash": 175,
+   "cost": 820,
+   "sprite": "us_army_ballistic_missile"
+  },
+  "hypersonic": {
+   "name": "LRHW Dark Eagle",
+   "class": "Hypersonic glide weapon",
+   "desc": "Army's Common-Hypersonic Glide Body on a Navy-derived booster; Mach 5+ glide, range ~2,800 km.",
+   "specs": "Mach 5+ | 2,800 km | mobile",
+   "damage": 1100,
+   "splash": 150,
+   "cost": 1400,
+   "sprite": "us_army_hypersonic"
+  },
+  "tactical_nuke": {
+   "name": "B61-12 Guided Bomb",
+   "class": "Tactical nuclear bomb",
+   "desc": "Variable-yield (0.3-50 kt) gravity bomb with a guided tail kit; deployed in Europe.",
+   "specs": "0.3-50 kt | tail kit",
+   "damage": 2000,
+   "splash": 230,
+   "cost": 1800,
+   "sprite": "us_army_tactical_nuke"
+  },
+  "nuke": {
+   "name": "LGM-30G Minuteman III",
+   "class": "ICBM",
+   "desc": "Silo-based 3-stage ICBM; 13,000 km range, 300 kt W87. 400 are on alert in the US.",
+   "specs": "300 kt | 13,000 km | silo",
+   "damage": 3600,
+   "splash": 330,
+   "cost": 3000,
+   "sprite": "us_army_nuke"
+  },
+  "mega_nuke": {
+   "name": "B41 (Mk-41) 25 Mt Bomb",
+   "class": "Thermonuclear bomb",
+   "desc": "Highest-yield US weapon ever deployed (1960-76). A 4.8-ton gravity bomb from a B-52.",
+   "specs": "25 Mt | 4.8 t | B-52",
+   "damage": 7000,
+   "splash": 560,
+   "cost": 6500,
+   "sprite": "us_army_mega_nuke"
+  },
+  "shotgunner": {
+   "name": "M97 Trench Gunner"
+  },
+  "marksman": {
+   "name": "M14 Designated Marksman"
+  },
+  "mortar_team": {
+   "name": "M224 Mortar Team"
+  },
+  "javelin": {
+   "name": "FGM-148 Javelin Team"
+  },
+  "riot_trooper": {
+   "name": "Ballistic-Shield Trooper"
+  },
+  "sapper": {
+   "name": "Combat Engineer Sapper"
+  },
+  "officer": {
+   "name": "Platoon Leader (2LT)"
+  },
+  "k9": {
+   "name": "K9 Demolition Dog"
+  },
+  "mine_flail": {
+   "name": "M1 Panther Mine Clearer"
+  },
+  "torpedo_boat": {
+   "name": "PT Torpedo Boat"
+  },
+  "frigate": {
+   "name": "Knox-class Frigate"
+  },
+  "minelayer": {
+   "name": "Terror-class Minelayer"
+  },
+  "midget_sub": {
+   "name": "Advanced SEAL Mini-Sub"
+  },
+  "cruise_sub": {
+   "name": "Ohio-class SSGN"
+  },
+  "sandbag_nest": {
+   "name": "M60 Sandbag Nest"
+  },
+  "watchtower": {
+   "name": "Guard Tower"
+  },
+  "sniper_nest": {
+   "name": "M82 Sniper Nest"
+  },
+  "flame_bunker": {
+   "name": "M2 Flame Bunker"
+  },
+  "torpedo_battery": {
+   "name": "Shore Torpedo Battery"
+  },
+  "observation_post": {
+   "name": "Forward Observer Post"
+  }
+ }
+}

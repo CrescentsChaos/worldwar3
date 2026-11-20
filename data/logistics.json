@@ -1,0 +1,88 @@
+{
+ "mobility": {
+  "foot": {
+   "road": 1.2,
+   "off": 1.0,
+   "name": "On foot"
+  },
+  "wheeled": {
+   "road": 2.1,
+   "off": 0.7,
+   "name": "Wheeled"
+  },
+  "truck": {
+   "road": 2.2,
+   "off": 0.55,
+   "name": "Truck"
+  },
+  "tracked": {
+   "road": 1.5,
+   "off": 0.95,
+   "name": "Tracked"
+  },
+  "heavy": {
+   "road": 1.35,
+   "off": 0.85,
+   "name": "Heavy tracked"
+  },
+  "air": {
+   "road": 1.0,
+   "off": 1.0,
+   "name": "Air"
+  },
+  "ship": {
+   "road": 1.0,
+   "off": 1.0,
+   "name": "Naval"
+  }
+ },
+ "ammo": {
+  "low_fraction": 0.25,
+  "empty_fraction": 0.0,
+  "reload_rate": 0.07,
+  "supply_cost": {
+   "infantry": 1.5,
+   "vehicle": 5.0,
+   "armor": 8.0,
+   "artillery": 10.0,
+   "air": 14.0,
+   "ship": 25.0
+  },
+  "truck_search_radius": 1900,
+  "truck_refill_below": 0.2
+ },
+ "transport": {
+  "board_range": 26,
+  "dismount_range": 330,
+  "wait_for_load": 18.0,
+  "survive_chance": 0.55,
+  "heli_survive_chance": 0.12,
+  "auto_board_radius": 520
+ },
+ "flight": {
+  "default_rearm_time": 10.0,
+  "bingo_hp": 0.35,
+  "takeoff_time": 1.4,
+  "min_speed_factor": 0.72,
+  "gun_cone_deg": {
+   "fighter": 13,
+   "strike": 16,
+   "drone": 30,
+   "orbit": 40,
+   "bomber": 360
+  }
+ },
+ "sectors": {
+  "capture_rate": 5.0,
+  "max_rate": 20.0,
+  "own_at": 100.0,
+  "power": {
+   "infantry": 1.0,
+   "vehicle": 1.4,
+   "armor": 1.6,
+   "ship": 0.0,
+   "air": 0.0
+  },
+  "decay": 3.0
+ }
+}

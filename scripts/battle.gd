@@ -17,6 +17,11 @@ var units_root: Node2D
 var proj_root: Node2D
 var fx_root: Node2D
 var terrain: TerrainLayer
+var sectors: Array = []                           # capture zones of the map: {id, name, pos, r, income, meter (+ = player), owner}
+var map_id := ""
+var _sector_t := 0.0
+var _supply_src: Array = [[], []]                 # depots, carriers, supply trucks per team
+var _missile_list: Array = []
 var decals: DecalLayer
 
 # --- command & control: production queues, selection, orders
@@ -88,16 +93,27 @@ var _power_ok: Array = [true, true]
 func _ready() -> void:
 	Engine.time_scale = 1.0
 	get_tree().paused = false
-	Water.ensure_built()
+	map_id = SaveManager.pending_map
+	if SaveManager.pending_load != "":
+		var peek: Dictionary = SaveManager.load_game(SaveManager.pending_load)
+		if peek.has("map"):
+			map_id = str(peek["map"])
+	GameData.set_map(map_id)
+	map_id = GameData.current_map
+	var mdef: Dictionary = GameData.map_def()
+	Water.configure(mdef)
+	RoadNet.configure(mdef)
+	_build_sectors(mdef)
 	Sfx.play_music("music_battle")
 	Sfx.play_ambient("ambient_battle")
 	terrain = TerrainLayer.new()
 	add_child(terrain)
-	terrain.setup_terrain()
+	terrain.setup_terrain(mdef)
 	decals = DecalLayer.new()
 	add_child(decals)
 	var wave_fx := WaterFX.new()
 	add_child(wave_fx)
+	wave_fx.battle = self
 	wave_fx.setup()
 	units_root = Node2D.new()
 	proj_root = Node2D.new()
@@ -327,6 +343,10 @@ func _clear_all() -> void:
 			c.queue_free()
 	bases = [null, null]
 	_objectives = [[], []]
+	_supply_src = [[], []]
+	for sec in sectors:
+		sec["meter"] = 0.0
+		sec["owner"] = -1
 	_caps = [{}, {}]
 	if decals != null:
 		decals.clear()
@@ -345,10 +365,13 @@ func _refresh_world() -> void:
 	var inc: Array = [base_inc, base_inc]
 	var objs: Array = [[], []]
 	var nat: Array = [0, 0]
+	var sup: Array = [[], []]
 	for n in get_tree().get_nodes_in_group("combatants"):
 		var c := n as Combatant
 		if c == null or c.dead or c.is_queued_for_deletion():
 			continue
+		if c.layer != "missile" and (c.def.has("supply") or c.supply_max > 0.0):
+			sup[c.team].append(c)
 		var gives_cap: bool = c.kind == "unit" and c.def.has("provides")
 		if c.kind != "base" and c.kind != "national" and not gives_cap:
 			continue
@@ -362,6 +385,11 @@ func _refresh_world() -> void:
 		for p in prov:
 			var key := str(p)
 			caps[t][key] = int(caps[t].get(key, 0)) + 1
+	for sec in sectors:
+		var so := int(sec["owner"])
+		if so >= 0:
+			inc[so] += float(sec["income"]) * float(GameData.settings.get("sector_income_mult", 1.0))
+	_supply_src = sup
 	var econ := float(GameData.settings.get("economy_mult", 1.0))
 	inc[0] *= econ
 	inc[1] *= econ
@@ -379,10 +407,13 @@ func _refresh_world() -> void:
 func _rebuild_grid() -> void:
 	_grid_t = 0.12
 	var g: Array = [{}, {}]
+	var ml: Array = []
 	for n in get_tree().get_nodes_in_group("combatants"):
 		var c := n as Combatant
-		if c == null or c.dead or c.is_queued_for_deletion():
+		if c == null or c.dead or c.is_queued_for_deletion() or c.parked:
 			continue
+		if c is Missile:
+			ml.append(c)
 		var key := Vector2i(floori(c.position.x / GRID), floori(c.position.y / GRID))
 		var cell: Dictionary = g[c.team]
 		if cell.has(key):
@@ -390,6 +421,7 @@ func _rebuild_grid() -> void:
 		else:
 			cell[key] = [c]
 	_grid = g
+	_missile_list = ml
 
 
 ## Combatants of `team` within about `radius` of `pos` (callers still do the exact distance test).
@@ -433,7 +465,7 @@ func missing_requirement(team: int, d: Dictionary) -> String:
 
 
 ## Nearest living enemy capital / country building: where units march when idle.
-func objective_for(team: int, from: Vector2) -> Vector2:
+func objective_for(team: int, from: Vector2, use_sectors: bool = false) -> Vector2:
 	var best := base_pos(1 - team)
 	var best_d := INF
 	var focus := plan_focus if team == 0 else "auto"
@@ -446,6 +478,10 @@ func objective_for(team: int, from: Vector2) -> Vector2:
 		if d < best_d:
 			best_d = d
 			best = c.position
+	if use_sectors and not sectors.is_empty() and (focus == "auto" or focus == "economy"):
+		var sp := next_sector_for(team, from)
+		if sp.x > -1.0 and from.distance_to(sp) < maxf(best_d, 1500.0) * 0.9:
+			return sp
 	return best
 
 
@@ -734,10 +770,6 @@ func on_combatant_died(c: Combatant, source_team: int) -> void:
 		else:
 			kills[source_team] += 1
 	_radio_death(c, source_team)
-	var cargo: Array = c.def.get("cargo", []) if c.cargo_loaded else []
-	for cid in cargo:
-		if unit_count(c.team, false) < int(GameData.settings.get("unit_cap", 90)):
-			spawn_entity("unit", str(cid), c.team, c.position + Vector2(randf_range(-24.0, 24.0), randf_range(-24.0, 24.0)))
 	if c.kind == "base":
 		_refresh_world()
 		game_over(1 - c.team)
@@ -1068,7 +1100,11 @@ func _tick_production(delta: float) -> void:
 func _finish_unit(t: int, it: Dictionary) -> void:
 	var id := str(it["id"])
 	var ud := GameData.def_for(t, "unit", id)
-	var prod: Combatant = it["prod"]
+	var producer = it.get("prod")
+	if not is_instance_valid(producer) or producer.dead:
+		money[t] += float(it["cost"])
+		return
+	var prod: Combatant = producer
 	if ud.is_empty() or unit_count(t, false) >= int(GameData.settings.get("unit_cap", 90)):
 		money[t] += float(it["cost"])
 		return
@@ -1174,9 +1210,10 @@ func issue_order(mode: String, target: Vector2) -> void:
 	var col := MilTheme.GOOD if mode == "move" else MilTheme.WARN
 	var tgt := Vector2(clampf(target.x, 20.0, float(W) - 20.0), clampf(target.y, float(Water.Y_MIN) + 10.0, float(Water.Y_MAX) - 10.0))
 	for i in n:
-		var c: Combatant = selected[i]
-		if not is_instance_valid(c):
+		var candidate = selected[i]
+		if not is_instance_valid(candidate):
 			continue
+		var c: Combatant = candidate
 		var off := Vector2(float(i % cols) - float(cols - 1) * 0.5, float(i / cols) - float(n / cols) * 0.5) * spacing
 		var p := tgt + off
 		if c.domain == "water" or c.domain == "sub":
@@ -1208,6 +1245,12 @@ func _command_key(key: int) -> void:
 			select_all_units()
 		KEY_Z:
 			use_selected_ability()
+		KEY_U:
+			unload_selected()
+		KEY_G:
+			if not selected.is_empty():
+				_cmd_mode = "dropoff"
+				hud.toast("Drop-off: click where the transports should unload")
 		KEY_M:
 			var on := Radio.toggle_voice()
 			hud.toast("Radio audio ON" if on else "Radio audio MUTED (subtitles stay)")
@@ -1854,6 +1897,10 @@ func _process(delta: float) -> void:
 	_vis_t -= delta
 	if _vis_t <= 0.0:
 		_update_vision()
+	_sector_t -= delta
+	if _sector_t <= 0.0:
+		_sector_t = 0.5
+		_tick_sectors(0.5)
 	var si := 0
 	while si < smokes.size():
 		smokes[si]["age"] = float(smokes[si]["age"]) + delta
@@ -1949,6 +1996,9 @@ func _unhandled_input(event: InputEvent) -> void:
 				elif _cmd_mode == "attack_move":
 					issue_order("attack_move", mp)
 					_cmd_mode = ""
+				elif _cmd_mode == "dropoff":
+					issue_dropoff(mp)
+					_cmd_mode = ""
 				else:
 					_box_active = true
 					_box_moved = false
@@ -1962,7 +2012,283 @@ func _unhandled_input(event: InputEvent) -> void:
 			elif _cmd_mode != "":
 				_cmd_mode = ""
 			elif not selected.is_empty():
-				issue_order("attack_move" if b.ctrl_pressed else "move", mp)
+				var boarding := _transport_at(mp)
+				if boarding != null and not _selected_infantry().is_empty():
+					issue_board(boarding)
+				else:
+					issue_order("attack_move" if b.ctrl_pressed else "move", mp)
+
+
+# ------------------------------------------------------------------ v7: sectors (capture zones)
+
+func _build_sectors(m: Dictionary) -> void:
+	sectors = []
+	var sl: Array = m.get("sectors", [])
+	for s in sl:
+		var sd: Dictionary = s
+		sectors.append({"id": str(sd.get("id", "?")), "name": str(sd.get("name", "Sector")),
+			"pos": Vector2(float(sd.get("x", 0.0)), float(sd.get("y", 0.0))), "r": float(sd.get("r", 170.0)),
+			"income": float(sd.get("income", 1.5)), "meter": 0.0, "owner": -1, "pw0": 0.0, "pw1": 0.0})
+
+
+func sector_owner_count(team: int) -> int:
+	var n := 0
+	for sec in sectors:
+		if int(sec["owner"]) == team:
+			n += 1
+	return n
+
+
+func in_owned_sector(team: int, p: Vector2) -> bool:
+	for sec in sectors:
+		if int(sec["owner"]) == team:
+			var sp: Vector2 = sec["pos"]
+			if p.distance_to(sp) <= float(sec["r"]) * 1.6:
+				return true
+	return false
+
+
+func _tick_sectors(dt: float) -> void:
+	if sectors.is_empty():
+		return
+	var power_tab: Dictionary = {}
+	var lg: Dictionary = GameData.logistics.get("sectors", {})
+	power_tab = lg.get("power", {})
+	var cap_rate := float(lg.get("capture_rate", 5.0))
+	var max_rate := float(lg.get("max_rate", 20.0))
+	var own_at := float(lg.get("own_at", 100.0))
+	var decay := float(lg.get("decay", 3.0))
+	var changed := false
+	for sec in sectors:
+		var pos: Vector2 = sec["pos"]
+		var r := float(sec["r"])
+		var pw: Array = [0.0, 0.0]
+		for t in 2:
+			for n in near_team(t, pos, r):
+				var c := n as Combatant
+				if c == null or c.dead or c.kind != "unit" or c.layer != "ground" or c.parked:
+					continue
+				if c.domain != "land" and c.domain != "amphib":
+					continue
+				if c.position.distance_to(pos) > r:
+					continue
+				pw[t] = float(pw[t]) + float(power_tab.get(c.cls, 1.0))
+		sec["pw0"] = pw[0]
+		sec["pw1"] = pw[1]
+		var meter := float(sec["meter"])
+		var diff := float(pw[0]) - float(pw[1])
+		var owner := int(sec["owner"])
+		if absf(diff) > 0.01:
+			var rate := clampf(diff * cap_rate, -max_rate, max_rate)
+			if float(pw[0]) > 0.0 and float(pw[1]) > 0.0:
+				rate *= 0.5                      # contested: slower
+			meter += rate * dt
+		elif owner == -1:
+			meter = move_toward(meter, 0.0, decay * dt)
+		meter = clampf(meter, -own_at, own_at)
+		sec["meter"] = meter
+		var new_owner := owner
+		if meter >= own_at:
+			new_owner = 0
+		elif meter <= -own_at:
+			new_owner = 1
+		elif owner == 0 and meter < 20.0:
+			new_owner = -1
+		elif owner == 1 and meter > -20.0:
+			new_owner = -1
+		if new_owner != owner:
+			sec["owner"] = new_owner
+			changed = true
+			if hud != null and not prep:
+				var nm := str(sec["name"])
+				if new_owner == 0:
+					hud.toast("Sector secured: %s" % nm)
+					Radio.say("sector_taken", {"pos": pos})
+				elif owner == 0:
+					hud.toast("Sector lost: %s" % nm)
+					Radio.say("sector_lost", {"pos": pos})
+				elif new_owner == 1:
+					hud.toast("Enemy took %s" % nm)
+	if changed:
+		_refresh_world()
+
+
+## Nearest capture zone the team does not own yet (for ground units that have nothing else to do), or (-1, -1).
+func next_sector_for(team: int, from: Vector2) -> Vector2:
+	var best := Vector2(-1.0, -1.0)
+	var bd := INF
+	for sec in sectors:
+		if int(sec["owner"]) == team:
+			continue
+		var p: Vector2 = sec["pos"]
+		var d := from.distance_to(p)
+		if d < bd:
+			bd = d
+			best = p
+	return best
+
+
+# ------------------------------------------------------------------ v7: supply, rearm, transport helpers
+
+func supply_sources(team: int) -> Array:
+	var arr: Array = _supply_src[team]
+	var i := 0
+	while i < arr.size():
+		var s = arr[i]
+		if not is_instance_valid(s) or s.dead or s.is_queued_for_deletion():
+			arr.remove_at(i)
+		else:
+			i += 1
+	return arr
+
+
+## Where a fixed-wing aircraft lands to rearm: the nearest living airbase, carrier or the capital.
+func rearm_point(team: int, from: Vector2) -> Vector2:
+	var best := base_pos(team)
+	var bd := INF
+	for sn in supply_sources(team):
+		var s := sn as Combatant
+		if s == null or s.layer == "air":
+			continue
+		var sp: Variant = s.def.get("supply", null)
+		if typeof(sp) != TYPE_DICTIONARY:
+			continue
+		var spd: Dictionary = sp
+		if not bool(spd.get("rearm", false)):
+			continue
+		var d := from.distance_to(s.position)
+		if d < bd:
+			bd = d
+			best = s.position
+	return best
+
+
+## Where a unit goes to reload: the nearest depot / truck that can reach it (ships: the coast next to a port).
+func supply_spot_for(c: Combatant) -> Vector2:
+	var ship := c.domain == "water" or c.domain == "sub"
+	var best := base_pos(c.team)
+	var bd := INF
+	for sn in supply_sources(c.team):
+		var s := sn as Combatant
+		if s == null or s == c or not s.can_supply() or s.layer == "air":
+			continue
+		if s.supply_max > 0.0 and (s.supply < 30.0 or ship):
+			continue
+		if (s.domain == "water" or s.domain == "sub") and not ship:
+			continue
+		var d := c.position.distance_to(s.position)
+		if d < bd:
+			bd = d
+			best = s.position
+	if ship:
+		var wp := Water.nearest_water(best, c.draft)
+		if wp.x > -1000.0:
+			return wp
+	return best
+
+
+## Auto transports ask nearby free infantry to climb aboard.
+func recruit_riders(t: Combatant) -> void:
+	var rad := float(GameData.logi("transport", "auto_board_radius", 520.0))
+	var boarding := 0
+	var cands: Array = []
+	for n in near_team(t.team, t.position, rad):
+		var c := n as Combatant
+		if c == null or c.dead or c.kind != "unit" or c.cls != "infantry" or c.domain != "land" or c == t:
+			continue
+		if c.order == "board" and c.board_target == t:
+			boarding += 1
+			continue
+		if c.order != "auto" or c.board_cd > 0.0 or c.target != null or c.retreating or c.resupplying:
+			continue
+		if bool(c.def.get("kamikaze", false)) or bool(c.def.get("scout", false)):
+			continue
+		cands.append(c)
+	var need := t.free_seats() - boarding
+	for c2 in cands:
+		if need <= 0:
+			return
+		(c2 as Combatant).order_board(t)
+		need -= 1
+
+
+## Choose a bombing objective for a bomber that just finished a pass (one of the nearest few enemy buildings).
+func pick_bombing_goal(team: int, from: Vector2) -> Vector2:
+	var list: Array = []
+	for c in _objectives[1 - team]:
+		if is_instance_valid(c) and not c.dead:
+			list.append(c)
+	if list.is_empty():
+		return base_pos(1 - team)
+	list.sort_custom(func(a, b): return from.distance_squared_to(a.position) < from.distance_squared_to(b.position))
+	var pick: Combatant = list[randi() % mini(4, list.size())]
+	var side := Vector2.from_angle(randf() * TAU) * randf_range(0.0, 140.0)
+	return pick.position + side
+
+
+func _transport_at(mp: Vector2) -> Combatant:
+	var best: Combatant = null
+	var bd := INF
+	for n in get_tree().get_nodes_in_group("team0"):
+		var c := n as Combatant
+		if c == null or c.dead or c.kind != "unit" or c.seats <= 0 or c.free_seats() <= 0:
+			continue
+		var d := c.position.distance_to(mp)
+		if d <= c.radius + 14.0 and d < bd:
+			bd = d
+			best = c
+	return best
+
+
+func _selected_infantry() -> Array:
+	var out: Array = []
+	for c in selected:
+		if is_instance_valid(c) and not c.dead and c.cls == "infantry" and c.can_take_orders():
+			out.append(c)
+	return out
+
+
+## RMB on a friendly transport with infantry selected: everyone boards (as many as there are seats).
+func issue_board(t: Combatant) -> void:
+	var inf := _selected_infantry()
+	if inf.is_empty():
+		return
+	var seats := t.free_seats()
+	var n := 0
+	for c in inf:
+		if n >= seats:
+			break
+		(c as Combatant).order_board(t)
+		n += 1
+	order_marks.append([t.position, 0.0, MilTheme.GOOD])
+	Sfx.play("click", -7.0, 0.03)
+	if n < inf.size() and hud != null:
+		hud.toast("%d boarding - only %d free seats" % [n, seats])
+	if n > 0:
+		Radio.say("ack_board", {"unit": inf[0]})
+
+
+func unload_selected() -> void:
+	var n := 0
+	for c in selected:
+		if is_instance_valid(c) and not c.dead and not c.passengers.is_empty():
+			n += c.unload_all()
+	if hud != null:
+		hud.toast("%d infantry dismounted" % n if n > 0 else "Nobody to dismount")
+
+
+## G + click: selected transports drive to the point and unload there.
+func issue_dropoff(target: Vector2) -> void:
+	var tgt := Vector2(clampf(target.x, 20.0, float(W) - 20.0), clampf(target.y, FIELD_TOP + 10.0, FIELD_BOTTOM - 10.0))
+	var n := 0
+	for c in selected:
+		if is_instance_valid(c) and not c.dead and c.seats > 0 and c.can_take_orders():
+			c.set_order("move", tgt + Vector2(randf_range(-30.0, 30.0), randf_range(-30.0, 30.0)))
+			c.drop_set = true
+			n += 1
+	order_marks.append([tgt, 0.0, MilTheme.AMBER])
+	if hud != null:
+		hud.toast("Drop-off ordered (%d vehicles)" % n if n > 0 else "Select a transport first")
 
 
 # ------------------------------------------------------------------- drawing
@@ -1988,8 +2314,10 @@ func _draw() -> void:
 
 	# Incoming / outgoing missile impact markers.
 	var pulse := 0.5 + 0.5 * sin(Time.get_ticks_msec() / 130.0)
-	for n in get_tree().get_nodes_in_group("combatants"):
-		var m := n as Missile
+	for mn in _missile_list:
+		if not is_instance_valid(mn):
+			continue
+		var m := mn as Missile
 		if m == null or m.dead:
 			continue
 		var col := MilTheme.BAD if m.team == 1 else MilTheme.GOOD
@@ -2017,9 +2345,48 @@ func _draw() -> void:
 	if _cmd_mode == "attack_move":
 		var mp2 := get_local_mouse_position()
 		draw_arc(mp2, 16.0, 0.0, TAU, 20, Color(MilTheme.WARN, 0.9), 2.0)
+	if _cmd_mode == "dropoff":
+		var mp3 := get_local_mouse_position()
+		draw_arc(mp3, 18.0, 0.0, TAU, 24, Color(MilTheme.GOOD, 0.9), 2.0)
+		draw_line(mp3 + Vector2(-8, 0), mp3 + Vector2(8, 0), Color(MilTheme.GOOD, 0.9), 2.0)
+		draw_line(mp3 + Vector2(0, -8), mp3 + Vector2(0, 8), Color(MilTheme.GOOD, 0.9), 2.0)
+	_draw_sectors()
 	_draw_smoke()
 	_draw_prep_overlay()
 	_draw_ghost()
+
+
+func _draw_sectors() -> void:
+	var font := MilTheme.font_bold()
+	var z := cam.zoom.x if cam != null else 1.0
+	for sec in sectors:
+		var pos: Vector2 = sec["pos"]
+		var r := float(sec["r"])
+		var own := int(sec["owner"])
+		var col := Color(0.75, 0.78, 0.8)
+		if own == 0:
+			col = MilTheme.FRIEND
+		elif own == 1:
+			col = MilTheme.ENEMY
+		var meter := float(sec["meter"])
+		var contested := float(sec["pw0"]) > 0.0 and float(sec["pw1"]) > 0.0
+		draw_circle(pos, r, Color(col, 0.07 if own >= 0 else 0.035))
+		draw_arc(pos, r, 0.0, TAU, 64, Color(col, 0.55 if own >= 0 else 0.30), 2.0 if own >= 0 else 1.5)
+		# capture progress: blue arc grows with the player's meter, red with the enemy's
+		if absf(meter) > 1.0:
+			var pc := MilTheme.FRIEND if meter > 0.0 else MilTheme.ENEMY
+			draw_arc(pos, r - 8.0, -PI * 0.5, -PI * 0.5 + TAU * absf(meter) / 100.0 * (1.0 if meter > 0.0 else -1.0), 48, Color(pc, 0.9), 4.0)
+		if contested:
+			draw_arc(pos, r * 0.5, 0.0, TAU, 32, Color(MilTheme.WARN, 0.4 + 0.3 * sin(Time.get_ticks_msec() / 160.0)), 2.0)
+		var label := str(sec["id"])
+		var lw := 26.0
+		draw_circle(pos, 14.0, Color(0.04, 0.05, 0.07, 0.85))
+		draw_arc(pos, 14.0, 0.0, TAU, 20, Color(col, 0.95), 2.0)
+		draw_string(font, pos + Vector2(-lw * 0.5, 5.0), label, HORIZONTAL_ALIGNMENT_CENTER, lw, 15, Color(1, 1, 1, 0.95))
+		if z > 0.45:
+			var nm := "%s  +%.1f" % [str(sec["name"]).to_upper(), float(sec["income"])]
+			draw_string_outline(font, pos + Vector2(-110.0, r + 18.0), nm, HORIZONTAL_ALIGNMENT_CENTER, 220.0, 12, 4, Color(0, 0, 0, 0.8))
+			draw_string(font, pos + Vector2(-110.0, r + 18.0), nm, HORIZONTAL_ALIGNMENT_CENTER, 220.0, 12, Color(col, 0.95))
 
 
 func _draw_smoke() -> void:
@@ -2140,6 +2507,8 @@ func serialize() -> Dictionary:
 		ents.append(c.to_dict())
 	return {
 		"difficulty": difficulty,
+		"map": map_id,
+		"sectors": _sectors_to_array(),
 		"factions": {"pf": GameData.team_faction[0], "ps": GameData.team_strategy[0],
 			"ef": GameData.team_faction[1], "es": GameData.team_strategy[1]},
 		"elapsed": elapsed,
@@ -2160,6 +2529,13 @@ func serialize() -> Dictionary:
 		"entities": ents,
 		"ai": ai.to_dict() if ai != null else {},
 	}
+
+
+func _sectors_to_array() -> Array:
+	var out: Array = []
+	for sec in sectors:
+		out.append({"id": sec["id"], "meter": sec["meter"], "owner": sec["owner"]})
+	return out
 
 
 func _queues_to_array() -> Array:
@@ -2209,6 +2585,13 @@ func deserialize(data: Dictionary) -> bool:
 	intercepted = _int_pair(data.get("intercepted", []))
 	nat_start = _int_pair(data.get("nat_start", []))
 	over = false
+	var sv: Array = data.get("sectors", [])
+	for sd in sv:
+		var sdd: Dictionary = sd
+		for sec in sectors:
+			if str(sec["id"]) == str(sdd.get("id", "")):
+				sec["meter"] = float(sdd.get("meter", 0.0))
+				sec["owner"] = int(sdd.get("owner", -1))
 	for e in ents:
 		var team := int(e.get("team", 0))
 		var kind := str(e.get("t", "unit"))
@@ -2281,6 +2664,11 @@ func load_slot(slot: String) -> bool:
 	if data.is_empty():
 		hud.toast("%s is empty" % SaveManager.slot_label(slot))
 		return false
+	if str(data.get("map", map_id)) != map_id:
+		SaveManager.pending_load = slot            # the save lives on another battlefield: reload the scene with that map
+		get_tree().paused = false
+		get_tree().reload_current_scene()
+		return true
 	var ok := deserialize(data)
 	hud.toast("Loaded %s" % SaveManager.slot_label(slot) if ok else "Load failed (old save format?)")
 	if ok:
@@ -2303,239 +2691,6 @@ func reload_sprites() -> void:
 
 ## Static scenery: ground, dirt, scorched front line, roads between the country buildings, craters, rocks and
 ## forests. Drawn once (cached by the engine).
-class TerrainLayer extends Node2D:
-	var patches: Array = []     # soft ground blotches [pos, radius, shade]
-	var craters: Array = []     # [pos, radius]
-	var forests: Array = []     # clusters of trees: [[pos, radius, shade], ...]
-	var roads: Array = []       # [a, b, width]
-	var scars: Array = []       # churned / scorched earth on the front line [pos, radius]
-	var rocks: Array = []       # [pos, size]
-
-	func _init() -> void:
-		z_index = -10
-		texture_repeat = CanvasItem.TEXTURE_REPEAT_ENABLED
-		texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
-
-	func setup_terrain() -> void:
-		var rng := RandomNumberGenerator.new()
-		rng.seed = 1914
-		var w := float(Battle.W)
-		var mid_y := (Battle.FIELD_TOP + Battle.FIELD_BOTTOM) * 0.5
-		for i in 1100:
-			patches.append([Vector2(rng.randf_range(-40, w + 40), rng.randf_range(Battle.FIELD_TOP - 30, Battle.FIELD_BOTTOM + 30)),
-				rng.randf_range(30, 130), rng.randf_range(-1.0, 1.0)])
-		for i in 520:
-			var cp := Vector2(rng.randf_range(1500, w - 1500.0), rng.randf_range(Battle.FIELD_TOP + 20, Battle.FIELD_BOTTOM - 20))
-			var cr := rng.randf_range(6, 22)
-			if Water.kind_at(cp) != 0 or Water.dist_to_water(cp, 1) < cr + 30.0:
-				continue
-			craters.append([cp, cr])
-		for i in 340:
-			var sp := Vector2(rng.randf_range(1500, w - 1500.0), rng.randf_range(Battle.FIELD_TOP + 20, Battle.FIELD_BOTTOM - 20))
-			if Water.kind_at(sp) != 0 or Water.dist_to_water(sp, 1) < 50.0:
-				continue
-			scars.append([sp, rng.randf_range(24, 70)])
-		for i in 650:
-			var rp := Vector2(rng.randf_range(0, w), rng.randf_range(Battle.FIELD_TOP + 10, Battle.FIELD_BOTTOM - 10))
-			if Water.kind_at(rp) != 0 or Water.dist_to_water(rp, 1) < 24.0:
-				continue
-			rocks.append([rp, rng.randf_range(2.5, 6.5)])
-		var sites: Array = [Vector2(Battle.BASE_MARGIN, mid_y), Vector2(w - Battle.BASE_MARGIN, mid_y)]
-		for e in GameData.country:
-			var lx := float(e[1])
-			var ly := float(e[2])
-			sites.append(Vector2(lx, ly))
-			sites.append(Vector2(w - lx, Battle.FIELD_TOP + Battle.FIELD_BOTTOM - ly))
-		roads.append([Vector2(0, mid_y), Vector2(w, mid_y), 22.0])
-		for s: Vector2 in sites:
-			if absf(s.y - mid_y) > 24.0:
-				roads.append([s, Vector2(s.x, mid_y), 9.0])
-		for i in 420:
-			var c := Vector2(rng.randf_range(0, w), rng.randf_range(Battle.FIELD_TOP + 20, Battle.FIELD_BOTTOM - 20))
-			var ok := absf(c.y - mid_y) > 36.0 and Water.dist_to_water(c, 1) > 70.0
-			for s: Vector2 in sites:
-				if c.distance_to(s) < 120.0:
-					ok = false
-					break
-			if not ok:
-				continue
-			var cluster: Array = []
-			for k in rng.randi_range(4, 8):
-				cluster.append([c + Vector2(rng.randf_range(-45, 45), rng.randf_range(-35, 35)), rng.randf_range(12, 26), rng.randf()])
-			forests.append(cluster)
-
-	## Soft blob: a few stacked low-alpha discs so there is no hard edge.
-	func _blob(p: Vector2, r: float, col: Color) -> void:
-		for k in 4:
-			draw_circle(p, r * (1.0 - float(k) * 0.22), Color(col, col.a * 0.45))
-
-	func _draw() -> void:
-		var ft := Battle.FIELD_TOP
-		var fb := Battle.FIELD_BOTTOM
-		var w := float(Battle.W)
-		var bg := SpriteLib.get_optional("background")
-		if bg != null:
-			draw_rect(Rect2(-60, ft - 60, w + 120, fb - ft + 120), Color(0.04, 0.05, 0.04))
-			draw_texture_rect(bg, Rect2(0, ft, w, fb - ft), false)
-			_draw_water()
-			return
-		TileLib.fill(self, PackedVector2Array([Vector2(-60, ft - 60), Vector2(w + 60, ft - 60),
-			Vector2(w + 60, fb + 60), Vector2(-60, fb + 60)]), "ground", Color(0.18, 0.22, 0.12))
-		for p in patches:
-			var shade: float = p[2]
-			if shade < 0.0:
-				_blob(p[0], p[1], Color(0.04, 0.06, 0.03, 0.30))
-			else:
-				_blob(p[0], p[1] * 0.8, Color(0.34, 0.30, 0.16, 0.16))
-		# churned and scorched earth along the front line
-		for sc in scars:
-			_blob(sc[0], sc[1], Color(0.05, 0.04, 0.03, 0.42))
-			_blob(sc[0] + Vector2(sc[1] * 0.2, -sc[1] * 0.1), sc[1] * 0.55, Color(0.16, 0.12, 0.08, 0.40))
-		var road_tex := TileLib.get_tile("road")
-		var crater_tex := TileLib.get_tile("crater")
-		var tree_tex := TileLib.get_tile("tree")
-		for r in roads:
-			var a: Vector2 = r[0]
-			var b: Vector2 = r[1]
-			var wd: float = r[2]
-			if road_tex != null:
-				var hw: float = wd * 0.5
-				draw_texture_rect(road_tex, Rect2(minf(a.x, b.x) - (hw if a.x == b.x else 0.0),
-					minf(a.y, b.y) - (hw if a.y == b.y else 0.0), absf(b.x - a.x) + (hw * 2.0 if a.x == b.x else 0.0),
-					absf(b.y - a.y) + (hw * 2.0 if a.y == b.y else 0.0)), true)
-				continue
-			var dir := (b - a)
-			var length := dir.length()
-			if length < 1.0:
-				continue
-			dir = dir / length
-			var nrm := dir.orthogonal()
-			if wd >= 20.0:
-				draw_line(a, b, Color(0.04, 0.04, 0.035, 0.75), wd + 9.0)
-				draw_line(a, b, Color(0.27, 0.24, 0.17, 0.60), wd + 4.0)
-				draw_line(a, b, Color(0.125, 0.125, 0.12), wd)
-				draw_line(a, b, Color(0.16, 0.16, 0.15, 0.7), wd * 0.45)
-				var t := 0.0
-				while t < length:
-					draw_line(a + dir * t, a + dir * minf(t + 15.0, length), Color(0.62, 0.56, 0.32, 0.5), 1.6)
-					t += 36.0
-				draw_line(a + nrm * wd * 0.5, b + nrm * wd * 0.5, Color(0.5, 0.48, 0.4, 0.28), 1.0)
-				draw_line(a - nrm * wd * 0.5, b - nrm * wd * 0.5, Color(0.5, 0.48, 0.4, 0.28), 1.0)
-			else:
-				draw_line(a, b, Color(0.06, 0.05, 0.035, 0.55), wd + 4.0)
-				draw_line(a, b, Color(0.25, 0.205, 0.14, 0.92), wd)
-				draw_line(a + nrm * wd * 0.24, b + nrm * wd * 0.24, Color(0.13, 0.10, 0.07, 0.75), 1.6)
-				draw_line(a - nrm * wd * 0.24, b - nrm * wd * 0.24, Color(0.13, 0.10, 0.07, 0.75), 1.6)
-		for cr in craters:
-			var cp: Vector2 = cr[0]
-			var rad: float = cr[1]
-			if crater_tex != null:
-				var cs := Vector2(rad, rad) * 3.2
-				draw_texture_rect(crater_tex, Rect2(cp - cs * 0.5, cs), false)
-			else:
-				draw_circle(cp, rad * 2.1, Color(0.02, 0.02, 0.015, 0.10))
-				draw_circle(cp, rad * 1.5, Color(0.03, 0.025, 0.02, 0.18))
-				draw_circle(cp, rad * 1.12, Color(0.31, 0.26, 0.18, 0.55))
-				draw_circle(cp, rad * 0.92, Color(0.075, 0.062, 0.045, 0.96))
-				draw_circle(cp + Vector2(rad * 0.12, rad * 0.16), rad * 0.62, Color(0.03, 0.025, 0.02, 0.7))
-				draw_arc(cp, rad * 1.0, PI * 1.05, PI * 1.78, 10, Color(0.52, 0.46, 0.33, 0.55), 1.6)
-		for rk in rocks:
-			var rp: Vector2 = rk[0]
-			var rs: float = rk[1]
-			draw_circle(rp + Vector2(1.5, 2.0), rs, Color(0, 0, 0, 0.3))
-			draw_circle(rp, rs, Color(0.23, 0.23, 0.21))
-			draw_circle(rp + Vector2(-rs * 0.25, -rs * 0.3), rs * 0.55, Color(0.38, 0.38, 0.34))
-		for cl in forests:
-			for tt in cl:
-				var sp: Vector2 = tt[0]
-				var sr: float = tt[1]
-				if tree_tex == null:
-					draw_circle(sp + Vector2(sr * 0.35, sr * 0.5), sr * 1.05, Color(0, 0, 0, 0.28))
-			for tt in cl:
-				var tp: Vector2 = tt[0]
-				var tr: float = tt[1]
-				var sh: float = tt[2]
-				if tree_tex != null:
-					var ts := Vector2(tr, tr) * 2.8
-					draw_texture_rect(tree_tex, Rect2(tp - ts * 0.5, ts), false)
-					continue
-				draw_circle(tp, tr, Color(0.05 + 0.03 * sh, 0.105 + 0.04 * sh, 0.045))
-				draw_circle(tp + Vector2(-tr * 0.12, -tr * 0.15), tr * 0.78, Color(0.085 + 0.04 * sh, 0.175 + 0.05 * sh, 0.065))
-				draw_circle(tp + Vector2(-tr * 0.26, -tr * 0.32), tr * 0.42, Color(0.15 + 0.04 * sh, 0.26 + 0.05 * sh, 0.10, 0.9))
-				for k in 5:
-					var ang := sh * 10.0 + float(k) * 1.9
-					draw_circle(tp + Vector2.from_angle(ang) * tr * 0.55, tr * 0.12, Color(0.04, 0.085, 0.035, 0.7))
-		for x in range(0, Battle.W + 1, 320):
-			draw_line(Vector2(x, ft), Vector2(x, fb), Color(0.8, 0.9, 0.8, 0.022), 1.0)
-		for y in range(int(ft), int(fb) + 1, 320):
-			draw_line(Vector2(0, y), Vector2(w, y), Color(0.8, 0.9, 0.8, 0.022), 1.0)
-		_draw_water()
-		draw_rect(Rect2(-3, ft - 3, w + 6, fb - ft + 6), Color(0, 0, 0, 0.8), false, 6.0)
-
-	## Rivers, the sea, bridges and the foam line. Drawn once (the animated waves are in WaterFX).
-	func _draw_water() -> void:
-		var w := float(Battle.W)
-		var deep := Color(0.045, 0.11, 0.16)
-		var shallow := Color(0.12, 0.235, 0.265)
-		var bank := Color(0.17, 0.14, 0.09, 0.80)
-		# rivers first: the sea is drawn over their mouths
-		for ww in Water.waterways:
-			var pts: PackedVector2Array = ww[0]
-			var wd := float(ww[1])
-			var k := int(ww[2])
-			draw_polyline(pts, bank, wd + (14.0 if k == 2 else 9.0), true)
-			if TileLib.get_tile("river") != null:
-				for si in range(pts.size() - 1):
-					var sa := pts[si]
-					var sb := pts[si + 1]
-					var sd := (sb - sa).normalized()
-					var sn := sd.orthogonal() * wd * 0.5
-					TileLib.fill(self, PackedVector2Array([sa - sd + sn, sb + sd + sn, sb + sd - sn, sa - sd - sn]), "river", Color.WHITE)
-			else:
-				draw_polyline(pts, Color(0.075, 0.17, 0.215) if k == 2 else Color(0.14, 0.27, 0.30), wd, true)
-				if k == 2:
-					draw_polyline(pts, Color(0.06, 0.14, 0.19), wd * 0.6, true)
-					draw_polyline(pts, Color(0.12, 0.24, 0.29, 0.5), wd * 0.18, true)
-			draw_circle(pts[0], wd * 0.5, Color(0.14, 0.27, 0.30))
-			draw_circle(pts[pts.size() - 1], wd * 0.5, Color(0.075, 0.17, 0.215) if k == 2 else Color(0.14, 0.27, 0.30))
-		# the sea: a shallow band along the coast, deep water beyond it
-		for sgn in [-1.0, 1.0]:
-			var far := float(Water.Y_MIN) - 60.0 if sgn < 0.0 else float(Water.Y_MAX) + 60.0
-			var coast := PackedVector2Array()
-			var offs := PackedVector2Array()
-			var x := -60.0
-			while x <= w + 60.0:
-				var cd := Water.coast_dy(clampf(x, 0.0, w))
-				coast.append(Vector2(x, Water.MID_Y + sgn * cd))
-				offs.append(Vector2(x, Water.MID_Y + sgn * (cd + 24.0)))
-				x += 16.0
-			var poly_a := PackedVector2Array(coast)
-			poly_a.append(Vector2(w + 60.0, far))
-			poly_a.append(Vector2(-60.0, far))
-			TileLib.fill(self, poly_a, "water_shallow", shallow)
-			var poly_b := PackedVector2Array(offs)
-			poly_b.append(Vector2(w + 60.0, far))
-			poly_b.append(Vector2(-60.0, far))
-			TileLib.fill(self, poly_b, "water_deep", deep)
-			draw_polyline(coast, Color(0.42, 0.38, 0.27, 0.5), 12.0, true)
-			draw_polyline(coast, Color(0.82, 0.9, 0.9, 0.32), 2.0, true)
-		# bridges over the central river
-		for r in Water.bridge_rects:
-			var rect: Rect2 = r
-			if TileLib.get_tile("bridge") != null:
-				draw_texture_rect(TileLib.get_tile("bridge"), rect, false)
-				continue
-			draw_rect(rect.grow(3.0), Color(0.04, 0.035, 0.03, 0.9))
-			draw_rect(rect, Color(0.24, 0.20, 0.14))
-			var bx := rect.position.x + 5.0
-			while bx < rect.end.x - 3.0:
-				draw_line(Vector2(bx, rect.position.y + 2.0), Vector2(bx, rect.end.y - 2.0), Color(0.13, 0.10, 0.07, 0.9), 1.5)
-				bx += 8.0
-			draw_line(rect.position, Vector2(rect.end.x, rect.position.y), Color(0.52, 0.5, 0.43), 3.0)
-			draw_line(Vector2(rect.position.x, rect.end.y), rect.end, Color(0.52, 0.5, 0.43), 3.0)
-
-
-## Persistent battle damage: scorch marks from explosions and burnt-out wrecks of vehicles / buildings.
 class DecalLayer extends Node2D:
 	const MAX_DECALS := 260
 	var items: Array = []    # {pos, r, seed, tex, rot, scl}
@@ -2583,6 +2738,8 @@ class DecalLayer extends Node2D:
 ## Animated sparkles on the open water.
 class WaterFX extends Node2D:
 	var marks: Array = []
+	var battle: Battle
+	var _t := 0.0
 
 	func _init() -> void:
 		z_index = -9
@@ -2595,13 +2752,22 @@ class WaterFX extends Node2D:
 			if Water.kind_at(p) >= 2:
 				marks.append([p, rng.randf() * TAU, rng.randf_range(10.0, 26.0)])
 
-	func _process(_delta: float) -> void:
-		queue_redraw()
+	func _process(delta: float) -> void:
+		_t -= delta
+		if _t <= 0.0:
+			_t = 0.07
+			queue_redraw()
 
 	func _draw() -> void:
+		var view := Rect2(-1e9, -1e9, 2e9, 2e9)
+		if battle != null and battle.cam != null:
+			var half := get_viewport_rect().size * 0.5 / battle.cam.zoom.x
+			view = Rect2(battle.cam.position - half, half * 2.0).grow(60.0)
 		var t := Time.get_ticks_msec() / 1000.0
 		for m in marks:
-			var a := 0.5 + 0.5 * sin(t * 1.3 + float(m[1]))
 			var p: Vector2 = m[0]
+			if not view.has_point(p):
+				continue
+			var a := 0.5 + 0.5 * sin(t * 1.3 + float(m[1]))
 			p.x += sin(t * 0.4 + float(m[1])) * 5.0
 			draw_line(p, p + Vector2(float(m[2]), 0.0), Color(0.7, 0.85, 0.9, 0.04 + 0.12 * a), 1.5)

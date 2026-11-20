@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """One-shot content expansion for data/units.json (idempotent: re-running just rewrites the same entries).
 Adds: bigger map settings, Traps tab, new infantry / vehicles / naval units, new defenses and country buildings."""
-import json, os
+import json, sys, os
 P = os.path.join(os.path.dirname(__file__), "..", "data", "units.json")
-d = json.load(open(P))
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import datafiles as df
+d = df.load_all()
 S = d["settings"]
 
 # ------------------------------------------------------------ map / economy / caps
@@ -166,7 +168,7 @@ N["forward_base"] = nat("Forward Operating Base", 1200, 1500, 92,
     armor=8, provides=["barracks"], spawns=["rifleman", "shotgunner", "mg_gunner"], spawn_every=18,
     range=250, damage=10, cooldown=0.25, proj="bullet", targets=["ground"], forward=True, deploy_cd=12.0)
 
-json.dump(d, open(P, "w"), indent=1)
+df.save_all(d)
 print("units", len(U), "structures", len(S_), "national", len(N), "tabs", [t["id"] for t in d["tabs"]])
 
 
@@ -211,7 +213,7 @@ U["mine_flail"]["desc"] = "Mine-clearing armor. Flails or rolls through minefiel
 U["cruise_sub"]["desc"] = "Missile submarine. Launches long-range missiles at land and sea targets from hiding."
 U["riot_trooper"]["desc"] = "Heavily armored shock infantry. Very tough, short-ranged. Soaks damage for the squad."
 S_["sniper_nest"]["desc"] = "Hidden sniper post. Kills infantry at long range, useless against armor."
-json.dump(d, open(P, "w"), indent=1)
+df.save_all(d)
 print("themed names added for", len(NAMES) + len(DNAMES), "items x 8 armies")
 
 # tag everything added by this script (the legacy roster self-test exempts v5 items)
@@ -219,4 +221,4 @@ for uid in NAMES:
     U[uid]["v5"] = 1
 for sid in list(DNAMES) + ["landmine", "ap_mine", "claymore", "napalm_trap", "barbed_wire", "tank_trap", "naval_mine", "decoy_tank"]:
     S_[sid]["v5"] = 1
-json.dump(d, open(P, "w"), indent=1)
+df.save_all(d)

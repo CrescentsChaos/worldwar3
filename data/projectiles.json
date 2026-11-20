@@ -1,0 +1,131 @@
+{
+ "bullet": {
+  "sprite": "proj_bullet",
+  "size": 10,
+  "speed": 950,
+  "homing": true,
+  "trail": 14,
+  "color": "ffe27a"
+ },
+ "shell": {
+  "sprite": "proj_shell",
+  "size": 14,
+  "speed": 520,
+  "homing": false,
+  "trail": 10,
+  "color": "ffd0a0"
+ },
+ "rocket": {
+  "sprite": "proj_rocket",
+  "size": 22,
+  "speed": 430,
+  "homing": true,
+  "trail": 30,
+  "color": "e8e8e8"
+ },
+ "bomb": {
+  "sprite": "proj_bomb",
+  "size": 18,
+  "speed": 260,
+  "homing": false,
+  "trail": 0,
+  "color": "ffffff"
+ },
+ "interceptor": {
+  "sprite": "proj_interceptor",
+  "size": 24,
+  "speed": 720,
+  "homing": true,
+  "trail": 40,
+  "color": "9fe8ff"
+ },
+ "grenade": {
+  "sprite": "proj_grenade",
+  "size": 12,
+  "speed": 330,
+  "homing": false,
+  "trail": 0,
+  "color": "d0d0a0"
+ },
+ "sniper": {
+  "sprite": "proj_sniper",
+  "size": 16,
+  "speed": 1500,
+  "homing": true,
+  "trail": 26,
+  "color": "ffffff"
+ },
+ "flame": {
+  "sprite": "proj_flame",
+  "size": 24,
+  "speed": 360,
+  "homing": true,
+  "trail": 18,
+  "color": "ff8a30",
+  "quiet": true
+ },
+ "mortar": {
+  "sprite": "proj_mortar",
+  "size": 14,
+  "speed": 300,
+  "homing": false,
+  "trail": 6,
+  "color": "c8c0a0"
+ },
+ "atgm": {
+  "sprite": "proj_atgm",
+  "size": 22,
+  "speed": 620,
+  "homing": true,
+  "trail": 30,
+  "color": "ffe9b0"
+ },
+ "heavy_shell": {
+  "sprite": "proj_heavy",
+  "size": 20,
+  "speed": 640,
+  "homing": false,
+  "trail": 14,
+  "color": "ffcfa0"
+ },
+ "flak": {
+  "sprite": "proj_flak",
+  "size": 12,
+  "speed": 700,
+  "homing": true,
+  "trail": 12,
+  "color": "ffd070"
+ },
+ "rail": {
+  "sprite": "proj_rail",
+  "size": 38,
+  "speed": 1800,
+  "homing": true,
+  "trail": 40,
+  "color": "9ad6ff"
+ },
+ "big_bomb": {
+  "sprite": "proj_bigbomb",
+  "size": 28,
+  "speed": 240,
+  "homing": false,
+  "trail": 0,
+  "color": "ffffff"
+ },
+ "torpedo": {
+  "sprite": "proj_torpedo",
+  "size": 28,
+  "speed": 170,
+  "homing": true,
+  "trail": 40,
+  "color": "bfe9ff"
+ },
+ "depth_charge": {
+  "sprite": "proj_depth",
+  "size": 16,
+  "speed": 130,
+  "homing": false,
+  "trail": 0,
+  "color": "9ad6ff"
+ }
+}

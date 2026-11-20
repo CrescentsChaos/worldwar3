@@ -3,7 +3,7 @@ extends Control
 ## All content lives in data/units.json -> "factions".
 
 const FACTION_ORDER := ["wehrmacht", "red_army", "ija", "british_army", "us_army", "french_army", "italian_army", "russian_gf"]
-const GOLD := Color(1.0, 0.62, 0.10)
+const GOLD := Color(0.27, 0.78, 0.88)
 
 var _pf := "us_army"
 var _ps := ""
@@ -14,6 +14,8 @@ var _faction_btns: Dictionary = {}
 var _strat_box: VBoxContainer
 var _faction_text: RichTextLabel
 var _strategy_text: RichTextLabel
+var _map_opt: OptionButton
+var _map_text: Label
 var _enemy_text: Label
 var _enemy_opt: OptionButton
 var _arsenal: Arsenal
@@ -128,9 +130,27 @@ func _build() -> void:
 		_enemy_opt.add_item(str(GameData.factions[fid].get("name", fid)))
 	_enemy_opt.item_selected.connect(_on_enemy_selected)
 	add_child(_enemy_opt)
-	_enemy_text = _label("", Vector2(1036, 186), Vector2(210, 300), 13, Color(0.78, 0.82, 0.75))
+	_enemy_text = _label("", Vector2(1036, 186), Vector2(210, 150), 13, Color(0.78, 0.82, 0.75))
 	_enemy_text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_refresh_enemy_text()
+
+	_label("BATTLEFIELD", Vector2(1036, 344), Vector2(210, 24), 16, GOLD)
+	_map_opt = OptionButton.new()
+	_map_opt.position = Vector2(1036, 372)
+	_map_opt.size = Vector2(210, 40)
+	var mids: Array = GameData.map_ids()
+	for mid in mids:
+		var md: Dictionary = GameData.maps[mid]
+		_map_opt.add_item(str(md.get("name", mid)))
+	if mids.is_empty():
+		_map_opt.add_item("Classic")
+	var cur := mids.find(SaveManager.pending_map if SaveManager.pending_map != "" else GameData.current_map)
+	_map_opt.select(maxi(cur, 0))
+	_map_opt.item_selected.connect(_on_map_selected)
+	add_child(_map_opt)
+	_map_text = _label("", Vector2(1036, 422), Vector2(210, 190), 13, Color(0.78, 0.82, 0.88))
+	_map_text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_on_map_selected(maxi(cur, 0))
 
 	var start := Button.new()
 	start.text = "DEPLOY  >>"
@@ -233,7 +253,7 @@ func _income_lines(src: Dictionary) -> Array:
 func _refresh_faction_text() -> void:
 	var f: Dictionary = GameData.factions[_pf]
 	var t := "[font_size=24][b]%s[/b][/font_size]\n" % str(f.get("name", _pf))
-	t += "[color=#ff9e1a]%s[/color]  -  %s\n\n" % [str(f.get("tagline", "")), str(f.get("era", ""))]
+	t += "[color=#45c7e0]%s[/color]  -  %s\n\n" % [str(f.get("tagline", "")), str(f.get("era", ""))]
 	t += str(f.get("desc", "")) + "\n\n"
 	t += "[b]Army perks[/b]\n"
 	var perks: Array = GameData.describe_mods(f.get("mods", []))
@@ -283,6 +303,20 @@ func _refresh_strategy_text() -> void:
 	_strategy_text.text = t
 
 
+func _on_map_selected(i: int) -> void:
+	var mids: Array = GameData.map_ids()
+	if i < 0 or i >= mids.size():
+		_map_text.text = "The classic single-river battlefield."
+		return
+	var mid := str(mids[i])
+	SaveManager.pending_map = mid
+	var md: Dictionary = GameData.maps[mid]
+	var sectors: Array = md.get("sectors", [])
+	var bridges: Array = md.get("bridges", [])
+	_map_text.text = "%s\n\n%d capture zones, %d bridges.\nZones pay income and resupply the units that hold them." % [
+		str(md.get("desc", "")), sectors.size(), bridges.size()]
+
+
 func _refresh_enemy_text() -> void:
 	if _enemy_choice == "random":
 		_enemy_text.text = "A random army with a random strategy. You will see who it is when the battle starts."
@@ -319,9 +353,4 @@ func _draw() -> void:
 	for y in range(0, 721, 80):
 		draw_line(Vector2(0, y), Vector2(1280, y), Color(0.7, 0.8, 0.7, 0.035), 1.0)
 	for r in [Rect2(318, 106, 412, 500), Rect2(742, 292, 276, 314)]:
-		draw_rect(r, Color(0.02, 0.024, 0.026, 0.88))
-		draw_rect(r, MilTheme.LINE, false, 1.0)
-		MilTheme.draw_brackets(self, r.grow(2.0), MilTheme.AMBER_DIM, 10.0, 1.5)
-	draw_rect(Rect2(0, 0, 6, 720), MilTheme.AMBER)
-	draw_rect(Rect2(0, 0, 1280, 2), Color(MilTheme.AMBER, 0.5))
-	draw_rect(Rect2(0, 718, 1280, 2), Color(MilTheme.AMBER, 0.5))
+		draw_style_box(MilTheme.glass(MilTheme.BG, MilTheme.LINE, 14), r)

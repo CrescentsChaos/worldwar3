@@ -1,0 +1,244 @@
+{
+ "landmine": {
+  "name": "Anti-Tank Mine",
+  "tab": "traps",
+  "role": "trap",
+  "shape": "mine",
+  "layer": "ground",
+  "cost": 40,
+  "hp": 60,
+  "armor": 0,
+  "speed": 0,
+  "size": 31,
+  "range": 0,
+  "damage": 0,
+  "deploy_cd": 0.4,
+  "desc": "Buried mine. Detonates under vehicles; infantry are too light to trigger it. Hidden from view of the enemy until it goes off.",
+  "trap": {
+   "triggers": [
+    "vehicle",
+    "armor"
+   ],
+   "radius": 24,
+   "splash": 55,
+   "damage": 230,
+   "pierce": 10,
+   "vs": {
+    "vehicle": 1.2,
+    "infantry": 0.3
+   }
+  },
+  "ai": false,
+  "ai_tier": 0.3,
+  "v5": 1
+ },
+ "ap_mine": {
+  "name": "Anti-Personnel Mine",
+  "tab": "traps",
+  "role": "trap",
+  "shape": "mine",
+  "layer": "ground",
+  "cost": 25,
+  "hp": 60,
+  "armor": 0,
+  "speed": 0,
+  "size": 25,
+  "range": 0,
+  "damage": 0,
+  "deploy_cd": 0.4,
+  "desc": "Cheap mine that shreds infantry. Vehicles roll over it safely.",
+  "trap": {
+   "triggers": [
+    "infantry"
+   ],
+   "radius": 16,
+   "splash": 48,
+   "damage": 95,
+   "vs": {
+    "infantry": 1.6,
+    "vehicle": 0.2
+   }
+  },
+  "ai": false,
+  "ai_tier": 0.3,
+  "v5": 1
+ },
+ "claymore": {
+  "name": "Claymore Array",
+  "tab": "traps",
+  "role": "trap",
+  "shape": "mine",
+  "layer": "ground",
+  "cost": 75,
+  "hp": 60,
+  "armor": 0,
+  "speed": 0,
+  "size": 36,
+  "range": 0,
+  "damage": 0,
+  "deploy_cd": 0.4,
+  "desc": "Directional charges with a wide trigger area. Lethal to infantry that walk into the kill zone.",
+  "trap": {
+   "triggers": [
+    "infantry",
+    "vehicle"
+   ],
+   "radius": 70,
+   "splash": 75,
+   "damage": 130,
+   "vs": {
+    "infantry": 1.9,
+    "vehicle": 0.5
+   }
+  },
+  "ai": false,
+  "ai_tier": 0.3,
+  "v5": 1
+ },
+ "napalm_trap": {
+  "name": "Napalm Trap",
+  "tab": "traps",
+  "role": "trap",
+  "shape": "mine",
+  "layer": "ground",
+  "cost": 120,
+  "hp": 60,
+  "armor": 0,
+  "speed": 0,
+  "size": 39,
+  "range": 0,
+  "damage": 0,
+  "deploy_cd": 0.4,
+  "desc": "Buried fuel drums. Explodes in a huge fireball when enemy ground units approach.",
+  "trap": {
+   "triggers": [
+    "infantry",
+    "vehicle",
+    "armor"
+   ],
+   "radius": 50,
+   "splash": 95,
+   "damage": 80,
+   "vs": {
+    "infantry": 2.2,
+    "vehicle": 1.0
+   }
+  },
+  "ai": false,
+  "ai_tier": 0.3,
+  "v5": 1
+ },
+ "barbed_wire": {
+  "name": "Barbed Wire",
+  "tab": "traps",
+  "role": "trap",
+  "shape": "mine",
+  "layer": "ground",
+  "cost": 30,
+  "hp": 120,
+  "armor": 0,
+  "speed": 0,
+  "size": 56,
+  "range": 0,
+  "damage": 0,
+  "deploy_cd": 0.4,
+  "desc": "Entangles infantry: slows them a lot and cuts them slowly.",
+  "trap": {
+   "slow": {
+    "classes": [
+     "infantry"
+    ],
+    "radius": 38,
+    "mult": 0.3,
+    "dps": 6
+   }
+  },
+  "ai": false,
+  "ai_tier": 0.3,
+  "v5": 1
+ },
+ "tank_trap": {
+  "name": "Dragon's Teeth",
+  "tab": "traps",
+  "role": "trap",
+  "shape": "mine",
+  "layer": "ground",
+  "cost": 60,
+  "hp": 800,
+  "armor": 14,
+  "speed": 0,
+  "size": 50,
+  "range": 0,
+  "damage": 0,
+  "deploy_cd": 0.4,
+  "desc": "Concrete tank traps. Vehicles crawl through them.",
+  "trap": {
+   "slow": {
+    "classes": [
+     "vehicle",
+     "armor"
+    ],
+    "radius": 46,
+    "mult": 0.3
+   }
+  },
+  "ai": false,
+  "ai_tier": 0.3,
+  "v5": 1
+ },
+ "naval_mine": {
+  "name": "Naval Mine",
+  "tab": "traps",
+  "role": "trap",
+  "shape": "mine",
+  "layer": "ground",
+  "cost": 90,
+  "hp": 60,
+  "armor": 0,
+  "speed": 0,
+  "size": 34,
+  "range": 0,
+  "damage": 0,
+  "deploy_cd": 0.4,
+  "desc": "Moored sea mine. Sinks ships and subs that touch it. Deploy in your own waters.",
+  "trap": {
+   "triggers": [
+    "ship"
+   ],
+   "radius": 38,
+   "splash": 70,
+   "damage": 270,
+   "layers": [
+    "ground",
+    "sub"
+   ],
+   "vs": {
+    "ship": 1.5
+   }
+  },
+  "ai": false,
+  "ai_tier": 0.3,
+  "domain": "water",
+  "draft": 1,
+  "v5": 1
+ },
+ "decoy_tank": {
+  "name": "Inflatable Decoy Tank",
+  "tab": "traps",
+  "role": "decoy",
+  "shape": "vehicle",
+  "layer": "ground",
+  "cost": 55,
+  "hp": 420,
+  "armor": 0,
+  "speed": 0,
+  "size": 73,
+  "range": 0,
+  "damage": 0,
+  "deploy_cd": 1.0,
+  "desc": "Looks like a real tank from afar. Enemy units waste ammunition on it.",
+  "ai": false,
+  "ai_tier": 0.2,
+  "v5": 1
+ }
+}

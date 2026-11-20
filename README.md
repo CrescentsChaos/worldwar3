@@ -81,16 +81,53 @@ transparent PNG. Team tint: set `team_tint` to `0` for full-colour art. `F10` re
 (projectiles use the names in the `projectiles` block, e.g. `proj_flame.png`).
 
 ## Changing / adding things (no code needed)
-Everything lives in `data/units.json`: `units`, `structures` (defenses), `national` (country buildings),
-`strategic` (missiles), `projectiles`, `country` (the layout), `settings` (money, income, zones, caps, AI).
+`data/units.json` is now split into small files (see `tools/datafiles.py`):
+```
+data/settings.json         money, income, zones, caps, AI, tabs, capital
+data/logistics.json        road / off-road speeds per drive type, ammo + supply rules, transport, flight, capture zones
+data/units/<tab>.json      infantry.json  vehicles.json  air.json  navy.json
+data/structures/<tab>.json defenses.json  traps.json
+data/national.json         country buildings        data/strategic.json  missiles / nukes
+data/projectiles.json      data/country.json (classic layout)
+data/factions/<army>.json  one file per army (roster, strategies, perks)
+data/maps/<map>.json       one file per battlefield
+```
 Copy an entry, give it a new key and a `tab`, drop `<key>.png` in the sprites folder - it appears automatically.
-Handy fields: `requires` (a capability such as `"factory"`, or a list), `vs` (damage multipliers),
-`pierce`, `prefer`, `stealth`, `kamikaze`, `cargo`, `heal`, `spawns`, `needs_power`, `radar_boost`, `income`, `provides`.
-A modified copy placed at `user://units.json` overrides the bundled file.
+New files dropped into any of these folders are merged in; a file of the same name under `user://data/` replaces
+the bundled one (a legacy `user://units.json` still replaces everything).
+Handy fields: `requires`, `vs`, `pierce`, `prefer`, `stealth`, `kamikaze`, `heal`, `spawns`, `needs_power`, `income`, `provides`,
+and the v7 logistics fields: `drive` (foot / wheeled / truck / tracked / heavy), `ammo` (shots, -1 = unlimited), `seats`,
+`cargo` (units inside at spawn), `supply_cap` / `supply_rate` (supply trucks), `supply` (`{radius, rate, rearm}` on buildings),
+`flight` (fighter / strike / bomber / orbit / drone / uav / heli) and `turn_radius` (aircraft).
+
+## v7: Broken Arrow style logistics, maps and UI
+* **Ammunition is finite.** Every unit carries a magazine (see the green-gold bar when selected). Empty units cannot fire; free-roaming
+  units fall back to the nearest supply point on their own (`RESUPPLYING`). Supply comes from **Supply Trucks** (1200 crates, they refill
+  at a Supply Depot / HQ / Factory and drive to whoever is running low), from depots, factories, barracks, airbases, ports, FOBs and
+  from **capture zones you hold** (slowly).
+* **Transports.** Infantry can ride: APC (8 seats), Humvee (4), Armored car (3), **Troop Truck** (16), **UH-60 Transport Helicopter** (12).
+  Select infantry and **right-click a friendly transport** to board, **U** dismounts, **G + click** drives to a point and unloads
+  there. Auto transports (and the AI) collect nearby infantry, drive to the front and dismount when contact starts.
+  Passengers are real units: they keep their health and ammo, and some survive if the vehicle is destroyed.
+* **Roads vs off-road.** Each vehicle has a drive type with a road and an off-road speed (`data/logistics.json`, shown in the selection card).
+  Convoys plan their route along the road network when that is faster than cross-country (roads come from the map files).
+* **Aircraft fly like aircraft.** Fixed-wing planes have a turn radius, bank, make attack passes (fighters/strikers), straight bombing runs
+  with wide turn-arounds (bombers), orbit their target (gunship) and dive (drones). They **burn ammunition and must return to an airbase or
+  carrier to rearm** (hidden while landed). Helicopters still hover.
+* **Capture zones** (Broken Arrow control points): stand in a zone to capture it; held zones pay income and resupply your units.
+  Idle ground units push toward the nearest zone that is not yours.
+* **Four battlefields** (pick one in the briefing screen): Dnieper Crossing, Kursk Steppe, Carpathian Gorge, Rhine Delta.
+  Regenerate / edit them with `python3 tools/gen_maps.py` (it also validates roads, bridges, zones and ports against the water grid).
+* **Lifelike sizes**: ground and air units use 5 px per metre of length, ships 1.6 px/m (a 1:1 carrier would not fit the sea),
+  infantry and tiny drones are drawn at a readable minimum. `settings.sprite_scale` is 1.0; buildings keep their old size.
+* **Performance**: terrain is cut into culled 800 px chunks (`scripts/terrain_layer.gd`), the water animation only draws what the camera
+  sees, units no longer redraw themselves every frame (shadows are sprites), and missile markers use a cached list.
+* **UI**: rounded glass theme with one accent colour, slim top bar, a one-row build dock (tabs; click a tab again or press **B** to hide the
+  card tray), the selection card and placement info only appear when needed, minimap bottom-left with roads and zones.
 
 ## Project layout
 ```
-data/units.json            all balance + unit / building definitions + country layout
+data/                      all balance + unit / building / map definitions (split into many small json files)
 scripts/battle.gd          map, camera, deployment, country, capabilities, explosions, save/load
 scripts/combatant.gd       units, defenses, country buildings, capital (targeting, movement, healing, production)
 scripts/missile.gd         missiles / nukes in flight (interceptable)
@@ -104,7 +141,9 @@ tools/                     sprite generator (Pillow) + headless tests
 ## Dev tools
 ```
 python3 tools/generate_placeholder_sprites.py                       # regenerate placeholder art (Pillow)
-python3 tools/build_rosters.py                                      # rebuild every army's roster in data/units.json from tools/rosters/*.py
+python3 tools/build_rosters.py                                      # rebuild every army's roster (data/factions/*.json) from tools/rosters/*.py
+python3 tools/gen_maps.py                                           # regenerate + validate data/maps/*.json
+python3 tools/tune_data.py                                          # (one-shot, already applied) sizes / drive / ammo / seats / flight pass
 godot --headless --path . --fixed-fps 60 res://tools/selftest.tscn  # smoke test (~100 s of game time)
 godot --headless --path . --fixed-fps 60 res://tools/soak.tscn      # 8-minute random-play soak test
 ```

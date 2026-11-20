@@ -1,0 +1,1222 @@
+{
+ "name": "British Army",
+ "era": "Modern (2020s)",
+ "tagline": "Professional, joint, and well defended.",
+ "desc": "A small professional force built for NATO's flanks: excellent infantry, long-range precision fires and a high-end navy. No super-heavy tank, strategic bomber, battleship or coastal missile units, and cluster munitions are banned by treaty.",
+ "mods": [
+  {
+   "match": "tab:infantry",
+   "hp": 1.1
+  },
+  {
+   "match": "tab:navy",
+   "cost": 0.92
+  },
+  {
+   "match": "kind:structure",
+   "hp": 1.05
+  }
+ ],
+ "income": 1.0,
+ "money": 1.0,
+ "ban": [
+  "mammoth",
+  "battleship",
+  "bomber",
+  "heavy_bomber",
+  "coastal_battery",
+  "cluster_missile",
+  "ballistic_missile"
+ ],
+ "names": {
+  "rifleman": "L85A3 Rifleman",
+  "assault": "L22A2 Carbine Trooper",
+  "bazooka": "NLAW Team",
+  "manpads": "Starstreak HVM Team",
+  "mg_gunner": "L7A2 GPMG Gunner",
+  "grenadier": "L17A2 UGL Grenadier",
+  "sniper": "L115A3 Long Range Rifle",
+  "flamer": "Carl Gustaf M3 HEDP Gunner",
+  "medic": "RAMC Combat Medic",
+  "engineer": "Royal Engineers Sapper",
+  "commando": "SAS Operator",
+  "jeep": "Land Rover Wolf",
+  "armored_car": "Jackal 2 MWMIK",
+  "apc": "Warrior CSP IFV",
+  "light_tank": "Scimitar Mk 2 CVR(T)",
+  "tank": "Challenger 2",
+  "heavy_tank": "Challenger 3",
+  "tank_destroyer": "Exactor (Spike NLOS) Launcher",
+  "flame_tank": "Trojan AVRE",
+  "artillery": "AS-90 Braveheart",
+  "howitzer": "RCH 155",
+  "mlrs": "M270B1 GMLRS",
+  "aa_truck": "Stormer HVM",
+  "sam_truck": "Sky Sabre CAMM Launcher",
+  "repair_vehicle": "CRARRV",
+  "drone": "Hero-120 Loitering Munition",
+  "fighter": "Typhoon FGR4",
+  "interceptor_jet": "Typhoon QRA (Meteor)",
+  "stealth_fighter": "F-35B Lightning II",
+  "strike_jet": "MQ-9B Protector RG1",
+  "helicopter": "Wildcat AH1",
+  "gunship": "AH-64E Apache Guardian",
+  "light_bomber": "Tornado GR4",
+  "stealth_bomber": "GCAP Tempest (concept)",
+  "diver": "Royal Marines SBS Swimmer",
+  "patrol_boat": "P2000 Archer-class",
+  "gunboat": "River-class Batch 2 OPV",
+  "missile_boat": "Type 31 Inspiration-class",
+  "destroyer": "Type 45 Daring-class",
+  "cruiser": "Type 26 City-class",
+  "submarine": "Astute-class",
+  "aircraft_carrier": "HMS Queen Elizabeth (R08)",
+  "mg_turret": "L7 GPMG Sangar",
+  "pillbox": "Hardened Sangar",
+  "at_gun": "MILAN ATGM Post",
+  "cannon_turret": "L7 105 mm Bunker",
+  "mortar_pit": "L16 81 mm Mortar",
+  "flak_battery": "Bofors L70 Flak",
+  "sam_site": "Rapier FSC Site",
+  "heavy_battery": "AS-90 155 mm Gun Battery",
+  "railgun": "DragonFire Laser",
+  "ciws": "Phalanx CIWS",
+  "interceptor_battery": "Sky Sabre Battery (C-RAM)",
+  "abm_battery": "Aster 30 B1NT Battery",
+  "barricade": "Hesco Bastion",
+  "repair_depot": "REME Forward Repair",
+  "tactical_missile": "GMLRS Rocket",
+  "cruise_missile": "Tomahawk Block IV",
+  "bunker_buster": "Storm Shadow (BROACH)",
+  "hypersonic": "HCSW (development)",
+  "tactical_nuke": "Trident II D5 (Holbrooke, sub-strategic)",
+  "nuke": "Trident II D5 (3 warheads)",
+  "mega_nuke": "Trident II D5 (full salvo)"
+ },
+ "strategies": {
+  "combined_arms": {
+   "name": "Combined Arms",
+   "desc": "Balanced armor and infantry at a discount. Starts with a mixed task force.",
+   "style": "balanced",
+   "mods": [
+    {
+     "match": "tab:vehicles",
+     "cost": 0.92
+    },
+    {
+     "match": "tab:infantry",
+     "cost": 0.92
+    }
+   ],
+   "setup": [
+    [
+     "unit",
+     "tank",
+     910,
+     470,
+     2
+    ],
+    [
+     "unit",
+     "apc",
+     890,
+     545,
+     2
+    ],
+    [
+     "unit",
+     "rifleman",
+     930,
+     504,
+     4
+    ]
+   ],
+   "income": 1.0,
+   "money": 1.0
+  },
+  "fortress_britain": {
+   "name": "Fortress Britain",
+   "desc": "An air-defense umbrella. Starts with SAMs, CIWS and interceptors.",
+   "style": "defense",
+   "mods": [
+    {
+     "match": "role:anti_air",
+     "cost": 0.75,
+     "hp": 1.2
+    },
+    {
+     "match": "role:interceptor",
+     "cost": 0.8
+    }
+   ],
+   "setup": [
+    [
+     "structure",
+     "sam_site",
+     360,
+     430,
+     1
+    ],
+    [
+     "structure",
+     "sam_site",
+     650,
+     430,
+     1
+    ],
+    [
+     "structure",
+     "ciws",
+     100,
+     420,
+     1
+    ],
+    [
+     "structure",
+     "interceptor_battery",
+     500,
+     440,
+     1
+    ]
+   ],
+   "income": 1.0,
+   "money": 1.0
+  },
+  "naval_supremacy": {
+   "name": "Royal Navy Supremacy",
+   "desc": "Rule the waves. Starts with warships and cheaper fleet.",
+   "style": "naval",
+   "mods": [
+    {
+     "match": "tab:navy",
+     "cost": 0.7,
+     "hp": 1.15
+    }
+   ],
+   "setup": [
+    [
+     "unit",
+     "destroyer",
+     450,
+     100,
+     1
+    ],
+    [
+     "unit",
+     "submarine",
+     450,
+     905,
+     1
+    ],
+    [
+     "unit",
+     "patrol_boat",
+     480,
+     130,
+     1
+    ]
+   ],
+   "income": 1.0,
+   "money": 1.0
+  }
+ },
+ "roster": {
+  "rifleman": {
+   "name": "L85A3 Rifleman",
+   "class": "Rifleman",
+   "desc": "Bullpup 5.56 mm rifle with SUSAT/ACOG optic; heavily reworked after early reliability problems and now an accurate, reliable weapon.",
+   "specs": "5.56x45 mm | 3.8 kg | 30-rd mag",
+   "hp": 72,
+   "range": 140,
+   "damage": 7,
+   "cooldown": 0.66,
+   "cost": 55,
+   "sprite": "british_army_rifleman"
+  },
+  "assault": {
+   "name": "L22A2 Carbine Trooper",
+   "class": "Close-quarters rifleman",
+   "desc": "Short-barrel SA80 carbine, compact for vehicle crews and urban work.",
+   "specs": "5.56 mm | 3.4 kg | 518 mm barrel",
+   "hp": 82,
+   "speed": 66,
+   "range": 92,
+   "damage": 6,
+   "cooldown": 0.22,
+   "cost": 70,
+   "sprite": "british_army_assault"
+  },
+  "bazooka": {
+   "name": "NLAW Team",
+   "class": "Guided anti-tank",
+   "desc": "Disposable, predicted-line-of-sight ATGM with top-attack mode; used in large numbers against Russian armor in Ukraine.",
+   "specs": "150 mm | 12.5 kg | 800 m",
+   "hp": 80,
+   "speed": 42,
+   "range": 220,
+   "damage": 125,
+   "cooldown": 3.8,
+   "proj": "atgm",
+   "pierce": 20,
+   "splash": 14,
+   "vs": {
+    "armor": 1.4,
+    "vehicle": 1.35
+   },
+   "cost": 150,
+   "sprite": "british_army_bazooka"
+  },
+  "manpads": {
+   "name": "Starstreak HVM Team",
+   "class": "High-velocity missile",
+   "desc": "Laser-beam-riding missile releasing three tungsten darts at Mach 3+. Also fired from vehicles and ships.",
+   "specs": "127 mm | 20 kg | 7 km | Mach 3+",
+   "hp": 72,
+   "range": 265,
+   "damage": 46,
+   "cooldown": 1.8,
+   "cost": 130,
+   "sprite": "british_army_manpads"
+  },
+  "mg_gunner": {
+   "name": "L7A2 GPMG Gunner",
+   "class": "General-purpose machine gun",
+   "desc": "'Gimpy': belt-fed 7.62 mm, the section's fire support weapon since the 1960s.",
+   "specs": "7.62x51 mm | 10.9 kg | 750 rpm",
+   "hp": 95,
+   "armor": 1,
+   "speed": 38,
+   "range": 185,
+   "damage": 8,
+   "cooldown": 0.16,
+   "cost": 100,
+   "sprite": "british_army_mg_gunner"
+  },
+  "grenadier": {
+   "name": "L17A2 UGL Grenadier",
+   "class": "Grenadier",
+   "desc": "Under-barrel 40 mm launcher; HEDP round defeats light armor.",
+   "specs": "40x46 mm | 1.5 kg | 350 m",
+   "hp": 82,
+   "range": 155,
+   "damage": 32,
+   "cooldown": 1.8,
+   "splash": 38,
+   "vs": {
+    "infantry": 1.3
+   },
+   "cost": 100,
+   "sprite": "british_army_grenadier"
+  },
+  "sniper": {
+   "name": "L115A3 Long Range Rifle",
+   "class": "Sniper rifle",
+   "desc": "Accuracy International rifle in .338 Lapua Magnum; confirmed kills at 2,475 m in Afghanistan, 2009.",
+   "specs": "8.6x70 mm | 6.8 kg | 1,100 m eff.",
+   "hp": 55,
+   "range": 365,
+   "damage": 58,
+   "cooldown": 2.7,
+   "vs": {
+    "infantry": 3.0,
+    "vehicle": 0.4,
+    "armor": 0.1,
+    "structure": 0.2
+   },
+   "cost": 160,
+   "sprite": "british_army_sniper"
+  },
+  "flamer": {
+   "name": "Carl Gustaf M3 HEDP Gunner",
+   "class": "Recoilless rifle",
+   "desc": "84 mm Carl Gustaf with HEDP, thermobaric and HE rounds for bunker busting; the UK retired flamethrowers long ago.",
+   "specs": "84 mm | 10 kg | 500 m",
+   "hp": 100,
+   "armor": 1,
+   "speed": 42,
+   "range": 125,
+   "damage": 75,
+   "cooldown": 2.8,
+   "proj": "rocket",
+   "splash": 36,
+   "pierce": 6,
+   "vs": {
+    "infantry": 1.6,
+    "structure": 1.5
+   },
+   "prefer": [
+    "infantry"
+   ],
+   "cost": 95,
+   "sprite": "british_army_flamer"
+  },
+  "medic": {
+   "name": "RAMC Combat Medic",
+   "class": "Combat medic",
+   "desc": "Trained to ATLS/BATLS standard; keeps the section on its feet in contact.",
+   "specs": "Bergen medic kit | CMT",
+   "hp": 70,
+   "speed": 56,
+   "heal": {
+    "rate": 18,
+    "radius": 125,
+    "cls": [
+     "infantry"
+    ]
+   },
+   "cost": 95,
+   "sprite": "british_army_medic"
+  },
+  "engineer": {
+   "name": "Royal Engineers Sapper",
+   "class": "Combat engineer",
+   "desc": "Breaching, route clearance and repair; Royal Engineers are considered the best in NATO at explosive clearance.",
+   "specs": "Demolition | Bangalore torpedo",
+   "hp": 92,
+   "heal": {
+    "rate": 30,
+    "radius": 110,
+    "cls": [
+     "vehicle",
+     "armor",
+     "structure"
+    ]
+   },
+   "cost": 140,
+   "sprite": "british_army_engineer"
+  },
+  "commando": {
+   "name": "SAS Operator",
+   "class": "Special forces",
+   "desc": "22 SAS: selection is among the hardest in the world. Suppressed L119A2 carbines and night vision.",
+   "specs": "L119A2 | NVG | 22 SAS",
+   "hp": 160,
+   "armor": 3,
+   "speed": 64,
+   "range": 200,
+   "damage": 22,
+   "cooldown": 0.28,
+   "pierce": 5,
+   "cost": 290,
+   "sprite": "british_army_commando"
+  },
+  "jeep": {
+   "name": "Land Rover Wolf",
+   "class": "Utility vehicle",
+   "desc": "Defender-derived Wolf with a roof-mounted GPMG; the Army's light patrol truck for decades.",
+   "specs": "2.5 t | 110 km/h | GPMG",
+   "hp": 170,
+   "speed": 120,
+   "range": 150,
+   "damage": 10,
+   "cooldown": 0.35,
+   "vs": {
+    "infantry": 1.2
+   },
+   "cost": 120,
+   "sprite": "british_army_jeep"
+  },
+  "armored_car": {
+   "name": "Jackal 2 MWMIK",
+   "class": "Patrol vehicle",
+   "desc": "Fast, lightly protected 4x4 with a .50 HMG or Mk19 launcher; devised for Helmand patrols.",
+   "specs": "7 t | 130 km/h | .50 HMG / GMG",
+   "hp": 250,
+   "armor": 3,
+   "speed": 128,
+   "range": 175,
+   "damage": 18,
+   "cooldown": 0.3,
+   "cost": 180,
+   "sprite": "british_army_armored_car"
+  },
+  "apc": {
+   "name": "Warrior CSP IFV",
+   "class": "Infantry fighting vehicle",
+   "desc": "Tracked IFV with a 40 mm CTA cannon after its upgrade; ordered for withdrawal and being replaced by Boxer.",
+   "specs": "~30 t | 3+7 | 40 mm CTA",
+   "hp": 580,
+   "armor": 9,
+   "speed": 80,
+   "range": 200,
+   "damage": 19,
+   "cooldown": 0.25,
+   "pierce": 4,
+   "cargo": [
+    "rifleman",
+    "rifleman",
+    "bazooka"
+   ],
+   "cost": 330,
+   "sprite": "british_army_apc"
+  },
+  "light_tank": {
+   "name": "Scimitar Mk 2 CVR(T)",
+   "class": "Reconnaissance vehicle",
+   "desc": "Light aluminium-armored tracked scout with a 30 mm L21 RARDEN cannon; fast and low.",
+   "specs": "8 t | 3 crew | 30 mm RARDEN",
+   "hp": 280,
+   "armor": 4,
+   "speed": 100,
+   "range": 190,
+   "damage": 23,
+   "cooldown": 0.3,
+   "proj": "bullet",
+   "pierce": 3,
+   "cost": 250,
+   "sprite": "british_army_light_tank"
+  },
+  "tank": {
+   "name": "Challenger 2",
+   "class": "Main battle tank",
+   "desc": "Dorchester (Chobham 2nd gen) armored MBT with 120 mm rifled L30A1 gun; never lost to enemy fire in combat before Ukraine.",
+   "specs": "62.5 t | 4 crew | 120 mm L30A1",
+   "hp": 640,
+   "armor": 12,
+   "speed": 56,
+   "range": 248,
+   "damage": 47,
+   "cooldown": 1.9,
+   "splash": 32,
+   "cost": 310,
+   "sprite": "british_army_tank"
+  },
+  "heavy_tank": {
+   "name": "Challenger 3",
+   "class": "Upgraded MBT",
+   "desc": "Challenger 2 rebuilt with a Rheinmetall 120 mm L55A1 smoothbore, Trophy APS and new turret; deliveries from 2027.",
+   "specs": "66 t | 4 crew | 120 mm L55A1",
+   "hp": 1350,
+   "armor": 22,
+   "speed": 40,
+   "range": 285,
+   "damage": 88,
+   "cooldown": 2.1,
+   "splash": 45,
+   "cost": 570,
+   "sprite": "british_army_heavy_tank"
+  },
+  "tank_destroyer": {
+   "name": "Exactor (Spike NLOS) Launcher",
+   "class": "Missile launcher",
+   "desc": "Spike NLOS missiles from a protected vehicle; fire-and-forget over 25 km with a top-attack seeker.",
+   "specs": "Spike NLOS | 25 km | tandem",
+   "hp": 370,
+   "armor": 7,
+   "speed": 75,
+   "range": 380,
+   "damage": 140,
+   "cooldown": 3.3,
+   "pierce": 22,
+   "vs": {
+    "armor": 1.5,
+    "infantry": 0.6
+   },
+   "cost": 350,
+   "sprite": "british_army_tank_destroyer"
+  },
+  "flame_tank": {
+   "name": "Trojan AVRE",
+   "class": "Combat engineer tank",
+   "desc": "Challenger 2-based engineer vehicle with a 165 mm L9 demolition gun; shatters bunkers and bridges obstacles.",
+   "specs": "62 t | 3 crew | 165 mm L9",
+   "hp": 900,
+   "armor": 13,
+   "speed": 50,
+   "range": 125,
+   "damage": 175,
+   "cooldown": 5.5,
+   "proj": "heavy_shell",
+   "splash": 62,
+   "pierce": 5,
+   "vs": {
+    "structure": 1.9,
+    "infantry": 1.4
+   },
+   "cost": 280,
+   "sprite": "british_army_flame_tank"
+  },
+  "artillery": {
+   "name": "AS-90 Braveheart",
+   "class": "Self-propelled howitzer",
+   "desc": "155 mm/39 turreted SPG with automatic loader; burst fire of 3 rounds in 10 seconds.",
+   "specs": "45 t | 5 crew | 155 mm/39",
+   "hp": 225,
+   "armor": 3,
+   "speed": 36,
+   "range": 535,
+   "damage": 70,
+   "cooldown": 3.0,
+   "min_range": 120,
+   "splash": 85,
+   "cost": 530,
+   "sprite": "british_army_artillery"
+  },
+  "howitzer": {
+   "name": "RCH 155",
+   "class": "Wheeled howitzer",
+   "desc": "Boxer 8x8 with a remote 155 mm/52 gun and autoloader; range 40+ km. UK/German programme.",
+   "specs": "~40 t | 2 crew | 155 mm/52",
+   "hp": 200,
+   "armor": 2,
+   "speed": 42,
+   "range": 740,
+   "damage": 118,
+   "cooldown": 4.0,
+   "min_range": 220,
+   "splash": 95,
+   "vs": {
+    "structure": 1.3
+   },
+   "cost": 700,
+   "sprite": "british_army_howitzer"
+  },
+  "mlrs": {
+   "name": "M270B1 GMLRS",
+   "class": "Rocket artillery",
+   "desc": "Tracked launcher with 12 rockets, 70+ km GPS-guided; upgraded to fire PrSM.",
+   "specs": "25 t | 3 crew | 12 GMLRS",
+   "hp": 260,
+   "armor": 2,
+   "speed": 34,
+   "range": 490,
+   "damage": 42,
+   "cooldown": 1.0,
+   "min_range": 140,
+   "splash": 72,
+   "cost": 730,
+   "sprite": "british_army_mlrs"
+  },
+  "aa_truck": {
+   "name": "Stormer HVM",
+   "class": "Mobile air defense",
+   "desc": "Tracked Stormer with eight Starstreak ready-to-fire missiles; accompanies armor on the move.",
+   "specs": "12.7 t | 8 Starstreak | 7 km",
+   "hp": 380,
+   "armor": 5,
+   "speed": 76,
+   "range": 300,
+   "damage": 44,
+   "cooldown": 1.3,
+   "proj": "rocket",
+   "cost": 220,
+   "sprite": "british_army_aa_truck"
+  },
+  "sam_truck": {
+   "name": "Sky Sabre CAMM Launcher",
+   "class": "Area SAM",
+   "desc": "Common Anti-air Modular Missile on a Rapid launcher; active seeker and 25+ km range.",
+   "specs": "CAMM | 25+ km | active seeker",
+   "hp": 300,
+   "armor": 3,
+   "speed": 55,
+   "range": 430,
+   "damage": 80,
+   "cooldown": 1.3,
+   "cost": 430,
+   "sprite": "british_army_sam_truck"
+  },
+  "repair_vehicle": {
+   "name": "CRARRV",
+   "class": "Armoured recovery",
+   "desc": "Challenger Armoured Repair and Recovery Vehicle with crane and winch; recovers 62-ton tanks.",
+   "specs": "62 t | crane 6.5 t | winch",
+   "hp": 420,
+   "armor": 6,
+   "speed": 54,
+   "heal": {
+    "rate": 32,
+    "radius": 125,
+    "cls": [
+     "vehicle",
+     "armor"
+    ]
+   },
+   "cost": 240,
+   "sprite": "british_army_repair_vehicle"
+  },
+  "drone": {
+   "name": "Hero-120 Loitering Munition",
+   "class": "Loitering munition",
+   "desc": "Tube-launched loitering munition of the type trialled by the British Army for infantry battalions.",
+   "specs": "12.5 kg | 60 min | 4.5 kg warhead",
+   "hp": 40,
+   "speed": 235,
+   "damage": 125,
+   "splash": 52,
+   "cost": 90,
+   "sprite": "british_army_drone"
+  },
+  "fighter": {
+   "name": "Typhoon FGR4",
+   "class": "Multirole fighter",
+   "desc": "Eurofighter Typhoon: canard-delta, supercruise-capable with Brimstone, Paveway IV and Storm Shadow.",
+   "specs": "Mach 2 | 2 EJ200 | 1 crew",
+   "hp": 250,
+   "speed": 235,
+   "range": 250,
+   "damage": 20,
+   "cooldown": 0.27,
+   "cost": 530,
+   "sprite": "british_army_fighter"
+  },
+  "interceptor_jet": {
+   "name": "Typhoon QRA (Meteor)",
+   "class": "Air policing fighter",
+   "desc": "Typhoon flown on Quick Reaction Alert with Meteor ramjet missiles (100+ km).",
+   "specs": "Mach 2 | Meteor BVRAAM",
+   "hp": 245,
+   "speed": 285,
+   "range": 330,
+   "damage": 26,
+   "cooldown": 0.26,
+   "vs": {
+    "air": 1.45
+   },
+   "cost": 600,
+   "sprite": "british_army_interceptor_jet"
+  },
+  "stealth_fighter": {
+   "name": "F-35B Lightning II",
+   "class": "Stealth multirole",
+   "desc": "STOVL stealth fighter with the RAF/Royal Navy; operates from HMS Queen Elizabeth. Internal weapons keep the stealth.",
+   "specs": "Mach 1.6 | STOVL | RCS ~0.005",
+   "hp": 270,
+   "speed": 250,
+   "range": 255,
+   "damage": 28,
+   "cooldown": 0.25,
+   "stealth": 0.5,
+   "cost": 870,
+   "sprite": "british_army_stealth_fighter"
+  },
+  "strike_jet": {
+   "name": "MQ-9B Protector RG1",
+   "class": "Armed drone",
+   "desc": "Long-endurance RPAS with Brimstone and Paveway; 40 hours loiter and SATCOM control.",
+   "specs": "1.7 t | 40 h | Brimstone 2",
+   "hp": 190,
+   "speed": 105,
+   "range": 200,
+   "damage": 38,
+   "cooldown": 1.2,
+   "proj": "rocket",
+   "pierce": 12,
+   "vs": {
+    "armor": 1.5,
+    "vehicle": 1.3
+   },
+   "cost": 380,
+   "sprite": "british_army_strike_jet"
+  },
+  "helicopter": {
+   "name": "Wildcat AH1",
+   "class": "Light attack helicopter",
+   "desc": "Armed reconnaissance helicopter with Martlet LMM missiles and GPMG; good in littoral and ASW roles.",
+   "specs": "6 t | 2 crew | LMM",
+   "hp": 330,
+   "armor": 3,
+   "speed": 125,
+   "range": 225,
+   "damage": 24,
+   "cooldown": 0.7,
+   "sub_damage": 90,
+   "cost": 470,
+   "sprite": "british_army_helicopter"
+  },
+  "gunship": {
+   "name": "AH-64E Apache Guardian",
+   "class": "Attack helicopter",
+   "desc": "Heavy attack helicopter with Hellfire, 30 mm gun and Longbow radar; 50 for the Army Air Corps.",
+   "specs": "10 t | 2 crew | 16 AGM-114",
+   "hp": 700,
+   "armor": 6,
+   "speed": 112,
+   "range": 250,
+   "damage": 32,
+   "cooldown": 0.8,
+   "cost": 520,
+   "sprite": "british_army_gunship"
+  },
+  "light_bomber": {
+   "name": "Tornado GR4",
+   "class": "Strike bomber",
+   "desc": "Swing-wing strike aircraft retired from RAF service in 2019. Modelled as reserve stock.",
+   "specs": "Mach 1.3 | 2 crew | 9 t",
+   "hp": 280,
+   "speed": 205,
+   "damage": 90,
+   "cooldown": 0.75,
+   "splash": 72,
+   "cost": 410,
+   "sprite": "british_army_light_bomber"
+  },
+  "stealth_bomber": {
+   "name": "GCAP Tempest (concept)",
+   "class": "Future combat aircraft",
+   "desc": "Sixth-generation fighter-bomber planned by the UK, Italy and Japan for the mid-2030s. A modelled concept.",
+   "specs": "Concept | stealth | ~2035",
+   "hp": 480,
+   "speed": 250,
+   "damage": 255,
+   "cooldown": 0.9,
+   "splash": 115,
+   "stealth": 0.5,
+   "vs": {
+    "structure": 1.3
+   },
+   "cost": 1500,
+   "sprite": "british_army_stealth_bomber"
+  },
+  "diver": {
+   "name": "Royal Marines SBS Swimmer",
+   "class": "Special boat service",
+   "desc": "SBS combat swimmers with rebreathers and limpet mines.",
+   "specs": "Rebreather | limpet mines",
+   "hp": 70,
+   "range": 55,
+   "damage": 100,
+   "cooldown": 3.5,
+   "cost": 130,
+   "sprite": "british_army_diver"
+  },
+  "patrol_boat": {
+   "name": "P2000 Archer-class",
+   "class": "Patrol vessel",
+   "desc": "Small training/patrol boat with a 20 mm gun; used by university units and ports.",
+   "specs": "54 t | 20 kn | 20 mm",
+   "hp": 170,
+   "speed": 110,
+   "range": 190,
+   "damage": 8,
+   "cooldown": 0.18,
+   "cost": 150,
+   "sprite": "british_army_patrol_boat"
+  },
+  "gunboat": {
+   "name": "River-class Batch 2 OPV",
+   "class": "Offshore patrol vessel",
+   "desc": "2,000 t OPV with a 30 mm cannon; fisheries and EEZ patrol.",
+   "specs": "2,000 t | 24 kn | 30 mm",
+   "hp": 420,
+   "armor": 4,
+   "speed": 80,
+   "range": 270,
+   "damage": 33,
+   "cooldown": 1.3,
+   "splash": 24,
+   "cost": 280,
+   "sprite": "british_army_gunboat"
+  },
+  "missile_boat": {
+   "name": "Type 31 Inspiration-class",
+   "class": "Frigate",
+   "desc": "General-purpose frigate with 57 mm gun, Sea Ceptor and 24 VLS cells.",
+   "specs": "5,700 t | 25 kn | 57 mm + CAMM",
+   "hp": 380,
+   "armor": 4,
+   "speed": 98,
+   "range": 340,
+   "damage": 58,
+   "cooldown": 1.5,
+   "splash": 18,
+   "vs": {
+    "air": 1.25,
+    "ship": 1.2
+   },
+   "cost": 460,
+   "sprite": "british_army_missile_boat"
+  },
+  "destroyer": {
+   "name": "Type 45 Daring-class",
+   "class": "Air-defense destroyer",
+   "desc": "Sea Viper PAAMS with Aster 30 missiles; one of the best AAW ships in the world.",
+   "specs": "8,500 t | 30 kn | 48 VLS",
+   "hp": 1000,
+   "armor": 10,
+   "speed": 70,
+   "range": 300,
+   "damage": 42,
+   "cooldown": 1.1,
+   "splash": 34,
+   "sub_damage": 100,
+   "cost": 680,
+   "sprite": "british_army_destroyer"
+  },
+  "cruiser": {
+   "name": "Type 26 City-class",
+   "class": "ASW frigate",
+   "desc": "6,900 t frigate with 24 Mk 41 cells and 48 CAMM silos; the RN's Tomahawk and sonar leader.",
+   "specs": "6,900 t | 26 kn | 24 Mk 41",
+   "hp": 1700,
+   "armor": 14,
+   "speed": 58,
+   "range": 420,
+   "damage": 85,
+   "cooldown": 2.0,
+   "splash": 56,
+   "cost": 1100,
+   "sprite": "british_army_cruiser"
+  },
+  "submarine": {
+   "name": "Astute-class",
+   "class": "Attack submarine",
+   "desc": "Nuclear attack boat with Spearfish torpedoes and Tomahawk; very quiet.",
+   "specs": "7,400 t | 30 kn | Spearfish",
+   "hp": 440,
+   "armor": 6,
+   "speed": 60,
+   "range": 290,
+   "damage": 290,
+   "cooldown": 3.9,
+   "cost": 740,
+   "sprite": "british_army_submarine"
+  },
+  "aircraft_carrier": {
+   "name": "HMS Queen Elizabeth (R08)",
+   "class": "Aircraft carrier",
+   "desc": "65,000 t STOVL carrier carrying F-35B, Merlin and Wildcat; no catapults.",
+   "specs": "65,000 t | 25 kn | ~40 aircraft",
+   "hp": 4300,
+   "armor": 15,
+   "speed": 32,
+   "spawn_every": 28,
+   "cost": 2600,
+   "sprite": "british_army_aircraft_carrier"
+  },
+  "mg_turret": {
+   "name": "L7 GPMG Sangar",
+   "class": "Machine gun post",
+   "desc": "Sandbagged and Hesco sangar with a GPMG and overhead cover; typical of bases in Afghanistan.",
+   "specs": "7.62 mm | sandbags",
+   "hp": 390,
+   "armor": 4,
+   "range": 215,
+   "damage": 9,
+   "cooldown": 0.16,
+   "cost": 170,
+   "sprite": "british_army_mg_turret"
+  },
+  "pillbox": {
+   "name": "Hardened Sangar",
+   "class": "Fortified post",
+   "desc": "Protected observation and fighting position made of Hesco and concrete.",
+   "specs": "Hesco | blast roof",
+   "hp": 730,
+   "armor": 10,
+   "range": 190,
+   "damage": 12,
+   "cooldown": 0.15,
+   "cost": 220,
+   "sprite": "british_army_pillbox"
+  },
+  "at_gun": {
+   "name": "MILAN ATGM Post",
+   "class": "Anti-tank post",
+   "desc": "MILAN 2 wire-guided missile with a tandem warhead; 2 km range.",
+   "specs": "115 mm | 2 km | tandem",
+   "hp": 410,
+   "armor": 7,
+   "range": 330,
+   "damage": 105,
+   "cooldown": 2.5,
+   "pierce": 12,
+   "vs": {
+    "armor": 1.5
+   },
+   "cost": 280,
+   "sprite": "british_army_at_gun"
+  },
+  "cannon_turret": {
+   "name": "L7 105 mm Bunker",
+   "class": "Dug-in gun",
+   "desc": "Fixed 105 mm L7 gun, widely produced and used in many roles.",
+   "specs": "105 mm L7 | dug in",
+   "hp": 820,
+   "armor": 14,
+   "range": 310,
+   "damage": 58,
+   "cooldown": 2.0,
+   "splash": 35,
+   "cost": 320,
+   "sprite": "british_army_cannon_turret"
+  },
+  "mortar_pit": {
+   "name": "L16 81 mm Mortar",
+   "class": "Mortar pit",
+   "desc": "Standard British infantry mortar; 5.6 km range and fast fire.",
+   "specs": "81 mm | 38 kg | 5.6 km",
+   "hp": 260,
+   "armor": 2,
+   "range": 425,
+   "damage": 55,
+   "cooldown": 2.0,
+   "min_range": 90,
+   "splash": 55,
+   "vs": {
+    "infantry": 1.3
+   },
+   "cost": 270,
+   "sprite": "british_army_mortar_pit"
+  },
+  "flak_battery": {
+   "name": "Bofors L70 Flak",
+   "class": "Light AA gun",
+   "desc": "Swedish 40 mm autocannon used by British Army Air Defence for 60 years.",
+   "specs": "40 mm | 240 rpm | 4 km",
+   "hp": 420,
+   "armor": 4,
+   "range": 330,
+   "damage": 22,
+   "cooldown": 0.5,
+   "splash": 50,
+   "cost": 300,
+   "sprite": "british_army_flak_battery"
+  },
+  "sam_site": {
+   "name": "Rapier FSC Site",
+   "class": "SAM site",
+   "desc": "Short-range SAM with optical/radar tracking, retired 2021 but modelled as a stock.",
+   "specs": "Rapier | 8 km | optical/radar",
+   "hp": 320,
+   "armor": 2,
+   "range": 330,
+   "damage": 52,
+   "cooldown": 1.3,
+   "cost": 250,
+   "sprite": "british_army_sam_site"
+  },
+  "heavy_battery": {
+   "name": "AS-90 155 mm Gun Battery",
+   "class": "Gun battery",
+   "desc": "Dug-in AS-90 guns with prepared fire plans.",
+   "specs": "155 mm/39 | prepared position",
+   "hp": 360,
+   "armor": 4,
+   "range": 660,
+   "damage": 94,
+   "cooldown": 3.9,
+   "min_range": 150,
+   "splash": 95,
+   "cost": 540,
+   "sprite": "british_army_heavy_battery"
+  },
+  "railgun": {
+   "name": "DragonFire Laser",
+   "class": "Directed-energy weapon",
+   "desc": "50 kW-class laser being developed for the Royal Navy and Army; precision against drones and light targets.",
+   "specs": "Laser | 1 pound/shot cost",
+   "hp": 600,
+   "armor": 14,
+   "range": 520,
+   "damage": 90,
+   "cooldown": 0.6,
+   "pierce": 15,
+   "targets": [
+    "ground",
+    "air"
+   ],
+   "proj": "rail",
+   "cost": 1300,
+   "sprite": "british_army_railgun"
+  },
+  "ciws": {
+   "name": "Phalanx CIWS",
+   "class": "Close-in weapon",
+   "desc": "Land Phalanx variant used for C-RAM defense of bases in Iraq and Afghanistan.",
+   "specs": "20 mm | 4,500 rpm",
+   "hp": 390,
+   "armor": 6,
+   "range": 275,
+   "damage": 12,
+   "cooldown": 0.08,
+   "cost": 530,
+   "sprite": "british_army_ciws"
+  },
+  "interceptor_battery": {
+   "name": "Sky Sabre Battery (C-RAM)",
+   "class": "Air defense battery",
+   "desc": "Sky Sabre with Giraffe 1X radar can also engage rockets, shells and cruise missiles.",
+   "specs": "CAMM | Giraffe 1X | 25+ km",
+   "hp": 390,
+   "armor": 4,
+   "range": 650,
+   "damage": 132,
+   "cooldown": 1.6,
+   "cost": 710,
+   "sprite": "british_army_interceptor_battery"
+  },
+  "abm_battery": {
+   "name": "Aster 30 B1NT Battery",
+   "class": "Ballistic missile defense",
+   "desc": "Notional land variant of the ship-borne Aster 30 B1NT; the UK relies on NATO partners.",
+   "specs": "Aster 30 | 120 km | Sea Viper evo",
+   "hp": 600,
+   "armor": 8,
+   "range": 930,
+   "damage": 255,
+   "cooldown": 1.4,
+   "cost": 1400,
+   "sprite": "british_army_abm_battery"
+  },
+  "barricade": {
+   "name": "Hesco Bastion",
+   "class": "Barrier",
+   "desc": "Sand/gravel-filled wire-mesh bastion; quick-build protection.",
+   "specs": "Wire mesh + geotextile",
+   "hp": 950,
+   "armor": 14,
+   "cost": 80,
+   "sprite": "british_army_barricade"
+  },
+  "repair_depot": {
+   "name": "REME Forward Repair",
+   "class": "Field workshop",
+   "desc": "Royal Electrical and Mechanical Engineers repair vehicles at the front.",
+   "specs": "REME | mobile",
+   "hp": 420,
+   "armor": 4,
+   "heal": {
+    "rate": 24,
+    "radius": 150,
+    "cls": [
+     "vehicle",
+     "armor",
+     "structure"
+    ]
+   },
+   "cost": 370,
+   "sprite": "british_army_repair_depot"
+  },
+  "tactical_missile": {
+   "name": "GMLRS Rocket",
+   "class": "Guided rocket",
+   "desc": "GPS/INS rocket with 90 kg warhead; 70+ km range.",
+   "specs": "227 mm | 70+ km | 90 kg",
+   "damage": 135,
+   "splash": 76,
+   "cost": 160,
+   "sprite": "british_army_tactical_missile"
+  },
+  "cruise_missile": {
+   "name": "Tomahawk Block IV",
+   "class": "Cruise missile",
+   "desc": "Fired from RN submarines; 1,600 km range with a 450 kg warhead.",
+   "specs": "Subsonic | 1,600 km | 450 kg",
+   "damage": 260,
+   "splash": 105,
+   "cost": 300,
+   "sprite": "british_army_cruise_missile"
+  },
+  "bunker_buster": {
+   "name": "Storm Shadow (BROACH)",
+   "class": "Cruise missile",
+   "desc": "Stealthy cruise missile with the BROACH penetrator warhead; 250 km range.",
+   "specs": "1.3 t | 250+ km | BROACH",
+   "damage": 650,
+   "splash": 68,
+   "cost": 600,
+   "sprite": "british_army_bunker_buster"
+  },
+  "hypersonic": {
+   "name": "HCSW (development)",
+   "class": "Hypersonic cruise weapon",
+   "desc": "UK/US Hypersonic Cruise Strike Weapon in development.",
+   "specs": "Mach 5+ | scramjet | prototype",
+   "damage": 1050,
+   "splash": 148,
+   "cost": 1350,
+   "sprite": "british_army_hypersonic"
+  },
+  "tactical_nuke": {
+   "name": "Trident II D5 (Holbrooke, sub-strategic)",
+   "class": "Sub-strategic warhead",
+   "desc": "Single-warhead mission of the ~10 kt Holbrooke warhead; intended as a limited signal.",
+   "specs": "~10 kt | 1 warhead | D5",
+   "damage": 1900,
+   "splash": 225,
+   "cost": 1700,
+   "sprite": "british_army_tactical_nuke"
+  },
+  "nuke": {
+   "name": "Trident II D5 (3 warheads)",
+   "class": "SLBM",
+   "desc": "Submarine-launched ballistic missile; about 100 kt per warhead with multiple independent re-entry vehicles.",
+   "specs": "~100 kt x 3 | 12,000 km",
+   "damage": 3500,
+   "splash": 330,
+   "cost": 2900,
+   "sprite": "british_army_nuke"
+  },
+  "mega_nuke": {
+   "name": "Trident II D5 (full salvo)",
+   "class": "SLBM salvo",
+   "desc": "A full Vanguard-class load of eight missiles with up to five warheads each.",
+   "specs": "40 warheads | 8 missiles",
+   "damage": 6800,
+   "splash": 550,
+   "cost": 6250,
+   "sprite": "british_army_mega_nuke"
+  },
+  "shotgunner": {
+   "name": "Trench Raider (Lanchester)"
+  },
+  "marksman": {
+   "name": "No.4 (T) Marksman"
+  },
+  "mortar_team": {
+   "name": "3-inch Mortar Team"
+  },
+  "javelin": {
+   "name": "PIAT Team"
+  },
+  "riot_trooper": {
+   "name": "Heavy Assault Sapper"
+  },
+  "sapper": {
+   "name": "Royal Engineer Sapper"
+  },
+  "officer": {
+   "name": "Platoon Commander"
+  },
+  "k9": {
+   "name": "Demolition Dog"
+  },
+  "mine_flail": {
+   "name": "Sherman Crab Flail Tank"
+  },
+  "torpedo_boat": {
+   "name": "Vosper MTB"
+  },
+  "frigate": {
+   "name": "River-class Frigate"
+  },
+  "minelayer": {
+   "name": "Abdiel-class Fast Minelayer"
+  },
+  "midget_sub": {
+   "name": "X-craft Midget Submarine"
+  },
+  "cruise_sub": {
+   "name": "Trafalgar-class SSN (Tomahawk)"
+  },
+  "sandbag_nest": {
+   "name": "Vickers Sandbag Nest"
+  },
+  "watchtower": {
+   "name": "Observation Watchtower"
+  },
+  "sniper_nest": {
+   "name": "Sniper Nest (Enfield)"
+  },
+  "flame_bunker": {
+   "name": "Wasp Flame Bunker"
+  },
+  "torpedo_battery": {
+   "name": "Coastal Torpedo Battery"
+  },
+  "observation_post": {
+   "name": "Forward Observation Post"
+  }
+ }
+}

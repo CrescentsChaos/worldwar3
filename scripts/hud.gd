@@ -76,8 +76,8 @@ func _ready() -> void:
 func _build_v6() -> void:
 	radio_panel = RadioPanel.new()
 	radio_panel.battle = battle
-	radio_panel.position = Vector2(14, 198)
-	radio_panel.size = Vector2(410, 154)
+	radio_panel.position = Vector2(14, 214)
+	radio_panel.size = Vector2(400, 154)
 	root.add_child(radio_panel)
 	prep_panel = PrepPanel.new()
 	root.add_child(prep_panel)
@@ -134,23 +134,16 @@ func _make_button(text: String, pos: Vector2, size: Vector2, cb: Callable, font_
 
 func _build_top_bar() -> void:
 	var bar := Panel.new()
-	bar.position = Vector2.ZERO
-	bar.size = Vector2(1280, 54)
-	bar.add_theme_stylebox_override("panel", MilTheme.edge_box(Color(0.035, 0.04, 0.043, 0.95), MilTheme.LINE_HI, SIDE_BOTTOM, 1))
+	bar.position = Vector2(8, 6)
+	bar.size = Vector2(1264, 50)
+	bar.add_theme_stylebox_override("panel", MilTheme.glass(MilTheme.BG, MilTheme.LINE, 14))
 	root.add_child(bar)
-	var accent := ColorRect.new()
-	accent.color = MilTheme.AMBER
-	accent.position = Vector2(0, 0)
-	accent.size = Vector2(5, 54)
-	bar.add_child(accent)
-
-	var brand := _label("WW3", Vector2(18, 4), Vector2(120, 32), 28, MilTheme.AMBER)
+	var brand := _label("WW3", Vector2(18, 7), Vector2(90, 34), 24, MilTheme.AMBER)
 	brand.add_theme_font_override("font", MilTheme.font_bold())
 	bar.add_child(brand)
-	bar.add_child(MilTheme.caption("Theatre command", Vector2(19, 35), Vector2(140, 14), MilTheme.DIM, 10))
 
-	bar.add_child(MilTheme.caption("Funds", Vector2(166, 5), Vector2(110, 14), MilTheme.DIM, 10))
-	money_label = MilTheme.readout("$ 0", Vector2(165, 15), Vector2(150, 34), MilTheme.AMBER, 26)
+	bar.add_child(MilTheme.caption("Funds", Vector2(166, 4), Vector2(110, 14), MilTheme.DIM, 10))
+	money_label = MilTheme.readout("$ 0", Vector2(165, 15), Vector2(150, 34), MilTheme.GOLD, 24)
 	bar.add_child(money_label)
 	bar.add_child(MilTheme.caption("Income", Vector2(310, 5), Vector2(80, 14), MilTheme.DIM, 10))
 	income_label = MilTheme.readout("+0.0/s", Vector2(309, 19), Vector2(100, 26), MilTheme.GOOD, 17)
@@ -179,7 +172,7 @@ func _build_top_bar() -> void:
 
 	# clock block between the capitals
 	var clock_bg := ColorRect.new()
-	clock_bg.color = Color(0, 0, 0, 0.55)
+	clock_bg.color = Color(0, 0, 0, 0.30)
 	clock_bg.position = Vector2(728, 8)
 	clock_bg.size = Vector2(72, 38)
 	bar.add_child(clock_bg)
@@ -193,7 +186,7 @@ func _build_top_bar() -> void:
 	country_label = MilTheme.readout("", Vector2(1042, 6), Vector2(90, 44), MilTheme.DIM, 11)
 	bar.add_child(country_label)
 
-	bar.add_child(_make_button("MENU", Vector2(1136, 12), Vector2(46, 30), _open_menu, 11))
+	bar.add_child(_make_button("MENU", Vector2(1128, 10), Vector2(54, 30), _open_menu, 11))
 	var speeds := [1.0, 2.0, 3.0]
 	for i in speeds.size():
 		var s: float = speeds[i]
@@ -204,75 +197,111 @@ func _build_top_bar() -> void:
 	speed_buttons[0].button_pressed = true
 
 	feed = FeedLog.new()
-	feed.position = Vector2(14, 64)
+	feed.position = Vector2(16, 66)
 	feed.size = Vector2(420, 130)
 	root.add_child(feed)
 
 
+var dock: Panel
+var tray: Panel
+var tray_open := true
+var sel_panel: SelectionPanel
+var info_panel: Panel
+const TAB_SHORT := {"infantry": "Infantry", "vehicles": "Vehicles", "air": "Air", "navy": "Navy", "defenses": "Defense",
+	"infrastructure": "Buildings", "traps": "Mines", "strategic": "Missiles"}
+
+
 func _build_bottom_panel() -> void:
-	var panel := Panel.new()
-	panel.position = Vector2(0, 568)
-	panel.size = Vector2(1280, 152)
-	panel.add_theme_stylebox_override("panel", MilTheme.edge_box(Color(0.035, 0.04, 0.043, 0.96), MilTheme.LINE_HI, SIDE_TOP, 1))
-	root.add_child(panel)
+	# --- category dock (always visible, one slim row)
+	dock = Panel.new()
+	dock.position = Vector2(302, 670)
+	dock.size = Vector2(660, 42)
+	dock.add_theme_stylebox_override("panel", MilTheme.glass(MilTheme.BG, MilTheme.LINE, 21))
+	root.add_child(dock)
+	var n := maxi(GameData.tabs.size(), 1)
+	var tw := (dock.size.x - 24.0 - 62.0) / float(n)
 	var x := 12.0
 	for t in GameData.tabs:
 		var tid := str(t.get("id", ""))
-		var b := _make_button(str(t.get("name", tid)).to_upper(), Vector2(x, 6), Vector2(100, 30), func(): _show_tab(tid), 12)
+		var label := str(TAB_SHORT.get(tid, str(t.get("name", tid))))
+		var b := _make_button(label, Vector2(x, 7), Vector2(tw - 3.0, 28), func(): _tab_pressed(tid), 12)
 		MilTheme.style_tab(b)
 		b.toggle_mode = true
-		panel.add_child(b)
+		b.clip_text = true
+		dock.add_child(b)
 		tab_buttons[tid] = b
-		x += 102.0
-	panel.add_child(_make_button("<", Vector2(x + 6.0, 8), Vector2(28, 26), func(): _scroll_cards(-320), 13))
-	panel.add_child(_make_button(">", Vector2(x + 38.0, 8), Vector2(28, 26), func(): _scroll_cards(320), 13))
-	panel.add_child(MilTheme.caption("WASD cam / wheel zoom / Q E tabs / 1-9 queue / V stance / P autopilot / X hold / T atk-move / F rally",
-		Vector2(x + 78.0, 14), Vector2(maxf(1270.0 - x - 78.0, 200.0), 18), Color(0.4, 0.44, 0.42), 10))
+		x += tw
+	dock.add_child(_make_button("<", Vector2(dock.size.x - 66.0, 7), Vector2(26, 28), func(): _scroll_cards(-320), 13))
+	dock.add_child(_make_button(">", Vector2(dock.size.x - 36.0, 7), Vector2(26, 28), func(): _scroll_cards(320), 13))
+	# --- card tray (only open while you are buying; closes itself when you start placing a building)
+	tray = Panel.new()
+	tray.position = Vector2(302, 552)
+	tray.size = Vector2(660, 114)
+	tray.add_theme_stylebox_override("panel", MilTheme.glass(MilTheme.BG, MilTheme.LINE, 14))
+	root.add_child(tray)
 	card_scroll = ScrollContainer.new()
-	card_scroll.position = Vector2(12, 42)
-	card_scroll.size = Vector2(944, 106)
+	card_scroll.position = Vector2(8, 5)
+	card_scroll.size = Vector2(644, 106)
 	card_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_SHOW_NEVER
 	card_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	panel.add_child(card_scroll)
+	tray.add_child(card_scroll)
 	card_box = HBoxContainer.new()
-	card_box.add_theme_constant_override("separation", 6)
+	card_box.add_theme_constant_override("separation", 8)
 	card_scroll.add_child(card_box)
-	var info_bg := Panel.new()
-	info_bg.position = Vector2(966, 42)
-	info_bg.size = Vector2(304, 104)
-	info_bg.add_theme_stylebox_override("panel", MilTheme.box(Color(0.02, 0.024, 0.026, 0.9), MilTheme.LINE, 1))
-	panel.add_child(info_bg)
-	info_frame = BracketFrame.new(MilTheme.AMBER_DIM, 8.0, 1.5)
-	info_frame.position = info_bg.position
-	info_frame.size = info_bg.size
-	panel.add_child(info_frame)
+	# --- placement info (replaces the old always-on text block; only shown while a building / missile is armed)
+	info_panel = Panel.new()
+	info_panel.position = Vector2(976, 520)
+	info_panel.size = Vector2(296, 190)
+	info_panel.add_theme_stylebox_override("panel", MilTheme.glass(MilTheme.BG, MilTheme.LINE, 12))
+	info_panel.visible = false
+	root.add_child(info_panel)
 	info_label = RichTextLabel.new()
 	info_label.bbcode_enabled = true
 	info_label.scroll_active = false
-	info_label.position = Vector2(10, 6)
-	info_label.size = Vector2(286, 94)
+	info_label.position = Vector2(12, 10)
+	info_label.size = Vector2(272, 172)
 	info_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	info_label.add_theme_font_size_override("normal_font_size", 11)
-	info_label.add_theme_font_size_override("bold_font_size", 14)
+	info_label.add_theme_font_size_override("normal_font_size", 12)
+	info_label.add_theme_font_size_override("bold_font_size", 15)
 	info_label.add_theme_font_override("bold_font", MilTheme.font_bold())
-	info_label.add_theme_color_override("default_color", Color(0.78, 0.82, 0.78))
-	info_bg.add_child(info_label)
-	# Overview map (click / drag to move the camera).
+	info_label.add_theme_color_override("default_color", Color(0.80, 0.84, 0.90))
+	info_panel.add_child(info_label)
+	# --- selection card
+	sel_panel = SelectionPanel.new()
+	sel_panel.battle = battle
+	sel_panel.position = Vector2(976, 538)
+	sel_panel.size = Vector2(296, 172)
+	root.add_child(sel_panel)
+	# --- overview map (click / drag to move the camera), bottom left
 	minimap = Minimap.new()
 	minimap.battle = battle
-	minimap.position = Vector2(970, 568 - 112)
-	minimap.size = Vector2(300, 104)
+	minimap.position = Vector2(12, 608)
+	minimap.size = Vector2(280, 100)
 	root.add_child(minimap)
 	cmd_panel = CommandPanel.new()
 	cmd_panel.battle = battle
-	cmd_panel.position = Vector2(12, 392)
-	cmd_panel.size = Vector2(350, 168)
+	cmd_panel.position = Vector2(12, 430)
+	cmd_panel.size = Vector2(296, 170)
 	root.add_child(cmd_panel)
-	# Full datasheet, shown while hovering a card (bottom-left, above the card strip; never blocks clicks).
 	sheet = UnitSheet.new()
 	sheet.position = Vector2(12, 200)
 	sheet.visible = false
 	root.add_child(sheet)
+	_set_tray(true)
+
+
+func _set_tray(open: bool) -> void:
+	tray_open = open
+	if tray != null:
+		tray.visible = open
+
+
+func _tab_pressed(tid: String) -> void:
+	if tid == current_tab and tray_open:
+		_set_tray(false)
+		tab_buttons[tid].button_pressed = true
+		return
+	_show_tab(tid)
 
 
 ## Army stance + autopilot toggles (top right of the battlefield).
@@ -281,9 +310,9 @@ var autopilot_button: Button
 
 
 func _build_mode_buttons() -> void:
-	stance_button = _make_button("", Vector2(1030, 62), Vector2(242, 26), func(): battle.cycle_stance(), 11)
+	stance_button = _make_button("", Vector2(1056, 64), Vector2(216, 26), func(): battle.cycle_stance(), 11)
 	root.add_child(stance_button)
-	autopilot_button = _make_button("", Vector2(1030, 92), Vector2(242, 26), func(): battle.set_autopilot(not battle.autopilot), 11)
+	autopilot_button = _make_button("", Vector2(1056, 94), Vector2(216, 26), func(): battle.set_autopilot(not battle.autopilot), 11)
 	root.add_child(autopilot_button)
 	refresh_modes()
 
@@ -292,8 +321,8 @@ func refresh_modes() -> void:
 	if stance_button == null or battle == null:
 		return
 	var names := {"assault": "AUTO-ASSAULT", "defend": "DEFEND RALLY", "manual": "MANUAL"}
-	stance_button.text = "ARMY: %s   [V]" % names.get(battle.stance, "?")
-	autopilot_button.text = "AUTOPILOT: %s   [P]" % ("ON" if battle.autopilot else "OFF")
+	stance_button.text = "%s   [V]" % names.get(battle.stance, "?")
+	autopilot_button.text = "AUTOPILOT %s   [P]" % ("ON" if battle.autopilot else "OFF")
 
 
 func _scroll_cards(amount: int) -> void:
@@ -304,7 +333,7 @@ func _build_overlays() -> void:
 	toast_label = _label("", Vector2(240, 528), Vector2(100, 30), 15, MilTheme.TEXT)
 	toast_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	toast_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	toast_label.add_theme_stylebox_override("normal", MilTheme.edge_box(Color(0.03, 0.035, 0.037, 0.88), MilTheme.AMBER, SIDE_LEFT, 3, 14, 6))
+	toast_label.add_theme_stylebox_override("normal", MilTheme.glass(Color(0.04, 0.05, 0.07, 0.90), Color(MilTheme.AMBER, 0.7), 18, 18, 6))
 	toast_label.modulate.a = 0.0
 	root.add_child(toast_label)
 
@@ -415,6 +444,7 @@ func rebuild_cards() -> void:
 
 func _show_tab(tab: String) -> void:
 	current_tab = tab
+	_set_tray(true)
 	for k in tab_buttons:
 		tab_buttons[k].button_pressed = (k == tab)
 	for c in card_box.get_children():
@@ -440,7 +470,7 @@ func _make_card(kind: String, id: String, d: Dictionary, hotkey: int) -> Button:
 	b.mouse_entered.connect(_on_card_hover.bind(kind + ":" + id, true))
 	b.mouse_exited.connect(_on_card_hover.bind(kind + ":" + id, false))
 	var back := ColorRect.new()
-	back.color = Color(0.016, 0.02, 0.022, 0.75)
+	back.color = Color(0, 0, 0, 0.22)
 	back.position = Vector2(3, 3)
 	back.size = Vector2(144, 58)
 	back.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -474,7 +504,7 @@ func _make_card(kind: String, id: String, d: Dictionary, hotkey: int) -> Button:
 	nm.add_theme_color_override("font_color", MilTheme.TEXT)
 	nm.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	b.add_child(nm)
-	var cost := MilTheme.readout("$%d" % int(d.get("cost", 0)), Vector2(7, 80), Vector2(70, 20), MilTheme.AMBER, 14)
+	var cost := MilTheme.readout("$%d" % int(d.get("cost", 0)), Vector2(8, 80), Vector2(70, 20), MilTheme.GOLD, 14)
 	b.add_child(cost)
 	var status := MilTheme.caption("", Vector2(62, 83), Vector2(84, 16), MilTheme.WARN, 9)
 	status.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
@@ -505,6 +535,8 @@ func _select(kind: String, id: String) -> void:
 		battle.select("", "")
 	else:
 		battle.select(kind, id)
+		if kind != "strategic":
+			_set_tray(false)
 	_refresh_card_styles()
 
 
@@ -518,15 +550,15 @@ func _refresh_card_styles(force: bool = false) -> void:
 		var selected: bool = battle.sel_kind == c["kind"] and battle.sel_id == c["id"]
 		var b: Button = c["button"]
 		var border := MilTheme.AMBER if selected else MilTheme.LINE
-		var bg := Color(0.14, 0.11, 0.05, 0.96) if selected else MilTheme.PANEL
-		b.add_theme_stylebox_override("normal", MilTheme.box(bg, border, 2 if selected else 1))
-		b.add_theme_stylebox_override("hover", MilTheme.box(bg.lightened(0.08), MilTheme.AMBER if selected else MilTheme.AMBER_DIM, 1))
-		b.add_theme_stylebox_override("pressed", MilTheme.box(bg.lightened(0.16), MilTheme.AMBER, 2))
+		var bg := Color(0.10, 0.20, 0.25, 0.96) if selected else MilTheme.PANEL
+		b.add_theme_stylebox_override("normal", MilTheme.box(bg, border, 2 if selected else 1, 0, 0, 10))
+		b.add_theme_stylebox_override("hover", MilTheme.box(bg.lightened(0.08), MilTheme.AMBER if selected else MilTheme.AMBER_DIM, 1, 0, 0, 10))
+		b.add_theme_stylebox_override("pressed", MilTheme.box(bg.lightened(0.16), MilTheme.AMBER, 2, 0, 0, 10))
 		var fr: BracketFrame = c["sel"]
 		fr.visible = selected
 
 
-const IDLE_INFO := "[color=#ff9e1a][b]COMMAND[/b][/color]\n[color=#8a948f]Unit cards queue production at your Barracks / Factory / Airbase / Port (Shift = x5).\nDrag to select. RMB move, Ctrl+RMB or T attack-move, X hold, F rally point, C select all.\nDefenses and buildings: pick a card, then click the map.[/color]"
+const IDLE_INFO := "[color=#45c7e0][b]COMMAND[/b][/color]\n[color=#8a948f]Unit cards queue production at your Barracks / Factory / Airbase / Port (Shift = x5).\nDrag to select. RMB move, Ctrl+RMB or T attack-move, X hold, F rally point, C select all.\nDefenses and buildings: pick a card, then click the map.[/color]"
 
 
 func _on_card_hover(key: String, inside: bool) -> void:
@@ -541,7 +573,7 @@ func _info_bbcode(kind: String, id: String) -> String:
 	var d := GameData.def_for(0, kind, id)
 	if d.is_empty():
 		return ""
-	var t := "[b][color=#ffb02e]%s[/color][/b]   [color=#ff9e1a]$%d[/color]\n" % [str(d.get("name", id)), int(float(d.get("cost", 0)))]
+	var t := "[b][color=#45c7e0]%s[/color][/b]   [color=#45c7e0]$%d[/color]\n" % [str(d.get("name", id)), int(float(d.get("cost", 0)))]
 	var cls := str(d.get("class", ""))
 	if cls != "":
 		t += "[color=#7f8a86]%s[/color]\n" % cls
@@ -566,7 +598,7 @@ func _info_bbcode(kind: String, id: String) -> String:
 		var rn: Array[String] = []
 		for r in req:
 			rn.append(GameData.cap_name(str(r)))
-		t += "\n[color=#ffbd33]Requires: %s[/color]" % ", ".join(PackedStringArray(rn))
+		t += "\n[color=#ffc247]Requires: %s[/color]" % ", ".join(PackedStringArray(rn))
 	return t
 
 
@@ -582,7 +614,7 @@ func _update_sheet() -> void:
 		_sheet_key = key
 		sheet.set_def(c["def"], str(c["kind"]), missing)
 	sheet.visible = true
-	sheet.position = Vector2(12.0, 560.0 - sheet.size.y)
+	sheet.position = Vector2(12.0, 600.0 - sheet.size.y)
 
 
 # ------------------------------------------------------------------- updates
@@ -593,7 +625,8 @@ func _process(delta: float) -> void:
 	var b: Battle = battle
 	money_label.text = "$ %d" % int(b.money[0])
 	income_label.text = "+%.1f/s" % b.income_rate(0)
-	country_label.text = "SECTORS\nYOU   %d/%d\nENEMY %d/%d" % [b.nat_alive(0), int(b.nat_start[0]), b.nat_alive(1), int(b.nat_start[1])]
+	country_label.text = "ZONES  %d / %d\nYOU %d  FOE %d" % [b.sector_owner_count(0), b.sectors.size(), b.nat_alive(0), b.nat_alive(1)]
+	country_label.tooltip_text = "Zones you hold / total.  Buildings alive: you / enemy."
 	var t := int(b.elapsed)
 	time_label.text = "%02d:%02d" % [t / 60, t % 60]
 	cap_label.text = "%d/%d" % [b.unit_count(0, false), int(GameData.settings.get("unit_cap", 90))]
@@ -618,8 +651,9 @@ func _process(delta: float) -> void:
 			ov.size.y = 104.0
 		else:
 			status_l.text = ""
-		cost_l.add_theme_color_override("font_color", MilTheme.AMBER if b.money[0] >= float(c["def"].get("cost", 0)) else MilTheme.BAD)
-	var info := _info_bbcode(b.sel_kind, b.sel_id) if b.sel_kind != "" else IDLE_INFO
+		cost_l.add_theme_color_override("font_color", MilTheme.GOLD if b.money[0] >= float(c["def"].get("cost", 0)) else MilTheme.BAD)
+	var info := _info_bbcode(b.sel_kind, b.sel_id) if b.sel_kind != "" else ""
+	info_panel.visible = info != ""
 	if info != _last_info:
 		_last_info = info
 		info_label.text = info
@@ -657,7 +691,7 @@ func toast(msg: String) -> void:
 		return
 	toast_label.text = msg
 	toast_label.reset_size()
-	toast_label.position = Vector2((1280.0 - toast_label.size.x) * 0.5, 526.0)
+	toast_label.position = Vector2((1280.0 - toast_label.size.x) * 0.5, 506.0 if tray_open else 616.0)
 	toast_t = 2.6
 	toast_label.modulate.a = 1.0
 	if msg.ends_with("destroyed!") and feed != null:
@@ -768,7 +802,7 @@ func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and not menu_open:
 		var mb := event as InputEventMouseButton
 		if mb.pressed and (mb.button_index == MOUSE_BUTTON_WHEEL_UP or mb.button_index == MOUSE_BUTTON_WHEEL_DOWN):
-			if card_scroll.get_global_rect().has_point(mb.position):
+			if tray_open and card_scroll.get_global_rect().has_point(mb.position):
 				_scroll_cards(-160 if mb.button_index == MOUSE_BUTTON_WHEEL_UP else 160)
 				get_viewport().set_input_as_handled()
 		return
@@ -804,6 +838,9 @@ func _input(event: InputEvent) -> void:
 			battle.focus_camera(battle.base_pos(0) + Vector2(520, 0))
 		KEY_END:
 			battle.focus_camera(battle.base_pos(1) - Vector2(520, 0))
+		KEY_B:
+			if not menu_open and not battle.over:
+				_set_tray(not tray_open)
 		KEY_Q:
 			if not menu_open:
 				_tab_step(-1)
