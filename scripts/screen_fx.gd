@@ -32,7 +32,7 @@ void fragment() {
 """
 
 
-func _init() -> void:
+func _init(grade: Dictionary = {}) -> void:
 	layer = 5
 	var rect := ColorRect.new()
 	rect.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -41,5 +41,12 @@ func _init() -> void:
 	sh.code = SHADER
 	var mat := ShaderMaterial.new()
 	mat.shader = sh
+	# per-map colour grade (data/maps/<id>.json -> biome.grade)
+	mat.set_shader_parameter("sat", float(grade.get("sat", 0.74)))
+	mat.set_shader_parameter("contrast", float(grade.get("contrast", 1.10)))
+	mat.set_shader_parameter("vignette", float(grade.get("vignette", 0.62)))
+	mat.set_shader_parameter("grain", float(grade.get("grain", 0.05)))
+	var tint_a: Array = grade.get("tint", [1.02, 1.0, 0.93])
+	mat.set_shader_parameter("tint", Vector3(float(tint_a[0]), float(tint_a[1]), float(tint_a[2])))
 	rect.material = mat
 	add_child(rect)

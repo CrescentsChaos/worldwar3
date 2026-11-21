@@ -41,6 +41,7 @@ var speed_buttons: Array = []
 var radio_panel: RadioPanel
 var prep_panel: PrepPanel
 var asset_manager: Control
+var asset_guide: Control
 
 var cards: Dictionary = {}          # "kind:id" -> {button, overlay, label, def, kind, id}
 var current_tab := "infantry"
@@ -92,6 +93,13 @@ func show_prep(on: bool) -> void:
 		prep_panel.refresh()
 
 
+func open_asset_guide() -> void:
+	if asset_guide != null and is_instance_valid(asset_guide):
+		return
+	asset_guide = AssetGuide.new()
+	root.add_child(asset_guide)
+
+
 func open_asset_manager() -> void:
 	if asset_manager != null and is_instance_valid(asset_manager):
 		return
@@ -102,7 +110,7 @@ func open_asset_manager() -> void:
 
 # ------------------------------------------------------------------ building
 
-func _panel_style(col: Color, border: Color = Color(0, 0, 0, 0), bw: int = 0, _radius: int = 0) -> StyleBoxFlat:
+func _panel_style(col: Color, border: Color = Color(0, 0, 0, 0), bw: int = 0, _radius: int = 0) -> StyleBox:
 	return MilTheme.box(col, border, bw)
 
 
@@ -124,10 +132,13 @@ func _make_button(text: String, pos: Vector2, size: Vector2, cb: Callable, font_
 	b.size = size
 	b.focus_mode = Control.FOCUS_NONE
 	b.add_theme_font_size_override("font_size", font_size)
-	b.add_theme_stylebox_override("normal", MilTheme.box(MilTheme.PANEL, MilTheme.LINE, 1, 4, 2))
-	b.add_theme_stylebox_override("hover", MilTheme.box(MilTheme.PANEL_HI, MilTheme.AMBER_DIM, 1, 4, 2))
-	b.add_theme_stylebox_override("pressed", MilTheme.box(MilTheme.AMBER, MilTheme.AMBER, 1, 4, 2))
-	b.add_theme_stylebox_override("hover_pressed", MilTheme.box(MilTheme.AMBER, MilTheme.AMBER, 1, 4, 2))
+	var none := Color(0, 0, 0, 0)
+	b.add_theme_stylebox_override("normal", BASkin.style(MilTheme.PANEL, MilTheme.LINE, none, 4, 1, 4, 2, "ui_button"))
+	b.add_theme_stylebox_override("hover", BASkin.style(MilTheme.PANEL_HI, MilTheme.AMBER, none, 4, 1, 4, 2, "ui_button_hover"))
+	b.add_theme_stylebox_override("pressed", BASkin.style(MilTheme.AMBER, MilTheme.AMBER, none, 4, 1, 4, 2, "ui_button_pressed"))
+	b.add_theme_stylebox_override("hover_pressed", BASkin.style(MilTheme.AMBER, MilTheme.AMBER, none, 4, 1, 4, 2, "ui_button_pressed"))
+	b.add_theme_color_override("font_pressed_color", MilTheme.BG_SOLID)
+	b.add_theme_color_override("font_hover_pressed_color", MilTheme.BG_SOLID)
 	b.pressed.connect(cb)
 	return b
 
@@ -273,6 +284,12 @@ func _build_bottom_panel() -> void:
 	sel_panel.size = Vector2(296, 172)
 	root.add_child(sel_panel)
 	# --- overview map (click / drag to move the camera), bottom left
+	var map_frame := Panel.new()
+	map_frame.position = Vector2(6, 600)
+	map_frame.size = Vector2(292, 114)
+	map_frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	map_frame.add_theme_stylebox_override("panel", MilTheme.glass(MilTheme.BG, MilTheme.LINE, 10))
+	root.add_child(map_frame)
 	minimap = Minimap.new()
 	minimap.battle = battle
 	minimap.position = Vector2(12, 608)
@@ -355,7 +372,7 @@ func _build_overlays() -> void:
 	var psb := MilTheme.box(Color(0.035, 0.04, 0.043, 0.97), MilTheme.LINE_HI, 1, 18, 14)
 	pause_panel.add_theme_stylebox_override("panel", psb)
 	pause_panel.position = Vector2(400, 70)
-	pause_panel.size = Vector2(480, 440)
+	pause_panel.size = Vector2(480, 480)
 	pause_panel.visible = false
 	root.add_child(pause_panel)
 	pause_frame = BracketFrame.new(MilTheme.AMBER, 16.0, 2.0)
@@ -387,7 +404,8 @@ func _build_overlays() -> void:
 		vb.add_child(b2)
 		slot_buttons["load:" + s] = b2
 	vb.add_child(_vbtn("Reload sprites (F10)", func(): battle.reload_sprites()))
-	vb.add_child(_vbtn("Asset manager (replace sprites / sounds / radio / tiles)", open_asset_manager))
+	vb.add_child(_vbtn("Asset manager (replace sprites / sounds / radio / tiles / UI)", open_asset_manager))
+	vb.add_child(_vbtn("Asset guide (how to replace anything)", open_asset_guide))
 	vb.add_child(_vbtn("Abort mission - main menu", _to_menu))
 
 	# Game over
@@ -469,21 +487,35 @@ func _make_card(kind: String, id: String, d: Dictionary, hotkey: int) -> Button:
 	b.pressed.connect(func(): _select(kind, id))
 	b.mouse_entered.connect(_on_card_hover.bind(kind + ":" + id, true))
 	b.mouse_exited.connect(_on_card_hover.bind(kind + ":" + id, false))
+	# picture plate (dark, with a team-coloured top strip)
 	var back := ColorRect.new()
-	back.color = Color(0, 0, 0, 0.22)
-	back.position = Vector2(3, 3)
-	back.size = Vector2(144, 58)
+	back.color = Color(0, 0, 0, 0.34)
+	back.position = Vector2(4, 4)
+	back.size = Vector2(142, 56)
 	back.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	b.add_child(back)
+	var strip := ColorRect.new()
+	strip.color = Color(SpriteLib.team_color(0), 0.85)
+	strip.position = Vector2(4, 4)
+	strip.size = Vector2(142, 2)
+	strip.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	b.add_child(strip)
 	var icon := TextureRect.new()
 	icon.texture = SpriteLib.get_texture(str(d.get("sprite", id)), str(d.get("shape", "box")))
 	icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	icon.position = Vector2(30, 5)
-	icon.size = Vector2(90, 54)
+	icon.position = Vector2(30, 7)
+	icon.size = Vector2(90, 52)
 	icon.modulate = SpriteLib.team_tint(0)
 	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	b.add_child(icon)
+	# bottom band: name + price tag
+	var band := ColorRect.new()
+	band.color = Color(0, 0, 0, 0.42)
+	band.position = Vector2(4, 62)
+	band.size = Vector2(142, 38)
+	band.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	b.add_child(band)
 	var ov := ColorRect.new()
 	ov.color = Color(0, 0, 0, 0.66)
 	ov.position = Vector2.ZERO
@@ -492,21 +524,35 @@ func _make_card(kind: String, id: String, d: Dictionary, hotkey: int) -> Button:
 	ov.visible = false
 	b.add_child(ov)
 	if hotkey <= 9:
-		var hk := MilTheme.caption(str(hotkey), Vector2(7, 4), Vector2(16, 14), MilTheme.DIM, 11)
+		var hkb := ColorRect.new()
+		hkb.color = Color(0, 0, 0, 0.6)
+		hkb.position = Vector2(4, 6)
+		hkb.size = Vector2(16, 15)
+		hkb.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		b.add_child(hkb)
+		var hk := MilTheme.caption(str(hotkey), Vector2(4, 6), Vector2(16, 14), MilTheme.AMBER, 11)
+		hk.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		b.add_child(hk)
 	var nm := Label.new()
-	nm.text = str(d.get("name", id))
-	nm.position = Vector2(7, 62)
-	nm.size = Vector2(138, 18)
+	nm.text = str(d.get("name", id)).to_upper()
+	nm.position = Vector2(8, 63)
+	nm.size = Vector2(136, 18)
 	nm.clip_text = true
 	nm.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-	nm.add_theme_font_size_override("font_size", 12)
+	nm.add_theme_font_size_override("font_size", 11)
+	nm.add_theme_font_override("font", MilTheme.font_bold())
 	nm.add_theme_color_override("font_color", MilTheme.TEXT)
 	nm.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	b.add_child(nm)
-	var cost := MilTheme.readout("$%d" % int(d.get("cost", 0)), Vector2(8, 80), Vector2(70, 20), MilTheme.GOLD, 14)
+	var tag := ColorRect.new()
+	tag.color = Color(MilTheme.AMBER_DIM, 0.55)
+	tag.position = Vector2(4, 82)
+	tag.size = Vector2(62, 18)
+	tag.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	b.add_child(tag)
+	var cost := MilTheme.readout("$%d" % int(d.get("cost", 0)), Vector2(8, 82), Vector2(58, 18), MilTheme.GOLD, 13)
 	b.add_child(cost)
-	var status := MilTheme.caption("", Vector2(62, 83), Vector2(84, 16), MilTheme.WARN, 9)
+	var status := MilTheme.caption("", Vector2(66, 84), Vector2(80, 16), MilTheme.WARN, 9)
 	status.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	status.clip_text = true
 	b.add_child(status)
@@ -549,16 +595,18 @@ func _refresh_card_styles(force: bool = false) -> void:
 		var c: Dictionary = cards[key]
 		var selected: bool = battle.sel_kind == c["kind"] and battle.sel_id == c["id"]
 		var b: Button = c["button"]
+		var none := Color(0, 0, 0, 0)
 		var border := MilTheme.AMBER if selected else MilTheme.LINE
-		var bg := Color(0.10, 0.20, 0.25, 0.96) if selected else MilTheme.PANEL
-		b.add_theme_stylebox_override("normal", MilTheme.box(bg, border, 2 if selected else 1, 0, 0, 10))
-		b.add_theme_stylebox_override("hover", MilTheme.box(bg.lightened(0.08), MilTheme.AMBER if selected else MilTheme.AMBER_DIM, 1, 0, 0, 10))
-		b.add_theme_stylebox_override("pressed", MilTheme.box(bg.lightened(0.16), MilTheme.AMBER, 2, 0, 0, 10))
+		var bg := Color(0.17, 0.13, 0.07, 0.97) if selected else MilTheme.PANEL
+		var skin := "ui_card_selected" if selected else "ui_card"
+		b.add_theme_stylebox_override("normal", BASkin.style(bg, border, none, 6, 2 if selected else 1, 0, 0, skin))
+		b.add_theme_stylebox_override("hover", BASkin.style(bg.lightened(0.08), MilTheme.AMBER if selected else MilTheme.AMBER_DIM, none, 6, 1, 0, 0, skin))
+		b.add_theme_stylebox_override("pressed", BASkin.style(bg.lightened(0.16), MilTheme.AMBER, none, 6, 2, 0, 0, "ui_card_selected"))
 		var fr: BracketFrame = c["sel"]
 		fr.visible = selected
 
 
-const IDLE_INFO := "[color=#45c7e0][b]COMMAND[/b][/color]\n[color=#8a948f]Unit cards queue production at your Barracks / Factory / Airbase / Port (Shift = x5).\nDrag to select. RMB move, Ctrl+RMB or T attack-move, X hold, F rally point, C select all.\nDefenses and buildings: pick a card, then click the map.[/color]"
+const IDLE_INFO := "[color=#f5991f][b]COMMAND[/b][/color]\n[color=#8a948f]Unit cards queue production at your Barracks / Factory / Airbase / Port (Shift = x5).\nDrag to select. RMB move, Ctrl+RMB or T attack-move, X hold, F rally point, C select all.\nDefenses and buildings: pick a card, then click the map.[/color]"
 
 
 func _on_card_hover(key: String, inside: bool) -> void:
@@ -573,7 +621,7 @@ func _info_bbcode(kind: String, id: String) -> String:
 	var d := GameData.def_for(0, kind, id)
 	if d.is_empty():
 		return ""
-	var t := "[b][color=#45c7e0]%s[/color][/b]   [color=#45c7e0]$%d[/color]\n" % [str(d.get("name", id)), int(float(d.get("cost", 0)))]
+	var t := "[b][color=#f5991f]%s[/color][/b]   [color=#f5991f]$%d[/color]\n" % [str(d.get("name", id)), int(float(d.get("cost", 0)))]
 	var cls := str(d.get("class", ""))
 	if cls != "":
 		t += "[color=#7f8a86]%s[/color]\n" % cls

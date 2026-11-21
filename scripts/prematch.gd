@@ -3,7 +3,7 @@ extends Control
 ## All content lives in data/units.json -> "factions".
 
 const FACTION_ORDER := ["wehrmacht", "red_army", "ija", "british_army", "us_army", "french_army", "italian_army", "russian_gf"]
-const GOLD := Color(0.27, 0.78, 0.88)
+const GOLD := Color(0.96, 0.60, 0.14)
 
 var _pf := "us_army"
 var _ps := ""
@@ -253,7 +253,7 @@ func _income_lines(src: Dictionary) -> Array:
 func _refresh_faction_text() -> void:
 	var f: Dictionary = GameData.factions[_pf]
 	var t := "[font_size=24][b]%s[/b][/font_size]\n" % str(f.get("name", _pf))
-	t += "[color=#45c7e0]%s[/color]  -  %s\n\n" % [str(f.get("tagline", "")), str(f.get("era", ""))]
+	t += "[color=#f5991f]%s[/color]  -  %s\n\n" % [str(f.get("tagline", "")), str(f.get("era", ""))]
 	t += str(f.get("desc", "")) + "\n\n"
 	t += "[b]Army perks[/b]\n"
 	var perks: Array = GameData.describe_mods(f.get("mods", []))

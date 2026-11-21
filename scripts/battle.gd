@@ -106,6 +106,8 @@ func _ready() -> void:
 	_build_sectors(mdef)
 	Sfx.play_music("music_battle")
 	Sfx.play_ambient("ambient_battle")
+	var biome_def: Dictionary = mdef.get("biome", {})
+	TileLib.set_map(map_id, biome_def)
 	terrain = TerrainLayer.new()
 	add_child(terrain)
 	terrain.setup_terrain(mdef)
@@ -133,7 +135,8 @@ func _ready() -> void:
 	cam.zoom = Vector2(z0, z0)
 	cam.position = Vector2(820.0, 520.0)
 	cam.make_current()
-	add_child(ScreenFX.new())
+	var grade_def: Dictionary = biome_def.get("grade", {})
+	add_child(ScreenFX.new(grade_def))
 	hud = HUD.new()
 	hud.battle = self
 	add_child(hud)
@@ -1205,16 +1208,28 @@ func issue_order(mode: String, target: Vector2) -> void:
 	if selected.is_empty():
 		return
 	var n := selected.size()
-	var cols := int(ceil(sqrt(float(n))))
-	var spacing := 34.0
 	var col := MilTheme.GOOD if mode == "move" else MilTheme.WARN
 	var tgt := Vector2(clampf(target.x, 20.0, float(W) - 20.0), clampf(target.y, float(Water.Y_MIN) + 10.0, float(Water.Y_MAX) - 10.0))
+	# slot size follows the biggest hull in the group, so tanks / ships get their own patch of ground
+	var max_r := 12.0
+	var ships := false
+	for cand in selected:
+		if is_instance_valid(cand):
+			max_r = maxf(max_r, float(cand.radius))
+			if cand.domain == "water" or cand.domain == "sub":
+				ships = true
+	var spacing := maxf(34.0, max_r * 2.3)
+	var cols := int(ceil(sqrt(float(n))))
+	if ships:
+		cols = maxi(1, mini(cols, 3))
+		spacing = maxf(spacing, max_r * 2.6)
+	var rows := int(ceil(float(n) / float(cols)))
 	for i in n:
 		var candidate = selected[i]
 		if not is_instance_valid(candidate):
 			continue
 		var c: Combatant = candidate
-		var off := Vector2(float(i % cols) - float(cols - 1) * 0.5, float(i / cols) - float(n / cols) * 0.5) * spacing
+		var off := Vector2(float(i % cols) - float(cols - 1) * 0.5, float(i / cols) - float(rows - 1) * 0.5) * spacing
 		var p := tgt + off
 		if c.domain == "water" or c.domain == "sub":
 			if Water.kind_at(p) < c.draft:
@@ -2678,6 +2693,9 @@ func load_slot(slot: String) -> bool:
 
 func reload_sprites() -> void:
 	SpriteLib.clear_cache()
+	MilTheme.reload_fonts()
+	TileLib.clear_cache()
+	terrain.setup_terrain(GameData.map_def())     # picks up new tiles / backgrounds / biome edits
 	for n in get_tree().get_nodes_in_group("combatants"):
 		var c := n as Combatant
 		if c != null:

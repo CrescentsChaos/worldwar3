@@ -20,8 +20,11 @@ const CORE_AUDIO := [
 ]
 const CORE_VFX := ["explosion_small", "explosion_medium", "explosion_large", "explosion_nuke", "muzzle_flash", "hit_spark",
 	"water_splash", "deploy_dust", "smoke_puff"]
-const TILES := ["ground", "water_deep", "water_shallow", "river", "road", "bridge", "crater", "tree"]
-const UI_IMAGES := [["background", "Battlefield background"], ["ui_menu_bg", "Main menu background"], ["ui_cursor", "Mouse cursor"]]
+const TILES := ["ground", "water_deep", "water_shallow", "river", "river_bank", "road", "bridge", "crater", "tree", "rock"]
+const UI_IMAGES := [["background", "Battlefield background (all maps)"], ["ui_menu_bg", "Main menu background"], ["ui_logo", "Title logo"],
+	["ui_cursor", "Mouse cursor"], ["ui_panel", "Panel skin (9-slice)"], ["ui_panel_dark", "Inset panel skin (9-slice)"],
+	["ui_button", "Button skin (9-slice)"], ["ui_button_hover", "Button skin, hover"], ["ui_button_pressed", "Button skin, pressed"],
+	["ui_card", "Unit card skin (9-slice)"], ["ui_card_selected", "Unit card skin, selected"]]
 const FONTS := [["font_ui", "Interface font (.ttf / .otf)"], ["font_bold", "Bold font"], ["font_mono", "Monospace font"]]
 
 
@@ -70,10 +73,15 @@ static func entries(cat: String) -> Array:
 					_add(out, seen, "deploy_" + id, "deploy: " + nm2)
 		"tiles":
 			for t in TILES:
-				_add(out, seen, t, "repeating map tile")
+				_add(out, seen, t, "repeating map tile (all maps)")
+			for mid in GameData.map_ids():
+				for t2 in ["ground", "water_deep", "water_shallow", "river", "river_bank", "tree", "rock"]:
+					_add(out, seen, "%s_%s" % [mid, t2], "%s only: %s" % [mid, t2])
 		"ui":
 			for u in UI_IMAGES:
 				_add(out, seen, u[0], u[1])
+			for mid2 in GameData.map_ids():
+				_add(out, seen, "background_" + str(mid2), "Battlefield picture: " + str(mid2) + " only")
 		"fonts":
 			for f in FONTS:
 				_add(out, seen, f[0], f[1])

@@ -73,6 +73,10 @@ static func ensure_built() -> void:
 		for by in BRIDGE_YS:
 			bridge_rects.append(Rect2(RIVER_X - 54.0, float(by) - 22.0, 108.0, 44.0))
 	else:
+		var bl0: Array = cfg.get("bridges", [])
+		for b0 in bl0:
+			var ba0: Array = b0
+			bridge_rects.append(Rect2(float(ba0[0]), float(ba0[1]), float(ba0[2]), float(ba0[3])))
 		var wl: Array = cfg.get("waterways", [])
 		for ww in wl:
 			var wd: Dictionary = ww
@@ -82,15 +86,57 @@ static func ensure_built() -> void:
 				var qa: Array = q
 				pts.append(Vector2(float(qa[0]), float(qa[1])))
 			if pts.size() >= 2:
-				waterways.append([pts, float(wd.get("w", 40.0)), int(wd.get("kind", 1))])
-		var bl: Array = cfg.get("bridges", [])
-		for b in bl:
-			var ba: Array = b
-			bridge_rects.append(Rect2(float(ba[0]), float(ba[1]), float(ba[2]), float(ba[3])))
+				var wv := float(wd.get("w", 40.0))
+				pts = _meander(pts, wv, int(cfg.get("seed", 1)) + waterways.size() * 31, float(cfg.get("meander", 1.0)))
+				waterways.append([pts, wv, int(wd.get("kind", 1))])
 	for w in waterways:
 		_stamp(w[0], float(w[1]) * 0.5, int(w[2]))
 	for r in bridge_rects:
 		_mark_bridge(r)
+
+
+## Rivers in the map files are straight or only gently bent. This adds natural bends (deterministic per map
+## seed) that fade to nothing at every bridge, so bridges, roads and capture zones stay exactly where they are.
+## The water grid is stamped from the bent line, so movement, pathfinding and the art all agree.
+## Set "meander": 0 in the map file to keep the original line, or a bigger number for wilder rivers.
+static func _meander(pts: PackedVector2Array, w: float, seed_v: int, strength: float) -> PackedVector2Array:
+	if strength <= 0.0 or w > 150.0 or w < 28.0:
+		return pts
+	var dense := PackedVector2Array()
+	for i in range(pts.size() - 1):
+		var a := pts[i]
+		var b := pts[i + 1]
+		var n := maxi(1, int(a.distance_to(b) / 20.0))
+		for s in n:
+			dense.append(a.lerp(b, float(s) / float(n)))
+	dense.append(pts[pts.size() - 1])
+	var curvy := pts.size() > 6
+	var amp := clampf(w * 0.55, 10.0, 44.0) * strength * (0.4 if curvy else 1.0)
+	var rng := RandomNumberGenerator.new()
+	rng.seed = seed_v
+	var ph1 := rng.randf() * TAU
+	var ph2 := rng.randf() * TAU
+	var out := PackedVector2Array()
+	var run := 0.0
+	var last := dense.size() - 1
+	for i in dense.size():
+		var p := dense[i]
+		if i > 0:
+			run += p.distance_to(dense[i - 1])
+		var tdir := dense[mini(i + 1, last)] - dense[maxi(i - 1, 0)]
+		if tdir.length() < 0.001:
+			out.append(p)
+			continue
+		var nrm := tdir.normalized().orthogonal()
+		var env := 1.0
+		for r in bridge_rects:
+			var rr: Rect2 = r
+			var dx := maxf(maxf(rr.position.x - p.x, p.x - rr.end.x), 0.0)
+			var dy := maxf(maxf(rr.position.y - p.y, p.y - rr.end.y), 0.0)
+			env = minf(env, smoothstep(10.0, 105.0, sqrt(dx * dx + dy * dy)))
+		var off := amp * (0.7 * sin(run * 0.0185 + ph1) + 0.45 * sin(run * 0.043 + ph2)) * env
+		out.append(p + nrm * off)
+	return out
 
 
 ## Distance from the map's centre line to the coast at world x (the sea is beyond it).
@@ -392,12 +438,18 @@ static func _smooth(pts: Array, level: int) -> PackedVector2Array:
 
 static func minimap_image(w: int, h: int) -> Image:
 	ensure_built()
+	var ground_color := Color(0.10, 0.17, 0.09, 1.0)
+	var pal: Dictionary = cfg.get("palette_def", {})
+	var ga: Variant = pal.get("ground", null)
+	if typeof(ga) == TYPE_ARRAY and (ga as Array).size() >= 3:
+		var gl: Array = ga
+		ground_color = Color(float(gl[0]) * 0.8, float(gl[1]) * 0.8, float(gl[2]) * 0.8, 1.0)
 	var img := Image.create(w, h, false, Image.FORMAT_RGBA8)
 	for y in h:
 		for x in w:
 			var p := Vector2((float(x) + 0.5) / float(w) * float(W),
 				float(Y_MIN) + (float(y) + 0.5) / float(h) * float(Y_MAX - Y_MIN))
-			var col := Color(0.10, 0.17, 0.09, 1.0)
+			var col := ground_color
 			match kind_at(p):
 				3: col = Color(0.05, 0.15, 0.29, 1.0)
 				2: col = Color(0.10, 0.26, 0.44, 1.0)

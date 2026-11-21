@@ -103,6 +103,11 @@ var fl_t := 0.0
 var parked := false             # landed at an airbase / carrier, rearming (hidden, cannot be targeted)
 var rearm_left := 0.0
 var bank := 0.0
+var _nb: Array = []             # nearby things this unit must not overlap (refreshed ~5x per second)
+var _nb_t := 0.0
+var jam_t := 0.0                # seconds spent unable to make progress (blocked by other units / buildings)
+var _ship_ready := false
+var _ship_moved := false
 var shadow: Sprite2D
 var _base_scale := Vector2.ONE
 var _tint := Color.WHITE
@@ -180,6 +185,7 @@ func set_order(o: String, p: Vector2 = Vector2.ZERO) -> void:
 	if not can_take_orders():
 		return
 	order = o
+	jam_t = 0.0
 	board_target = null
 	drop_set = false
 	resupplying = false
@@ -267,6 +273,7 @@ func _process(delta: float) -> void:
 		_acquire()
 		_compute_push()
 	_act(delta)
+	_traffic(delta)
 	_tick_special(delta)
 	_tick_abilities(delta)
 	_tick_logistics(delta)
@@ -283,6 +290,8 @@ func _process(delta: float) -> void:
 			if is_fixed_wing():
 				sprite.rotation = heading            # the flight model already turns smoothly
 				sprite.scale = Vector2(_base_scale.x, _base_scale.y * (1.0 - 0.24 * absf(bank)))
+			elif _ship_ready and (domain == "water" or domain == "sub"):
+				sprite.rotation = heading             # ships turn through their own heading (see _ship_move)
 			else:
 				sprite.rotation = lerp_angle(sprite.rotation, desired_angle, minf(1.0, delta * 9.0))
 		if shadow != null:
@@ -519,7 +528,8 @@ func _support_goal() -> Vector2:
 
 
 func _compute_push() -> void:
-	push = Vector2.ZERO
+	push = Vector2.ZERO          # replaced by _traffic(): overlap resolution that also works while standing still
+	return
 	if _speed() <= 0.0:
 		return
 	for n in battle.near_team(team, position, 180.0):
@@ -576,7 +586,7 @@ func _act(delta: float) -> void:
 				_try_fire()
 		return
 	if order == "move" and speed > 0.0:
-		if position.distance_to(order_pos) < 22.0:
+		if position.distance_to(order_pos) < _arrive_radius(22.0):
 			order = "hold"
 			if drop_set:
 				drop_set = false
@@ -598,7 +608,7 @@ func _act(delta: float) -> void:
 		target = null
 		if order == "hold":
 			return
-		if order == "attack_move" and position.distance_to(order_pos) < 28.0:
+		if order == "attack_move" and position.distance_to(order_pos) < _arrive_radius(28.0):
 			order = "hold"
 			return
 		if ((def.has("heal") or def.has("aura")) and bool(def.get("follow", false))) or is_logistics() or is_transport():
@@ -738,6 +748,9 @@ func _move_toward(pos: Vector2, speed: float, delta: float) -> void:
 	var dir := goal - position
 	if dir.length() < 2.0:
 		return
+	if domain == "water" or domain == "sub":
+		_ship_move(goal, speed, delta)
+		return
 	dir = dir.normalized()
 	desired_angle = dir.angle()
 	vel = dir * speed * _terrain_speed() * (slow_m if slow_t > 0.0 else 1.0) + push
@@ -775,7 +788,10 @@ func _steer(goal: Vector2, delta: float) -> Vector2:
 	if path.size() == 0:
 		return goal
 	var last := path.size() - 1
-	while path_i < last and position.distance_to(path[path_i]) < 20.0:
+	var tol := 20.0
+	if domain == "water" or domain == "sub":
+		tol = maxf(20.0, radius * 0.9)          # big ships cannot hit a waypoint exactly: cut the corner
+	while path_i < last and position.distance_to(path[path_i]) < tol:
 		path_i += 1
 	if level >= 4 and path_i >= last and position.distance_to(path[last]) < 20.0:
 		return goal
@@ -821,7 +837,8 @@ func _can_stand(p: Vector2) -> bool:
 
 
 ## Moves by `step`, sliding along shores and river banks instead of entering forbidden terrain.
-func _apply_move(step: Vector2) -> void:
+func _apply_move(step: Vector2, track: bool = true) -> void:
+	var before := position
 	var np := position + step
 	if not _can_stand(position) or _can_stand(np):
 		position = np
@@ -830,6 +847,181 @@ func _apply_move(step: Vector2) -> void:
 	elif _can_stand(Vector2(position.x, np.y)):
 		position = Vector2(position.x, np.y)
 	_clamp_to_field()
+	if track:
+		var want := step.length()
+		var dt := get_process_delta_time()
+		if want > 0.01 and position.distance_to(before) < want * 0.3:
+			jam_t += dt
+		else:
+			jam_t = maxf(0.0, jam_t - dt * 2.0)
+
+
+## Radius around an order point that counts as "arrived": bigger for big hulls, and much bigger while the
+## unit has been jammed against its neighbours for a while (so a column does not shove forever at one spot).
+func _arrive_radius(base: float) -> float:
+	var r := base + radius * (0.9 if (domain == "water" or domain == "sub") else 0.5)
+	if jam_t > 1.2:
+		r = maxf(r, 150.0 + radius * 2.0)
+	return r
+
+
+# ------------------------------------------------------------ traffic (units never stack)
+
+## 1 = land unit that walks / drives, 2 = ship or submarine, 0 = does not take part.
+func _traffic_kind() -> int:
+	if kind != "unit" or parked or _speed() <= 0.0:
+		return 0
+	if domain == "water" or domain == "sub":
+		return 2
+	if layer == "ground" and domain == "land":
+		return 1
+	return 0
+
+
+func _refresh_traffic() -> void:
+	_nb.clear()
+	var tk := _traffic_kind()
+	for t in 2:
+		for n in battle.near_team(t, position, radius + 260.0):
+			var c := n as Combatant
+			if c == null or c == self or c.dead or c.parked or c.is_queued_for_deletion():
+				continue
+			if tk == 1:
+				if c.layer != "ground" or c.domain != "land" or c.kind == "strategic":
+					continue
+				if c.kind == "structure" and c.def.has("trap"):
+					continue              # mines / wire / dragon's teeth are driven over (they slow, not block)
+			else:
+				if c.kind != "unit" or c.domain != domain:
+					continue
+			_nb.append(c)
+
+
+## Keeps units from sitting on top of each other (every team, every order, also while standing still) and
+## keeps vehicles out of buildings. Heavier hulls give way less; units that are parked hold their ground.
+func _traffic(delta: float) -> void:
+	var tk := _traffic_kind()
+	if tk == 0 or battle == null:
+		return
+	if tk == 2:
+		_ship_coast(delta)
+	_nb_t -= delta
+	if _nb_t <= 0.0:
+		_nb_t = 0.16 + randf() * 0.1
+		_refresh_traffic()
+	if _nb.is_empty():
+		return
+	var soft := Vector2.ZERO
+	var hardv := Vector2.ZERO
+	var moving := vel.length_squared() > 4.0
+	var my_m := maxf(radius * radius, 1.0)
+	if not moving:
+		my_m *= 2.5
+	var relax := minf(1.0, delta * 9.0)
+	for cn in _nb:
+		if not is_instance_valid(cn):
+			continue
+		var c := cn as Combatant
+		if c == null or c.dead:
+			continue
+		if board_target == c or c.board_target == self:
+			continue
+		var off: Vector2 = position - c.position
+		var d := off.length()
+		var building: bool = c.kind != "unit"
+		var min_d: float
+		if building:
+			if cls == "infantry":
+				continue                  # soldiers walk through / past buildings
+			min_d = radius + c.radius * 0.8
+		else:
+			min_d = (radius + c.radius) * 0.92
+		if d >= min_d:
+			continue
+		if d < 0.05:
+			off = Vector2.from_angle(float(get_instance_id() % 628) / 100.0)
+			d = 1.0
+		var n := off / d
+		var over := min_d - d
+		if building:
+			hardv += n * over
+			if moving:
+				var tang := n.orthogonal()
+				var side := 1.0 if vel.dot(tang) >= 0.0 else -1.0
+				hardv += tang * side * minf(over, 14.0) * 0.5
+		else:
+			var other_m := maxf(c.radius * c.radius, 1.0)
+			if c.vel.length_squared() < 4.0:
+				other_m *= 2.5
+			soft += n * over * (other_m / (my_m + other_m)) * relax
+	if soft.length() > 70.0 * delta:
+		soft = soft.normalized() * 70.0 * delta
+	var adj := soft + hardv
+	if adj.length_squared() > 0.0004:
+		_apply_move(adj, false)
+
+
+## Ships: heading, speed and turn rate are real. A carrier needs a wide arc and a long run to turn or stop.
+func _ship_turn_rate() -> float:
+	var hull := maxf(float(def.get("size", 60)) * GameData.sprite_scale(), 30.0)
+	var trate := float(def.get("turn_rate", 0.0))       # optional data override (radians per second at full speed)
+	if trate <= 0.0:
+		trate = clampf(1.8 * pow(40.0 / hull, 0.8), 0.14, 2.2)
+	return trate
+
+
+func _ship_accel_time() -> float:
+	var hull := maxf(float(def.get("size", 60)) * GameData.sprite_scale(), 30.0)
+	return float(def.get("accel_time", clampf(hull / 40.0, 1.2, 14.0)))
+
+
+func _ship_init() -> void:
+	_ship_ready = true
+	fspeed = 0.0
+	heading = sprite.rotation if sprite != null else desired_angle
+
+
+func _ship_move(goal: Vector2, speed: float, delta: float) -> void:
+	if not _ship_ready:
+		_ship_init()
+	_ship_moved = true
+	var vmax := maxf(speed * _terrain_speed() * (slow_m if slow_t > 0.0 else 1.0), 1.0)
+	var to_goal := goal - position
+	var err := angle_difference(heading, to_goal.angle())
+	var frac := clampf(fspeed / vmax, 0.0, 1.0)
+	var rate := _ship_turn_rate() * (0.35 + 0.65 * frac)
+	heading = wrapf(heading + clampf(err, -rate * delta, rate * delta), -PI, PI)
+	# target speed: slow while pointing the wrong way, brake in time for the destination
+	var aligned := maxf(0.0, cos(err))
+	var target_v := vmax * lerpf(0.25, 1.0, aligned)
+	var acc := vmax / _ship_accel_time()
+	var stop_d := fspeed * fspeed / (2.0 * acc * 1.3) + radius * 0.3
+	if to_goal.length() < stop_d and order == "move":
+		target_v = 0.0
+	if fspeed < target_v:
+		fspeed = minf(target_v, fspeed + acc * delta)
+	else:
+		fspeed = maxf(target_v, fspeed - acc * 1.3 * delta)
+	desired_angle = heading
+	vel = Vector2.from_angle(heading) * fspeed
+	var before := position
+	_apply_move(vel * delta)
+	if fspeed > 1.0 and position.distance_to(before) < fspeed * delta * 0.3:
+		fspeed *= 1.0 - minf(1.0, delta * 2.0)          # scraping a shore: lose way
+
+
+## A ship that was not steered this frame keeps gliding and slows down gradually instead of stopping dead.
+func _ship_coast(delta: float) -> void:
+	if _ship_moved:
+		_ship_moved = false
+		return
+	if not _ship_ready or fspeed < 0.5:
+		fspeed = 0.0
+		return
+	var vmax := maxf(_speed(), 1.0)
+	fspeed = maxf(0.0, fspeed - vmax / _ship_accel_time() * 1.6 * delta)
+	vel = Vector2.from_angle(heading) * fspeed
+	_apply_move(vel * delta, false)
 
 
 func _strafe(delta: float, speed: float) -> void:

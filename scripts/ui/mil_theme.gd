@@ -1,32 +1,32 @@
 class_name MilTheme
 extends RefCounted
-## One place for the whole game's look: a dark, desaturated "command console" palette with a single
-## amber accent, sharp corners, thin lines and a condensed industrial font. Every UI root calls
-## `MilTheme.theme()` and assigns it to its top-level Control so buttons, lists, bars... all match.
+## One place for the whole game's look (v8 "Broken Arrow" restyle): dark olive-graphite panels with cut corners,
+## thin hard lines and ONE warm orange accent, blue / red for the two sides, a condensed military font.
+## Every UI root calls `MilTheme.theme()`; change colours here, or replace the panel images (see ba_skin.gd).
 
-const BG := Color(0.050, 0.060, 0.080, 0.84)
-const BG_SOLID := Color(0.045, 0.054, 0.072, 1.0)
-const BG_DEEP := Color(0.032, 0.040, 0.056, 0.94)
-const PANEL := Color(0.086, 0.102, 0.130, 0.90)
-const PANEL_HI := Color(0.135, 0.158, 0.200, 0.95)
-const LINE := Color(0.32, 0.38, 0.48, 0.55)
-const LINE_HI := Color(0.50, 0.60, 0.74, 0.85)
-const AMBER := Color(0.27, 0.78, 0.88)          # the single accent colour (kept under its old name for the older screens)
-const AMBER_DIM := Color(0.14, 0.44, 0.52)
+const BG := Color(0.066, 0.074, 0.070, 0.90)
+const BG_SOLID := Color(0.060, 0.068, 0.064, 1.0)
+const BG_DEEP := Color(0.040, 0.046, 0.044, 0.95)
+const PANEL := Color(0.098, 0.110, 0.102, 0.94)
+const PANEL_HI := Color(0.165, 0.180, 0.160, 0.97)
+const LINE := Color(0.30, 0.33, 0.28, 0.80)
+const LINE_HI := Color(0.56, 0.59, 0.46, 0.95)
+const AMBER := Color(0.96, 0.60, 0.14)          # the single accent colour (name kept for the older screens)
+const AMBER_DIM := Color(0.58, 0.36, 0.10)
 const ACCENT := AMBER
-const GOLD := Color(1.0, 0.80, 0.30)            # money
-const TEXT := Color(0.91, 0.93, 0.96)
-const DIM := Color(0.58, 0.64, 0.72)
-const FRIEND := Color(0.36, 0.62, 0.95)
-const ENEMY := Color(0.95, 0.35, 0.32)
-const GOOD := Color(0.42, 0.86, 0.55)
+const GOLD := Color(1.0, 0.82, 0.36)            # money
+const TEXT := Color(0.91, 0.92, 0.87)
+const DIM := Color(0.60, 0.63, 0.55)
+const FRIEND := Color(0.30, 0.60, 0.95)
+const ENEMY := Color(0.93, 0.30, 0.25)
+const GOOD := Color(0.52, 0.84, 0.36)
 const WARN := Color(1.0, 0.76, 0.28)
-const BAD := Color(0.97, 0.36, 0.33)
-const ACCENT_HEX := "#45c7e0"
+const BAD := Color(0.95, 0.33, 0.28)
+const ACCENT_HEX := "#f5991f"
 const CORNER := 8
 
-const UI_FONTS := ["Inter", "Segoe UI Variable Text", "Segoe UI", "SF Pro Text", "Helvetica Neue", "Roboto", "Noto Sans", "DejaVu Sans", "Arial"]
-const MONO_FONTS := ["JetBrains Mono", "Cascadia Mono", "Consolas", "SF Mono", "Menlo", "DejaVu Sans Mono", "Liberation Mono", "Courier New"]
+const UI_FONTS := ["Bahnschrift", "Barlow Semi Condensed", "Rajdhani", "Roboto Condensed", "Oswald", "Segoe UI Semibold", "Segoe UI", "SF Pro Text", "Helvetica Neue", "Roboto", "Noto Sans", "DejaVu Sans", "Arial"]
+const MONO_FONTS := ["Bahnschrift", "JetBrains Mono", "Cascadia Mono", "Consolas", "SF Mono", "Menlo", "DejaVu Sans Mono", "Liberation Mono", "Courier New"]
 
 static var _theme: Theme = null
 static var _font_ui: Font = null
@@ -45,11 +45,13 @@ static func _custom_font(nm: String) -> Font:
 	return null
 
 
-## Forget the cached fonts; screens opened afterwards use the new ones.
+## Forget the cached fonts and skins; screens opened afterwards use the new ones.
 static func reload_fonts() -> void:
 	_font_ui = null
 	_font_bold = null
 	_font_mono = null
+	_theme = null
+	BASkin.clear_cache()
 
 
 static func font_ui() -> Font:
@@ -83,15 +85,13 @@ static func font_mono() -> Font:
 	return _font_mono
 
 
-## Rounded flat box. `mx` / `my` are the content margins, `r` the corner radius.
-static func box(bg: Color, border: Color = Color(0, 0, 0, 0), bw: int = 0, mx: int = 0, my: int = 0, r: int = CORNER) -> StyleBoxFlat:
+## Flat rectangle (bars, small chips). Corners stay nearly square.
+static func flat(bg: Color, border: Color = Color(0, 0, 0, 0), bw: int = 0, mx: int = 0, my: int = 0, r: int = 2) -> StyleBoxFlat:
 	var sb := StyleBoxFlat.new()
 	sb.bg_color = bg
 	sb.border_color = border
 	sb.set_border_width_all(bw)
 	sb.set_corner_radius_all(r)
-	sb.anti_aliasing = true
-	sb.anti_aliasing_size = 0.8
 	sb.content_margin_left = mx
 	sb.content_margin_right = mx
 	sb.content_margin_top = my
@@ -99,18 +99,27 @@ static func box(bg: Color, border: Color = Color(0, 0, 0, 0), bw: int = 0, mx: i
 	return sb
 
 
-## Floating "glass" panel: translucent, rounded, with a soft drop shadow.
-static func glass(bg: Color = BG, border: Color = LINE, r: int = 12, mx: int = 0, my: int = 0) -> StyleBoxFlat:
-	var sb := box(bg, border, 1, mx, my, r)
-	sb.shadow_color = Color(0, 0, 0, 0.38)
-	sb.shadow_size = 8
-	sb.shadow_offset = Vector2(0, 2)
-	return sb
+## Box with cut corners (the old `radius` now only decides how big the cut is). Small radii stay flat.
+static func box(bg: Color, border: Color = Color(0, 0, 0, 0), bw: int = 0, mx: int = 0, my: int = 0, r: int = CORNER) -> StyleBox:
+	if r < 6:
+		return flat(bg, border, bw, mx, my, r)
+	return BASkin.style(bg, border, Color(0, 0, 0, 0), clampi(int(float(r) * 0.55), 3, 7), bw, mx, my, "")
 
 
-## Box whose only visible border is one edge (kept for older screens; now softly rounded).
+## Floating panel: cut corners, a thin accent line along the top edge.
+static func glass(bg: Color = BG, border: Color = LINE, r: int = 12, mx: int = 0, my: int = 0) -> StyleBox:
+	return BASkin.style(bg, border, Color(AMBER, 0.85), clampi(int(float(r) * 0.7), 5, 9), 1, mx, my, "ui_panel")
+
+
+## Panel without the accent line (lists, inset areas).
+static func inset(bg: Color = BG_DEEP, border: Color = LINE, mx: int = 0, my: int = 0) -> StyleBox:
+	return BASkin.style(bg, border, Color(0, 0, 0, 0), 6, 1, mx, my, "ui_panel_dark")
+
+
+## Box whose only visible border is one edge.
 static func edge_box(bg: Color, border: Color, side: int, bw: int, mx: int = 0, my: int = 0) -> StyleBoxFlat:
-	var sb := box(bg, border, 0, mx, my, 6)
+	var sb := flat(bg, Color(0, 0, 0, 0), 0, mx, my, 0)
+	sb.border_color = border
 	match side:
 		SIDE_TOP: sb.border_width_top = bw
 		SIDE_BOTTOM: sb.border_width_bottom = bw
@@ -120,18 +129,18 @@ static func edge_box(bg: Color, border: Color, side: int, bw: int, mx: int = 0, 
 
 
 static func _button_styles(t: Theme, type_name: String) -> void:
-	t.set_stylebox("normal", type_name, box(PANEL, LINE, 1, 14, 7, 7))
-	t.set_stylebox("hover", type_name, box(PANEL_HI, AMBER, 1, 14, 7, 7))
-	t.set_stylebox("pressed", type_name, box(Color(AMBER, 0.9), AMBER, 1, 14, 7, 7))
-	t.set_stylebox("hover_pressed", type_name, box(AMBER.lightened(0.12), AMBER, 1, 14, 7, 7))
-	t.set_stylebox("disabled", type_name, box(Color(0.06, 0.07, 0.09, 0.7), Color(0.2, 0.23, 0.28, 0.5), 1, 14, 7, 7))
+	t.set_stylebox("normal", type_name, BASkin.style(PANEL, LINE, Color(0, 0, 0, 0), 6, 1, 14, 7, "ui_button"))
+	t.set_stylebox("hover", type_name, BASkin.style(PANEL_HI, AMBER, Color(0, 0, 0, 0), 6, 1, 14, 7, "ui_button_hover"))
+	t.set_stylebox("pressed", type_name, BASkin.style(Color(AMBER, 0.95), AMBER, Color(0, 0, 0, 0), 6, 1, 14, 7, "ui_button_pressed"))
+	t.set_stylebox("hover_pressed", type_name, BASkin.style(AMBER.lightened(0.14), AMBER, Color(0, 0, 0, 0), 6, 1, 14, 7, "ui_button_pressed"))
+	t.set_stylebox("disabled", type_name, BASkin.style(Color(0.06, 0.065, 0.06, 0.75), Color(0.2, 0.22, 0.19, 0.6), Color(0, 0, 0, 0), 6, 1, 14, 7, "ui_button"))
 	t.set_stylebox("focus", type_name, StyleBoxEmpty.new())
 	t.set_color("font_color", type_name, TEXT)
 	t.set_color("font_hover_color", type_name, Color.WHITE)
 	t.set_color("font_pressed_color", type_name, BG_SOLID)
 	t.set_color("font_hover_pressed_color", type_name, BG_SOLID)
 	t.set_color("font_focus_color", type_name, TEXT)
-	t.set_color("font_disabled_color", type_name, Color(0.38, 0.42, 0.48))
+	t.set_color("font_disabled_color", type_name, Color(0.38, 0.40, 0.35))
 
 
 static func theme() -> Theme:
@@ -150,8 +159,8 @@ static func theme() -> Theme:
 	t.set_stylebox("panel", "Panel", glass(PANEL, LINE, 12))
 	t.set_stylebox("panel", "PanelContainer", glass(PANEL, LINE, 12, 14, 12))
 
-	t.set_stylebox("background", "ProgressBar", box(Color(0, 0, 0, 0.5), Color(0, 0, 0, 0), 0, 0, 0, 5))
-	t.set_stylebox("fill", "ProgressBar", box(AMBER, Color(0, 0, 0, 0), 0, 0, 0, 5))
+	t.set_stylebox("background", "ProgressBar", flat(Color(0, 0, 0, 0.55), Color(0, 0, 0, 0), 0, 0, 0, 1))
+	t.set_stylebox("fill", "ProgressBar", flat(AMBER, Color(0, 0, 0, 0), 0, 0, 0, 1))
 
 	var sep := StyleBoxLine.new()
 	sep.color = LINE
@@ -160,57 +169,71 @@ static func theme() -> Theme:
 	t.set_constant("separation", "HSeparator", 8)
 
 	# ItemList (arsenal)
-	t.set_stylebox("panel", "ItemList", box(BG_DEEP, LINE, 1, 6, 6, 8))
+	t.set_stylebox("panel", "ItemList", inset(BG_DEEP, LINE, 6, 6))
 	t.set_stylebox("focus", "ItemList", StyleBoxEmpty.new())
-	t.set_stylebox("selected", "ItemList", box(Color(AMBER, 0.28), AMBER_DIM, 1, 0, 0, 6))
-	t.set_stylebox("selected_focus", "ItemList", box(Color(AMBER, 0.34), AMBER, 1, 0, 0, 6))
-	t.set_stylebox("hovered", "ItemList", box(Color(1, 1, 1, 0.07), Color(0, 0, 0, 0), 0, 0, 0, 6))
-	t.set_stylebox("hovered_selected", "ItemList", box(Color(AMBER, 0.40), AMBER, 1, 0, 0, 6))
-	t.set_stylebox("hovered_selected_focus", "ItemList", box(Color(AMBER, 0.40), AMBER, 1, 0, 0, 6))
+	t.set_stylebox("selected", "ItemList", flat(Color(AMBER, 0.24), AMBER_DIM, 1, 0, 0, 0))
+	t.set_stylebox("selected_focus", "ItemList", flat(Color(AMBER, 0.30), AMBER, 1, 0, 0, 0))
+	t.set_stylebox("hovered", "ItemList", flat(Color(1, 1, 1, 0.07), Color(0, 0, 0, 0), 0, 0, 0, 0))
+	t.set_stylebox("hovered_selected", "ItemList", flat(Color(AMBER, 0.36), AMBER, 1, 0, 0, 0))
+	t.set_stylebox("hovered_selected_focus", "ItemList", flat(Color(AMBER, 0.36), AMBER, 1, 0, 0, 0))
 	t.set_color("font_color", "ItemList", TEXT)
 	t.set_color("font_hovered_color", "ItemList", Color.WHITE)
 	t.set_color("font_selected_color", "ItemList", Color.WHITE)
 	t.set_constant("v_separation", "ItemList", 4)
 
 	# Popup (option dropdown)
-	t.set_stylebox("panel", "PopupMenu", box(BG_DEEP, AMBER_DIM, 1, 6, 6, 8))
-	t.set_stylebox("hover", "PopupMenu", box(Color(AMBER, 0.28), Color(0, 0, 0, 0), 0, 0, 0, 5))
+	t.set_stylebox("panel", "PopupMenu", flat(BG_DEEP, AMBER_DIM, 1, 6, 6, 0))
+	t.set_stylebox("hover", "PopupMenu", flat(Color(AMBER, 0.26), Color(0, 0, 0, 0), 0, 0, 0, 0))
 	t.set_color("font_color", "PopupMenu", TEXT)
 	t.set_color("font_hover_color", "PopupMenu", Color.WHITE)
 
 	# Rich text + scrollbars
 	t.set_color("default_color", "RichTextLabel", TEXT)
 	for sb_type in ["VScrollBar", "HScrollBar"]:
-		t.set_stylebox("scroll", sb_type, box(Color(0, 0, 0, 0.25), Color(0, 0, 0, 0), 0, 0, 0, 4))
-		t.set_stylebox("grabber", sb_type, box(Color(LINE_HI, 0.55), Color(0, 0, 0, 0), 0, 0, 0, 4))
-		t.set_stylebox("grabber_highlight", sb_type, box(AMBER_DIM, Color(0, 0, 0, 0), 0, 0, 0, 4))
-		t.set_stylebox("grabber_pressed", sb_type, box(AMBER, Color(0, 0, 0, 0), 0, 0, 0, 4))
+		t.set_stylebox("scroll", sb_type, flat(Color(0, 0, 0, 0.30), Color(0, 0, 0, 0), 0, 0, 0, 0))
+		t.set_stylebox("grabber", sb_type, flat(Color(LINE_HI, 0.55), Color(0, 0, 0, 0), 0, 0, 0, 0))
+		t.set_stylebox("grabber_highlight", sb_type, flat(AMBER_DIM, Color(0, 0, 0, 0), 0, 0, 0, 0))
+		t.set_stylebox("grabber_pressed", sb_type, flat(AMBER, Color(0, 0, 0, 0), 0, 0, 0, 0))
 
 	_theme = t
 	return _theme
 
 
-## Tab button: transparent pill, accent-tinted when toggled on.
+## Dock tab: flat, dim text, bright accent underline when selected.
 static func style_tab(b: Button) -> void:
-	b.add_theme_stylebox_override("normal", box(Color(0, 0, 0, 0), Color(0, 0, 0, 0), 0, 10, 5, 14))
-	b.add_theme_stylebox_override("hover", box(Color(1, 1, 1, 0.08), Color(0, 0, 0, 0), 0, 10, 5, 14))
-	b.add_theme_stylebox_override("pressed", box(Color(AMBER, 0.22), Color(AMBER, 0.85), 1, 10, 5, 14))
-	b.add_theme_stylebox_override("hover_pressed", box(Color(AMBER, 0.30), AMBER, 1, 10, 5, 14))
+	var none := Color(0, 0, 0, 0)
+	b.add_theme_stylebox_override("normal", flat(none, none, 0, 10, 5, 0))
+	b.add_theme_stylebox_override("hover", flat(Color(1, 1, 1, 0.07), none, 0, 10, 5, 0))
+	var on := flat(Color(AMBER, 0.14), none, 0, 10, 5, 0)
+	on.border_color = AMBER
+	on.border_width_bottom = 3
+	b.add_theme_stylebox_override("pressed", on)
+	var on_hi := flat(Color(AMBER, 0.22), none, 0, 10, 5, 0)
+	on_hi.border_color = AMBER
+	on_hi.border_width_bottom = 3
+	b.add_theme_stylebox_override("hover_pressed", on_hi)
 	b.add_theme_color_override("font_color", DIM)
 	b.add_theme_color_override("font_hover_color", TEXT)
-	b.add_theme_color_override("font_pressed_color", AMBER)
-	b.add_theme_color_override("font_hover_pressed_color", AMBER)
+	b.add_theme_color_override("font_pressed_color", Color.WHITE)
+	b.add_theme_color_override("font_hover_pressed_color", Color.WHITE)
 
 
-## Wide menu button: glass pill with an accent edge when hovered / selected.
+## Wide menu button: dark slab with an orange bar on the left when hovered / selected.
 static func style_menu(b: Button) -> void:
 	b.alignment = HORIZONTAL_ALIGNMENT_LEFT
-	b.add_theme_stylebox_override("normal", box(Color(0.07, 0.085, 0.11, 0.78), Color(LINE, 0.6), 1, 20, 9, 10))
-	b.add_theme_stylebox_override("hover", box(Color(AMBER, 0.16), AMBER, 1, 20, 9, 10))
-	b.add_theme_stylebox_override("pressed", box(Color(AMBER, 0.9), AMBER, 1, 20, 9, 10))
-	b.add_theme_stylebox_override("hover_pressed", box(Color(AMBER, 0.9), AMBER, 1, 20, 9, 10))
-	b.add_theme_stylebox_override("disabled", box(Color(0.05, 0.06, 0.08, 0.55), Color(LINE, 0.25), 1, 20, 9, 10))
+	var n := flat(Color(0.07, 0.078, 0.072, 0.82), Color(LINE, 0.7), 1, 22, 9, 0)
+	b.add_theme_stylebox_override("normal", n)
+	var h := flat(Color(AMBER, 0.14), AMBER_DIM, 1, 22, 9, 0)
+	h.border_color = AMBER
+	h.border_width_left = 5
+	b.add_theme_stylebox_override("hover", h)
+	var p := flat(Color(AMBER, 0.92), AMBER, 1, 22, 9, 0)
+	b.add_theme_stylebox_override("pressed", p)
+	b.add_theme_stylebox_override("hover_pressed", p)
+	b.add_theme_stylebox_override("disabled", flat(Color(0.05, 0.055, 0.05, 0.6), Color(LINE, 0.25), 1, 22, 9, 0))
 	b.add_theme_font_size_override("font_size", 17)
+	b.add_theme_color_override("font_pressed_color", BG_SOLID)
+	b.add_theme_color_override("font_hover_pressed_color", BG_SOLID)
 
 
 ## Small all-caps caption (section headers, readout captions).
@@ -237,15 +260,17 @@ static func readout(text: String, pos: Vector2, size: Vector2, col: Color = TEXT
 	return l
 
 
-## Selection frame (the old "targeting brackets"): a soft rounded outline with brighter corner ticks.
+## Selection frame: four L-shaped corner brackets (no full outline).
 static func draw_brackets(ci: CanvasItem, rect: Rect2, col: Color, arm: float = 10.0, w: float = 1.5) -> void:
-	var sb := StyleBoxFlat.new()
-	sb.bg_color = Color(0, 0, 0, 0)
-	sb.border_color = Color(col, col.a * 0.55)
-	sb.set_border_width_all(maxi(1, int(w)))
-	sb.set_corner_radius_all(CORNER)
-	sb.anti_aliasing = true
-	ci.draw_style_box(sb, rect)
+	var a := minf(arm, minf(rect.size.x, rect.size.y) * 0.45)
+	var tl := rect.position
+	var br := rect.end
+	var tr := Vector2(br.x, tl.y)
+	var bl := Vector2(tl.x, br.y)
+	ci.draw_polyline(PackedVector2Array([tl + Vector2(0, a), tl, tl + Vector2(a, 0)]), col, w)
+	ci.draw_polyline(PackedVector2Array([tr + Vector2(-a, 0), tr, tr + Vector2(0, a)]), col, w)
+	ci.draw_polyline(PackedVector2Array([br + Vector2(0, -a), br, br + Vector2(-a, 0)]), col, w)
+	ci.draw_polyline(PackedVector2Array([bl + Vector2(a, 0), bl, bl + Vector2(0, -a)]), col, w)
 
 
 ## Diagonal hazard stripes over a rect. The caller must set clip_contents = true on its Control.

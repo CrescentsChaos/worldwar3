@@ -5,8 +5,6 @@ var _slot_box: VBoxContainer
 var _status: Label
 var _rng := RandomNumberGenerator.new()
 var _t := 0.0
-var _contours: Array = []     # [center, phases, ring count, ring step]
-var _blips: Array = []        # [pos, angle, friendly]
 
 
 func _ready() -> void:
@@ -16,14 +14,6 @@ func _ready() -> void:
 	Engine.time_scale = 1.0
 	get_tree().paused = false
 	_rng.seed = 1939
-	for i in 6:
-		_contours.append([Vector2(_rng.randf_range(80, 1200), _rng.randf_range(60, 660)),
-			Vector2(_rng.randf_range(0.0, TAU), _rng.randf_range(0.0, TAU)), _rng.randi_range(5, 9), _rng.randf_range(24.0, 38.0)])
-	var radar_c := Vector2(930, 410)
-	for i in 14:
-		var ang := _rng.randf() * TAU
-		var d := _rng.randf_range(40.0, 280.0)
-		_blips.append([radar_c + Vector2.from_angle(ang) * d, ang, i % 3 != 0])
 	_build()
 
 
@@ -37,7 +27,7 @@ func _build() -> void:
 
 	var left := VBoxContainer.new()
 	left.position = Vector2(72, 232)
-	left.size = Vector2(380, 400)
+	left.size = Vector2(380, 440)
 	left.add_theme_constant_override("separation", 8)
 	add_child(left)
 	left.add_child(_heading("New campaign"))
@@ -48,6 +38,7 @@ func _build() -> void:
 	left.add_child(_heading("Command"))
 	left.add_child(_btn("OPEN SPRITES FOLDER", _open_sprites))
 	left.add_child(_btn("ASSET MANAGER  (replace anything)", _open_assets))
+	left.add_child(_btn("ASSET GUIDE  (how to replace things)", _open_guide))
 	left.add_child(_btn("QUIT TO DESKTOP", func(): get_tree().quit()))
 
 	var right := VBoxContainer.new()
@@ -82,7 +73,7 @@ func _heading(text: String) -> Label:
 func _btn(text: String, cb: Callable) -> Button:
 	var b := Button.new()
 	b.text = text
-	b.custom_minimum_size = Vector2(0, 46)
+	b.custom_minimum_size = Vector2(0, 40)
 	b.focus_mode = Control.FOCUS_NONE
 	MilTheme.style_menu(b)
 	b.pressed.connect(cb)
@@ -104,6 +95,10 @@ func _open_assets() -> void:
 	add_child(AssetManager.new())
 
 
+func _open_guide() -> void:
+	add_child(AssetGuide.new())
+
+
 func _open_sprites() -> void:
 	DirAccess.make_dir_recursive_absolute(SpriteLib.USER_DIR)
 	var path := ProjectSettings.globalize_path(SpriteLib.USER_DIR)
@@ -113,75 +108,52 @@ func _open_sprites() -> void:
 
 # ------------------------------------------------------------------ backdrop
 
+func _hex(c: Vector2, r: float, col: Color) -> void:
+	var pts := PackedVector2Array()
+	for i in 7:
+		pts.append(c + Vector2.from_angle(float(i) * TAU / 6.0 + PI / 6.0) * r)
+	draw_polyline(pts, col, 1.0)
+
+
 func _draw() -> void:
 	draw_polygon(PackedVector2Array([Vector2(0, 0), Vector2(1280, 0), Vector2(1280, 720), Vector2(0, 720)]),
-		PackedColorArray([Color(0.055, 0.065, 0.068), Color(0.055, 0.065, 0.068), Color(0.018, 0.022, 0.024), Color(0.018, 0.022, 0.024)]))
+		PackedColorArray([Color(0.085, 0.095, 0.088), Color(0.060, 0.068, 0.062), Color(0.020, 0.024, 0.022), Color(0.034, 0.040, 0.036)]))
 	var menu_bg: Texture2D = SpriteLib.get_optional("ui_menu_bg")
 	if menu_bg != null:
-		draw_texture_rect(menu_bg, Rect2(0, 0, 1280, 720), false, Color(1, 1, 1, 0.55))
-	# contour map
-	for c in _contours:
-		var ctr: Vector2 = c[0]
-		var ph: Vector2 = c[1]
-		var rings: int = c[2]
-		var step: float = c[3]
-		for k in range(1, rings + 1):
-			var pts := PackedVector2Array()
-			var base := step * float(k)
-			for i in 97:
-				var th := float(i) / 96.0 * TAU
-				var wob := 1.0 + 0.16 * sin(3.0 * th + ph.x + float(k) * 0.21) + 0.09 * sin(5.0 * th + ph.y - float(k) * 0.13) + 0.04 * sin(9.0 * th + ph.x * 2.0)
-				pts.append(ctr + Vector2.from_angle(th) * base * wob)
-			draw_polyline(pts, Color(0.55, 0.62, 0.5, 0.05 + 0.012 * float(k % 3)), 1.0)
-	# tactical grid
-	for x in range(0, 1281, 80):
-		draw_line(Vector2(x, 0), Vector2(x, 720), Color(0.7, 0.8, 0.7, 0.035), 1.0)
-	for y in range(0, 721, 80):
-		draw_line(Vector2(0, y), Vector2(1280, y), Color(0.7, 0.8, 0.7, 0.035), 1.0)
-	for x in range(0, 1281, 160):
-		for y in range(0, 721, 160):
-			draw_line(Vector2(x - 5, y), Vector2(x + 5, y), Color(0.9, 0.95, 0.9, 0.16), 1.0)
-			draw_line(Vector2(x, y - 5), Vector2(x, y + 5), Color(0.9, 0.95, 0.9, 0.16), 1.0)
-
-	# radar
-	var rc := Vector2(930, 410)
-	for r in [80.0, 160.0, 240.0, 320.0]:
-		draw_arc(rc, r, 0.0, TAU, 96, Color(0.55, 0.8, 0.55, 0.10), 1.0)
-	draw_line(rc + Vector2(-330, 0), rc + Vector2(330, 0), Color(0.55, 0.8, 0.55, 0.08), 1.0)
-	draw_line(rc + Vector2(0, -330), rc + Vector2(0, 330), Color(0.55, 0.8, 0.55, 0.08), 1.0)
-	var sweep := fmod(_t * 0.9, TAU)
-	for k in 36:
-		var a0 := sweep - float(k) * 0.025
-		var a1 := a0 - 0.025
-		var al := 0.16 * (1.0 - float(k) / 36.0)
-		draw_colored_polygon(PackedVector2Array([rc, rc + Vector2.from_angle(a0) * 330.0, rc + Vector2.from_angle(a1) * 330.0]),
-			Color(0.45, 0.9, 0.5, al))
-	draw_line(rc, rc + Vector2.from_angle(sweep) * 330.0, Color(0.6, 1.0, 0.6, 0.55), 1.5)
-	for b in _blips:
-		var bp: Vector2 = b[0]
-		var ang: float = b[1]
-		var since := fposmod(sweep - ang, TAU)
-		var a := clampf(1.0 - since / 4.2, 0.0, 1.0)
-		if a <= 0.02:
-			continue
-		var col := MilTheme.FRIEND if bool(b[2]) else MilTheme.ENEMY
-		draw_rect(Rect2(bp - Vector2(3, 3), Vector2(6, 6)), Color(col, a), false, 1.5)
-		draw_circle(bp, 1.5, Color(col, a))
-
-	# left-edge shading so the menu text stays readable
-	draw_polygon(PackedVector2Array([Vector2(0, 0), Vector2(560, 0), Vector2(560, 720), Vector2(0, 720)]),
-		PackedColorArray([Color(0, 0, 0, 0.62), Color(0, 0, 0, 0.0), Color(0, 0, 0, 0.0), Color(0, 0, 0, 0.62)]))
-
-	# amber side bar + title block
-	draw_rect(Rect2(0, 0, 6, 720), MilTheme.AMBER)
-	draw_rect(Rect2(72, 70, 4, 92), MilTheme.AMBER)
-	var tf := MilTheme.font_bold()
-	_spaced(tf, "WORLD WAR 3", Vector2(92, 142), 92, 12.0, Color(0, 0, 0, 0.7), Vector2(3, 3))
-	_spaced(tf, "WORLD WAR 3", Vector2(92, 142), 92, 12.0, Color(0.93, 0.94, 0.9), Vector2.ZERO)
-	_hazard_rule(Rect2(72, 196, 380, 6))
-	draw_rect(Rect2(0, 0, 1280, 2), Color(MilTheme.AMBER, 0.5))
-	draw_rect(Rect2(0, 718, 1280, 2), Color(MilTheme.AMBER, 0.5))
-	MilTheme.draw_brackets(self, Rect2(14, 14, 1252, 692), Color(MilTheme.LINE_HI, 0.7), 22.0, 1.5)
+		draw_texture_rect(menu_bg, Rect2(0, 0, 1280, 720), false, Color(1, 1, 1, 0.9))
+	else:
+		# procedural backdrop: hex grid + slow light sweep + big accent slash
+		var hr := 46.0
+		var dx := hr * 1.7320508
+		for row in 11:
+			for col in 18:
+				var c := Vector2(float(col) * dx + (dx * 0.5 if row % 2 == 1 else 0.0), float(row) * hr * 1.5)
+				var fall := clampf(1.0 - c.x / 1500.0, 0.0, 1.0)
+				_hex(c, hr - 2.0, Color(0.72, 0.78, 0.62, 0.025 + 0.05 * fall))
+		var sweep := fmod(_t * 90.0, 2600.0) - 600.0
+		draw_polygon(PackedVector2Array([Vector2(sweep, 0), Vector2(sweep + 120.0, 0), Vector2(sweep - 160.0, 720), Vector2(sweep - 280.0, 720)]),
+			PackedColorArray([Color(1, 0.85, 0.6, 0.0), Color(1, 0.85, 0.6, 0.05), Color(1, 0.85, 0.6, 0.0), Color(1, 0.85, 0.6, 0.0)]))
+		draw_polygon(PackedVector2Array([Vector2(760, 720), Vector2(1020, 0), Vector2(1280, 0), Vector2(1280, 720)]),
+			PackedColorArray([Color(0, 0, 0, 0), Color(MilTheme.AMBER, 0.10), Color(MilTheme.AMBER, 0.02), Color(0, 0, 0, 0.0)]))
+		draw_line(Vector2(760, 720), Vector2(1020, 0), Color(MilTheme.AMBER, 0.55), 2.0)
+	# left shading so the menu text stays readable
+	draw_polygon(PackedVector2Array([Vector2(0, 0), Vector2(620, 0), Vector2(620, 720), Vector2(0, 720)]),
+		PackedColorArray([Color(0, 0, 0, 0.70), Color(0, 0, 0, 0.0), Color(0, 0, 0, 0.0), Color(0, 0, 0, 0.70)]))
+	# top / bottom rails
+	draw_rect(Rect2(0, 0, 1280, 3), Color(MilTheme.AMBER, 0.85))
+	draw_rect(Rect2(0, 717, 1280, 3), Color(MilTheme.AMBER, 0.35))
+	var logo: Texture2D = SpriteLib.get_optional("ui_logo")
+	if logo != null:
+		var ls := logo.get_size()
+		var k := minf(560.0 / ls.x, 120.0 / ls.y)
+		draw_texture_rect(logo, Rect2(Vector2(72, 66), ls * k), false)
+	else:
+		var tf := MilTheme.font_bold()
+		draw_rect(Rect2(72, 70, 6, 96), MilTheme.AMBER)
+		_spaced(tf, "WORLD WAR 3", Vector2(94, 144), 88, 8.0, Color(0, 0, 0, 0.7), Vector2(3, 3))
+		_spaced(tf, "WORLD WAR 3", Vector2(94, 144), 88, 8.0, Color(0.93, 0.94, 0.9), Vector2.ZERO)
+	_hazard_rule(Rect2(72, 196, 380, 5))
+	MilTheme.draw_brackets(self, Rect2(16, 16, 1248, 688), Color(MilTheme.LINE_HI, 0.55), 26.0, 2.0)
 
 
 ## Hazard stripe rule drawn without clip_contents: every stripe is clipped to the rect by hand.
